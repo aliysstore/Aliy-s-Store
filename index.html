@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Encabezado Responsivo</title>
+
+  <!-- Fuente Montserrat -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="encabezado">
+  <div class="contenedor-portada">
+    <div class="portada-borde">
+      <img src="img/portada.jpg" alt="Imagen de portada" class="portada" />
+    </div>
+    <div class="contenedor-perfil">
+      <img src="img/perfil.jpg" alt="Foto de perfil" class="perfil" />
+    </div>
+  </div>
+
+  <div class="presentacion">
+    <h1>Aliy | Distribuidora Price Shoes</h1>
+    <p>Hola, soy Alicia, y como socia Price Shoes estoy aquí para ayudarte a encontrar el producto perfecto para ti</p>
+  </div>
+</header>
+
+<!-- Subtítulo -->
+<section class="subtitulo">
+  <h2>¡El mejor regreso a clases!</h2>
+</section>
+
+<!-- Carrusel -->
+<section class="carrusel" id="carrusel"></section>
+
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-11866726277"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+  gtag('config', 'G-11866726277');
+</script>
+
+<!-- Script principal -->
+<script type="module" src="main.js"></script>
+
+</body>
+</html>
