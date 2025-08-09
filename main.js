@@ -31,8 +31,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function cargarCarrusel() {
   const contenedor = document.getElementById("carrusel");
-  contenedor.innerHTML = "Cargando...";
-
+  
+  // Mostrar spinner centrado
+  contenedor.innerHTML = `<div class="spinner"></div>`;
+  
   try {
     console.log("📡 Realizando consulta a Firestore con filtro y orden...");
     const q = query(
@@ -40,19 +42,19 @@ async function cargarCarrusel() {
       where("seccion", "==", "banner_novedades"),
       orderBy("id", "asc")
     );
-
+    
     const snapshot = await getDocs(q);
     console.log(`📊 Documentos obtenidos: ${snapshot.size}`);
-
-    contenedor.innerHTML = "";
-
+    
+    contenedor.innerHTML = ""; // Quitar el spinner
+    
     snapshot.forEach(doc => {
       const data = doc.data();
       console.log(`🖼 Procesando banner ID ${doc.id}:`, data);
-
+      
       const card = document.createElement("div");
       card.classList.add("carrusel-card");
-
+      
       const link = document.createElement("a");
       link.href = data.url;
       link.target = "_blank";
@@ -62,18 +64,18 @@ async function cargarCarrusel() {
           banner_id: doc.id,
           url: data.url
         });
-        console.log("📤 Evento enviado a GA: click_banner");
       });
-
+      
       const img = document.createElement("img");
       img.src = data.imagen;
-      img.alt = "Banner";
-
+      img.alt = data.alt || "Banner";
+      img.loading = "lazy";
+      
       link.appendChild(img);
       card.appendChild(link);
       contenedor.appendChild(card);
     });
-
+    
     console.log("✅ Carrusel cargado correctamente.");
   } catch (error) {
     console.error("❌ Error cargando carrusel:", error);
