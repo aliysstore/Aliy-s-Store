@@ -127,22 +127,22 @@ async function cargarCatalogos() {
   card.appendChild(texto);
   
   // Evento click con evento GA
-card.addEventListener("click", () => {
-  console.log(`📍 Clic en catálogo ID ${doc.id}, evento: ${data.evento_ga}`);
+  card.addEventListener("click", () => {
+    console.log(`📍 Clic en catálogo ID ${doc.id}, evento: ${data.evento_ga}`);
   
-  // Registrar en Google Analytics
-  logEvent(analytics, data.evento_ga || "click_default", {
-    catalogo_id: doc.id,
-    texto: data.texto,
-  });
+    // Registrar en Google Analytics
+    logEvent(analytics, data.evento_ga || "click_default", {
+      catalogo_id: doc.id,
+      texto: data.texto,
+    });
 
-  // Abrir URL en nueva pestaña (si existe en Firestore)
-  if (data.url) {
-    window.open(data.url, "_blank");
-  } else {
-    console.warn("⚠️ El documento no tiene URL definida:", doc.id);
-  }
-});
+    // Abrir URL en nueva pestaña (si existe en Firestore)
+    if (data.url) {
+      window.open(data.url, "_blank");
+    } else {
+      console.warn("⚠️ El documento no tiene URL definida:", doc.id);
+    }
+  });
   
   contenedor.appendChild(card);
 });
