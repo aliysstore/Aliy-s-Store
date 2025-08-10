@@ -42,6 +42,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   console.log("✅ Todas las cargas terminadas.");
+  
+  const btn = document.getElementById("whatsapp-btn");
+  
+  setInterval(() => {
+    btn.classList.add("animate-pulse");
+    
+    // Quitar la clase después de la animación para poder volverla a activar
+    setTimeout(() => {
+      btn.classList.remove("animate-pulse");
+    }, 1000)
+  }, 5000)
+});
+
+document.querySelector('.whatsapp-fab').addEventListener('click', () => {
+  logEvent(analytics, "click_whatsapp", { origen: "FAB flotante" });
 });
 
 function mostrarSpinner() {
