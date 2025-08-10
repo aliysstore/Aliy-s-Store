@@ -202,25 +202,12 @@ body {
   margin-left: -20px;
 }
 
-/* Grid responsive para catálogos */
-/*.catalogos-grid {
-  display: grid;
-  gap: 15px;
-  grid-template-columns: repeat(2, 1fr);
-}*/
 .catalogos-grid {
   display: grid;
   gap: 15px;
   grid-template-columns: repeat(auto-fit, 150px);
   justify-content: space-between; /* para centrar cuando no llena todo */
 }
-
-/* En pantallas medianas y móviles, 2 columnas */
-/*@media (max-width: 768px) {
-  .catalogos-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}*/
 
 /* Cards para catálogos */
 .catalogos-card {
@@ -261,12 +248,6 @@ body {
   object-fit: fill; /* llena todo el espacio, recortando la imagen */
   display: block;
 }
-
-/*@media (min-width: 769px) {
-  .imagen-contenedor {
-    height: 290px;
-  }
-}*/
 
 /* Contenedor texto que se adapta a su contenido */
 .catalogo-texto {
