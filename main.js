@@ -1,4 +1,3 @@
-// Comentario para forzar Git
 // Import Firebase módulos
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
 import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
