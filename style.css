@@ -362,7 +362,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.5rem;
+  font-size: 1.5rem;   /* tamaño para móvil/tablet */
   color: #0077cc;
   font-weight: 700;
   flex-wrap: wrap; /* permite que el texto haga wrap sin afectar el ícono */
@@ -375,6 +375,7 @@ body {
   stroke-width: 1.5;
   color: #0077cc;
 }
+
 .contenedor-info i {
   flex: 0 0 26px;  /* ancho fijo */
   height: 26px;
@@ -389,4 +390,15 @@ body {
 
 .contenedor-info strong {
   color: #004a99;
+}
+
+/* Ajustes para escritorio */
+@media (min-width: 1024px) {
+  .contenedor-info h2 {
+    font-size: 1.3rem; /* tamaño un poco más pequeño y proporcionado */
+  }
+  
+  .contenedor-info p {
+    font-size: 1.1rem; /* párrafos un poco más grandes para mejor lectura */
+  }
 }
