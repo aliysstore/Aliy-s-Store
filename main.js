@@ -26,7 +26,7 @@ const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ DOM cargado. Iniciando carga concurrente...");
-
+  
   mostrarSpinner(); // 🔹 Mostrar antes de empezar
 
   try {
@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       btn.classList.remove("animate-pulse");
     }, 1000)
   }, 5000)
+  
 });
 
 document.querySelector('.whatsapp-fab').addEventListener('click', () => {
