@@ -25,10 +25,9 @@ console.log("📌 Inicializando Firestore...");
 const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", async () => {
-  console.log("✅ DOM cargado. Iniciando carga del carrusel...");
-  await cargarCarrusel();
-  console.log("✅ Cargando catálogos de calzado...");
-  await cargarCatalogos();
+  console.log("✅ DOM cargado. Iniciando carga concurrente...");
+  await Promise.all([cargarCarrusel(), cargarCatalogos()]);
+  console.log("✅ Ambas cargas terminadas.");
 });
 
 async function cargarCarrusel() {
