@@ -210,7 +210,7 @@ body {
 }
 
 /* Cards para catálogos */
-.catalogos-card {
+/*.catalogos-card {
   background: white;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -226,6 +226,25 @@ body {
 
 .catalogos-card:hover {
   transform: scale(1.04);
+}*/
+
+.catalogos-card {
+  background: white;
+  border-radius: 15px;
+  border: 1px solid rgba(33, 140, 253, 0.3);
+  box-shadow: none; 
+  cursor: pointer;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.catalogos-card:hover {
+  transform: scale(1.02);
+  border-color: #0077cc; /* cambia el color del borde al pasar el mouse */
 }
 
 /* Contenedor imagen con altura fija y centrado vertical */
@@ -258,4 +277,18 @@ body {
   text-align: center;
   /* No altura fija ni flex-grow */
   line-height: 1.4;
+}
+
+.etiqueta-nuevo {
+  position: absolute;
+  top: 10px;
+  right: -35px;
+  background: #2196f3; /* azul bajo */
+  color: white;
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 4px 40px;
+  transform: rotate(45deg);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 5;
 }

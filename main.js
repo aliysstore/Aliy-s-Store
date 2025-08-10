@@ -144,6 +144,14 @@ async function cargarCatalogos() {
     }
   });
   
+  // 🔹 Si es nuevo, añadir etiqueta
+  if (data.esNuevo === true) {
+    const etiqueta = document.createElement("div");
+    etiqueta.classList.add("etiqueta-nuevo");
+    etiqueta.textContent = "Nuevo";
+    card.appendChild(etiqueta);
+  }
+  
   contenedor.appendChild(card);
 });
   } catch (error) {
