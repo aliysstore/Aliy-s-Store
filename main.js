@@ -26,7 +26,7 @@ const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", async () => {
   console.log("✅ DOM cargado. Iniciando carga concurrente...");
-  await Promise.all([cargarCarrusel(), cargarCatalogos()]);
+  await Promise.all([cargarCarrusel(), cargarCatalogos(), cargarCatalogosAccesorios()]);
   console.log("✅ Ambas cargas terminadas.");
 });
 
@@ -93,6 +93,81 @@ async function cargarCatalogos() {
     const q = query(
       collection(db, "catalogo"),
       where("seccion", "==", "catalogo_calzado"),
+      orderBy("id", "asc")
+    );
+    
+    const snapshot = await getDocs(q);
+    
+    contenedor.innerHTML = "";
+    
+    snapshot.forEach(doc => {
+  const data = doc.data();
+
+  const card = document.createElement("div");
+  card.classList.add("catalogos-card");
+  
+  // Contenedor imagen
+  const contenedorImagen = document.createElement("div");
+  contenedorImagen.classList.add("imagen-contenedor");
+
+  const img = document.createElement("img");
+  img.src = data.imagen;
+  img.alt = data.alt || "Catalogo";
+  img.loading = "lazy";
+
+  contenedorImagen.appendChild(img);
+
+  // Contenedor texto
+  const texto = document.createElement("div");
+  texto.classList.add("catalogo-texto");
+  texto.textContent = data.nombre || "";
+
+  // Armar card
+  card.appendChild(contenedorImagen);
+  card.appendChild(texto);
+  
+  // Evento click con evento GA
+  card.addEventListener("click", () => {
+    console.log(`📍 Clic en catálogo ID ${doc.id}, evento: ${data.evento_ga}`);
+  
+    // Registrar en Google Analytics
+    logEvent(analytics, data.evento_ga || "click_default", {
+      catalogo_id: doc.id,
+      texto: data.texto,
+    });
+
+    // Abrir URL en nueva pestaña (si existe en Firestore)
+    if (data.url) {
+      window.open(data.url, "_blank");
+    } else {
+      console.warn("⚠️ El documento no tiene URL definida:", doc.id);
+    }
+  });
+  
+  // 🔹 Si es nuevo, añadir etiqueta
+  if (data.esNuevo === true) {
+    const etiqueta = document.createElement("div");
+    etiqueta.classList.add("etiqueta-nuevo");
+    etiqueta.textContent = "Nuevo";
+    card.appendChild(etiqueta);
+  }
+  
+  contenedor.appendChild(card);
+});
+  } catch (error) {
+    console.error("❌ Error cargando catálogos:", error);
+    contenedor.innerHTML = "Error al cargar catálogos";
+  }
+}
+
+async function cargarCatalogosAccesorios() {
+  const contenedor = document.getElementById("catalogos-accesorios");
+  contenedor.innerHTML = `<div class="spinner"></div>`;
+  
+  try {
+    const q = query(
+      collection(db, "catalogo"),
+      where("seccion", "==", "catalogo_accesorios"),
       orderBy("id", "asc")
     );
     
