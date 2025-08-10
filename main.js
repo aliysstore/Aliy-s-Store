@@ -105,7 +105,7 @@ async function cargarCatalogos() {
 
   const card = document.createElement("div");
   card.classList.add("catalogos-card");
-
+  
   // Contenedor imagen
   const contenedorImagen = document.createElement("div");
   contenedorImagen.classList.add("imagen-contenedor");
