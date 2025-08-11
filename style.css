@@ -479,15 +479,17 @@ body {
   }
 
   .contenedor-info h2 {
-    font-size: 1.75rem;
+    font-size: 2rem; /* Aumentado para mejor presencia */
   }
 
   .contenedor-info p,
   .contenedor-info li {
     font-size: 1rem;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .contenedor-info ul {
-    padding-left: 25px;
+    padding-left: 20px;
   }
 }
