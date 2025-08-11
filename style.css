@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap");
 
 html {
   font-size: 16px; /* Tamaño base estándar */
@@ -7,7 +7,7 @@ html {
 body {
   height: 100%;
   margin: 0;
-  font-family: "Montserrat", sans-serif;
+  font-family: "Nunito", sans-serif;
   font-size: 1rem;
   line-height: 1.6;
   background: linear-gradient(to bottom, #ffdee9, #b5fffc);
