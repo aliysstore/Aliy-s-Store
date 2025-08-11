@@ -412,12 +412,20 @@ body {
 }*/
 
 /* Estilos base para móvil/tablet (default) */
-.seccion-info-con-borde {
+/*.seccion-info-con-borde {
   border-top: 3px solid #0077cc;
   border-bottom: 3px solid #0077cc;
   padding: 40px 20px;
   margin: auto;
   background: #f9faff;
+  color: #222;
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.6;
+}*/
+
+.seccion-info-con-borde {
+  padding: 40px 20px 20px 20px;
+  margin: auto;
   color: #222;
   font-family: 'Montserrat', sans-serif;
   line-height: 1.6;
@@ -491,5 +499,223 @@ body {
 
   .contenedor-info ul {
     padding-left: 20px;
+  }
+}
+
+/* Card del formulario con mismo margen que seccion-info-con-borde */
+.card-reseña {
+  //background-color: #fff;
+  padding: 20px;
+  //margin: 20px;
+  border-radius: 12px;
+  //box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-sizing: border-box;
+}
+
+@media (min-width: 1024px) {
+  .card-reseña {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+.card-reseña h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Formulario */
+#form-reseña {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#form-reseña label {
+  font-weight: bold;
+  color: #555;
+}
+
+#form-reseña input[type="text"],
+#form-reseña textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: "Nunito", sans-serif;
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+#form-reseña input[type="text"]:focus,
+#form-reseña textarea:focus {
+  border-color: #ff7f50;
+  outline: none;
+}
+
+/* Estrellas */
+.estrellas {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+
+.estrellas input {
+  display: none;
+}
+
+.estrellas label {
+  font-family: "Nunito", sans-serif;
+  font-size: 2rem;
+  color: #ccc;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+/* Hover → usa data-color */
+.estrellas label:hover,
+.estrellas label:hover ~ label {
+  color: gold;
+}
+
+/* Seleccionado → color según data-color */
+.estrellas input:checked + label,
+.estrellas input:checked + label ~ label {
+  color: currentColor;
+}
+
+.estrellas input:checked + label {
+  color: var(--star-color);
+}
+
+/* Colores para cada valor */
+#estrella1:checked ~ label { color: #f44336; }
+#estrella2:checked ~ label { color: #ff9800; }
+#estrella3:checked ~ label { color: #ffc107; }
+#estrella4:checked ~ label { color: #8bc34a; }
+#estrella5:checked ~ label { color: #4caf50; }
+
+/* Solo la estrella sobre la que estamos con hover */
+.rating label:hover {
+  color: #ffdb70;
+}
+
+/* Botón */
+#form-reseña button {
+  background-color: #ff7f50;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-family: "Nunito", sans-serif;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#form-reseña button:hover {
+  background-color: #ff6347;
+}
+
+
+
+
+.card-reseñas-navegacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 900px;
+  margin: 0 20px 40px 20px;
+  padding: 40px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(33, 140, 253, 0.3);
+  box-shadow: none;
+  background-color: white; /* o transparent si prefieres sin fondo */
+  gap: 20px;
+  position: relative;
+}
+
+.card-reseñas-navegacion button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  color: #0077cc;
+  transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.card-reseñas-navegacion button:hover {
+  color: #004a99;
+}
+
+.contenido-reseña {
+  flex: 1;
+  text-align: center;
+  user-select: none;
+}
+
+.autor-reseña {
+  font-weight: 700;
+  color: #0077cc;
+  margin-bottom: 12px;
+  font-size: 1.2rem;
+}
+
+.texto-reseña {
+  font-style: normal;
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 16px;
+  position: relative;
+  padding: 0 20px;
+}
+
+/* Añadir comillas estilizadas alrededor del texto */
+/*.texto-reseña::before,
+.texto-reseña::after {
+  content: '"';
+  font-size: 2rem;
+  color: #ccc;
+  position: absolute;
+  top: -10px;
+}*/
+
+.texto-reseña::before {
+  left: 5px;
+}
+
+.texto-reseña::after {
+  right: 5px;
+}
+
+/* Estrellas */
+.estrellas-reseña {
+  font-size: 1.4rem;
+  color: #ffc107; /* color amarillo típico para estrellas */
+  user-select: none;
+}
+
+/* Responsivo para móviles */
+@media (max-width: 600px) {
+  .card-reseñas-navegacion {
+    flex-direction: column;
+    padding: 30px 15px;
+  }
+  
+  .card-reseñas-navegacion button {
+    position: relative;
+    top: 0;
+    margin: 10px 0;
+  }
+  
+  .contenido-reseña {
+    text-align: center;
   }
 }

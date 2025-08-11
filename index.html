@@ -165,6 +165,56 @@
         </ul>
       </div>
     </section>
+  </section>    
+
+  
+  <section class="card-reseñas-navegacion">
+  <button id="btn-anterior" aria-label="Reseña anterior" title="Anterior">
+    <i data-lucide="chevron-left"></i>
+  </button>
+
+  <div class="contenido-reseña">
+    <p id="autor-reseña" class="autor-reseña">
+      Juan Pérez
+    </p>
+    <p id="texto-reseña" class="texto-reseña">
+      Excelente servicio y atención, ¡muy recomendable!
+    </p>
+    <div id="estrellas-reseña" class="estrellas-reseña" aria-label="Calificación de la reseña" role="img">
+      ★★★★☆
+    </div>
+  </div>
+
+  <button id="btn-siguiente" aria-label="Siguiente reseña" title="Siguiente">
+    <i data-lucide="chevron-right"></i>
+  </button>
+</section>
+  
+
+  <section class="card-reseña">
+  <h2>Deja tu reseña</h2>
+  <form id="form-reseña">
+    <label for="nombre">Nombre</label>
+    <input type="text" id="nombre" name="nombre" placeholder="Tu nombre" required>
+    
+    <label for="mensaje">Tu reseña</label>
+    <textarea id="mensaje" name="mensaje" rows="4" placeholder="Escribe tu experiencia..." required></textarea>
+
+    <label for="calificacion">Calificación</label>
+    <div class="estrellas">
+      <input type="radio" id="estrella5" name="calificacion" value="5"><label for="estrella5" data-color="#4caf50">★</label>
+      <input type="radio" id="estrella4" name="calificacion" value="4"><label for="estrella4" data-color="#8bc34a">★</label>
+      <input type="radio" id="estrella3" name="calificacion" value="3"><label for="estrella3" data-color="#ffc107">★</label>
+      <input type="radio" id="estrella2" name="calificacion" value="2"><label for="estrella2" data-color="#ff9800">★</label>
+      <input type="radio" id="estrella1" name="calificacion" value="1"><label for="estrella1" data-color="#f44336">★</label>
+    </div>
+    
+    <button type="submit">Enviar reseña</button>
+  </form>
+</section>
+  
+
+    
     <!-- Colócalo justo antes de cerrar el body -->
     <div id="spinner-overlay" class="spinner-overlay" style="display: none">
       <div class="spinner"></div>
