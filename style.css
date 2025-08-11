@@ -1,13 +1,15 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 
-html,
-body {
-  height: 100%;
-  margin: 0;
+html {
+  font-size: 16px; /* Tamaño base estándar */
 }
 
 body {
+  height: 100%;
+  margin: 0;
   font-family: "Montserrat", sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
   background: linear-gradient(to bottom, #ffdee9, #b5fffc);
   background-attachment: fixed;
   background-size: cover;
@@ -346,12 +348,12 @@ body {
   animation: swing 1s ease-in-out;
 }
 
+/* Estilos base para móvil/tablet (default) */
 .seccion-info-con-borde {
   border-top: 3px solid #0077cc;
   border-bottom: 3px solid #0077cc;
-  padding: 0px 20px;
-  
-  margin: auto auto;
+  padding: 0 20px;
+  margin: auto;
   background: #f9faff;
   color: #222;
   font-family: 'Montserrat', sans-serif;
@@ -362,29 +364,29 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.5rem;   /* tamaño para móvil/tablet */
+  font-size: 1.5rem !important; /* 24px */
   color: #0077cc;
   font-weight: 700;
-  flex-wrap: wrap; /* permite que el texto haga wrap sin afectar el ícono */
+  flex-wrap: wrap;
 }
 
 .contenedor-info h2 svg {
-  flex-shrink: 0;  /* no permite que el svg se reduzca */
-  width: 24px !important;  /* tamaño fijo */
+  flex-shrink: 0;
+  width: 24px !important;
   height: 24px !important;
   stroke-width: 1.5;
   color: #0077cc;
 }
 
 .contenedor-info i {
-  flex: 0 0 26px;  /* ancho fijo */
+  flex: 0 0 26px;
   height: 26px;
   stroke-width: 1.7;
   color: #0077cc;
 }
 
 .contenedor-info p {
-  font-size: 1rem;
+  font-size: 1rem !important; /* 16px */
   margin-bottom: 25px;
 }
 
@@ -392,13 +394,20 @@ body {
   color: #004a99;
 }
 
-/* Ajustes para escritorio */
+/* Alternativa para escritorio (pantallas >= 1024px) */
 @media (min-width: 769px) {
-  .contenedor-info h2 {
-    font-size: 1.3rem; /* tamaño un poco más pequeño y proporcionado */
+  .seccion-info-con-borde {
+    padding: 0 20px; /* más espacio a los lados */
   }
-  
+
+  .contenedor-info h2 {
+    font-size: 2rem !important; /* 20px */
+  }
+
   .contenedor-info p {
-    font-size: 1.1rem; /* párrafos un poco más grandes para mejor lectura */
+    font-size: 0.8rem !important; /* 16px: mismo tamaño que móvil para no exagerar */
+    max-width: 850px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
