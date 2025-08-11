@@ -393,7 +393,7 @@ body {
 }
 
 /* Ajustes para escritorio */
-@media (min-width: 1024px) {
+@media (min-width: 769px) {
   .contenedor-info h2 {
     font-size: 1.3rem; /* tamaño un poco más pequeño y proporcionado */
   }
