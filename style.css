@@ -87,7 +87,7 @@ body {
   overflow-x: auto;
   gap: 15px;
   padding: 4px 20px;
-  scroll-snap-type: x 15px + mandatory;
+  scroll-snap-type: x mandatory;
   position: relative;
 }
 
@@ -349,69 +349,6 @@ body {
 }
 
 /* Estilos base para móvil/tablet (default) */
-/*.seccion-info-con-borde {
-  border-top: 3px solid #0077cc;
-  border-bottom: 3px solid #0077cc;
-  padding: 0 20px;
-  margin: auto;
-  background: #f9faff;
-  color: #222;
-  font-family: 'Montserrat', sans-serif;
-  line-height: 1.6;
-}
-
-.contenedor-info h2 {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.5rem !important;
-  color: #0077cc;
-  font-weight: 700;
-  flex-wrap: wrap;
-}
-
-.contenedor-info h2 svg {
-  flex-shrink: 0;
-  width: 24px !important;
-  height: 24px !important;
-  stroke-width: 1.5;
-  color: #0077cc;
-}
-
-.contenedor-info i {
-  flex: 0 0 26px;
-  height: 26px;
-  stroke-width: 1.7;
-  color: #0077cc;
-}
-
-.contenedor-info p {
-  font-size: 1rem !important;
-  margin-bottom: 25px;
-}
-
-.contenedor-info strong {
-  color: #004a99;
-}
-
-@media (min-width: 769px) {
-  .seccion-info-con-borde {
-    padding: 0 20px;
-  }
-
-  .contenedor-info h2 {
-    font-size: 2rem !important;
-  }
-
-  .contenedor-info p {
-    font-size: 0.8rem !important;
-    max-width: 850px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}*/
-
-/* Estilos base para móvil/tablet (default) */
 .seccion-info-con-borde {
   border-top: 3px solid #0077cc;
   border-bottom: 3px solid #0077cc;
@@ -475,7 +412,19 @@ body {
 /* Estilos para escritorio (pantallas >= 1024px) */
 @media (min-width: 1024px) {
   .seccion-info-con-borde {
-    padding: 60px 40px;
+    padding-left: 40px;
+    padding-right: 40px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1200px; /* Controla el ancho máximo para centrar */
+  }
+
+  .contenedor-info {
+    max-width: 950px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .contenedor-info h2 {
