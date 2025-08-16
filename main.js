@@ -34,7 +34,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   try {
     await Promise.all([
-      cargarCarrusel(),
       cargarCatalogos(),
       cargarCatalogosAccesorios(),
       cargarResenas()
@@ -162,7 +161,7 @@ async function cargarCatalogos() {
   try {
     const q = query(
       collection(db, "catalogo"),
-      where("seccion", "==", "catalogo_calzado"),
+      where("seccion", "==", "catalogo_andrea"),
       orderBy("id", "asc")
     );
 
