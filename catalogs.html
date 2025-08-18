@@ -251,27 +251,32 @@
     const catalogGrid = document.getElementById('catalog-grid');
     const filterContainer = document.getElementById('filter-container');
     const whatsappButton = document.getElementById('whatsapp-contact-button');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
 
     let catalogosData = [];
     let iso;
 
-    // NEW CODE: Object to track the current active filters
     let filters = {
         brand: '*',
         category: '*'
     };
 
+    function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        sidebarOverlay.classList.add('hidden');
+    }
+
     menuButton.addEventListener('click', () => {
       sidebar.classList.remove('-translate-x-full');
       sidebarOverlay.classList.remove('hidden');
     });
+
     closeButton.addEventListener('click', () => {
-      sidebar.classList.add('-translate-x-full');
-      sidebarOverlay.classList.add('hidden');
+        closeSidebar();
     });
+
     sidebarOverlay.addEventListener('click', () => {
-      sidebar.classList.add('-translate-x-full');
-      sidebarOverlay.classList.add('hidden');
+        closeSidebar();
     });
     
     function registerCardClickEvent(eventName, catalogo) {
@@ -294,14 +299,25 @@
         registerWhatsappClickEvent();
     });
 
-    // NEW CODE: Function to combine and apply the filters
     function applyFilters() {
-        const combinedFilter = `${filters.category}${filters.brand}`;
-        iso.arrange({ filter: combinedFilter });
-        updateUrlParameter(filters.brand, filters.category);
+        let combinedFilter;
+
+        if (filters.brand === '*' && filters.category === '*') {
+            combinedFilter = '*';
+        } else if (filters.brand === '*') {
+            combinedFilter = filters.category;
+        } else if (filters.category === '*') {
+            combinedFilter = filters.brand;
+        } else {
+            combinedFilter = filters.brand + filters.category;
+        }
+
+        if (iso) {
+            iso.arrange({ filter: combinedFilter });
+            updateUrlParameter(filters.brand, filters.category);
+        }
     }
     
-    // MODIFIED CODE: Update card creation to add category classes
     function displayCatalogos() {
         const grid = document.getElementById('catalog-grid');
         
@@ -358,7 +374,6 @@
         });
     }
 
-    // MODIFIED CODE: Filter logic to use the new 'filters' object
     function createFilterButtons(brands) {
         const allButton = document.createElement('button');
         allButton.textContent = 'Todo';
@@ -384,7 +399,6 @@
         });
     }
 
-    // MODIFIED CODE: Function to check and apply both brand and category filters from the URL
     function checkUrlFilter() {
         const urlParams = new URLSearchParams(window.location.search);
         const brandFromUrl = urlParams.get('brand');
@@ -413,7 +427,6 @@
         }
     }
 
-    // MODIFIED CODE: Function to update the URL with both brand and category parameters
     function updateUrlParameter(brandName, categoryName) {
       const urlParams = new URLSearchParams(window.location.search);
       
@@ -455,8 +468,6 @@
         }
     }
 
-    // NEW CODE: Event listener for sidebar links
-    const sidebarLinks = document.querySelectorAll('.sidebar-link');
     sidebarLinks.forEach(link => {
         link.addEventListener('click', (event) => {
             event.preventDefault(); 
@@ -466,6 +477,8 @@
             const categoryValue = event.currentTarget.dataset.filter;
             filters.category = categoryValue;
             applyFilters();
+            
+            closeSidebar();
         });
     });
 
