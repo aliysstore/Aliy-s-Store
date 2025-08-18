@@ -161,7 +161,7 @@ async function cargarCatalogos() {
   try {
     const q = query(
       collection(db, "catalogo"),
-      where("seccion", "==", "catalogo_andrea"),
+      where("seccion", "==", "catalogo_calzado"),
       orderBy("id", "asc")
     );
 
