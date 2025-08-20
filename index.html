@@ -231,6 +231,9 @@
         max-width: 500px;
         color: #1d1b1f;
         position: relative;
+        max-height: 80vh; /* Limita la altura en pantallas pequeñas */
+        display: flex; /* Nuevo: para organizar los elementos */
+        flex-direction: column; /* Nuevo: para organizar los elementos */
     }
 
     .consent-modal-content h3 {
@@ -255,6 +258,8 @@
         display: flex;
         flex-direction: column;
         gap: 1rem;
+        overflow-y: auto; /* Nuevo: permite el scroll vertical */
+        padding-right: 0.5rem; /* Nuevo: evita que el scrollbar se pegue a los bordes */
     }
 
     .consent-option {
@@ -269,6 +274,7 @@
     .consent-option .option-info {
         display: flex;
         flex-direction: column;
+        flex-grow: 1; /* Allow text to take more space */
     }
 
     .consent-option .option-info h4 {
@@ -278,6 +284,10 @@
     .consent-option .option-info p {
         font-size: 0.875rem;
         color: #504147;
+    }
+
+    .consent-option .toggle-container { /* New container for better spacing */
+        margin-left: 1rem; /* Add some left margin to the toggle container */
     }
 
     .consent-option .toggle {
@@ -446,9 +456,11 @@
                     <h4>Cookies necesarias</h4>
                     <p>Necesarias para el funcionamiento básico del sitio. No se pueden desactivar.</p>
                 </div>
-                <div class="toggle">
-                    <input type="checkbox" checked disabled />
-                    <span class="slider"></span>
+                <div class="toggle-container">
+                    <div class="toggle">
+                        <input type="checkbox" checked disabled />
+                        <span class="slider"></span>
+                    </div>
                 </div>
             </div>
             <div class="consent-option">
@@ -456,20 +468,24 @@
                     <h4>Cookies de analíticas</h4>
                     <p>Nos ayudan a entender cómo los visitantes interactúan con la página, como el número de visitantes y la fuente del tráfico.</p>
                 </div>
-                <label class="toggle">
-                    <input type="checkbox" id="analytics-toggle" checked />
-                    <span class="slider"></span>
-                </label>
+                <div class="toggle-container">
+                    <label class="toggle">
+                        <input type="checkbox" id="analytics-toggle" checked disabled />
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
             <div class="consent-option">
                 <div class="option-info">
                     <h4>Cookies de publicidad</h4>
                     <p>Utilizadas para rastrear a los visitantes a través de los sitios web con el fin de mostrar anuncios relevantes y atractivos.</p>
                 </div>
-                <label class="toggle">
-                    <input type="checkbox" id="ad-toggle" checked />
-                    <span class="slider"></span>
-                </label>
+                <div class="toggle-container">
+                    <label class="toggle">
+                        <input type="checkbox" id="ad-toggle" checked />
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
         </div>
         <div class="flex justify-end mt-6">
