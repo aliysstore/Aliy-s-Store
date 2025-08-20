@@ -579,7 +579,7 @@
         }
     }
     
-    function displayCatalogos() {
+    /*function displayCatalogos() {
         const grid = document.getElementById('catalog-grid');
         catalogosData.forEach(catalogo => {
             const categoryClasses = catalogo.categoria.map(cat => cat.replace(/\s+/g, '-').toLowerCase()).join(' ');
@@ -626,6 +626,74 @@
             },
             sortBy: 'name'
         });
+        imagesLoaded(grid).on('progress', function() {
+            iso.layout();
+            checkUrlFilter();
+        });
+    }*/
+    
+    function displayCatalogos() {
+        const grid = document.getElementById('catalog-grid');
+        catalogosData.forEach(catalogo => {
+            const categoryClasses = catalogo.categoria.map(cat => cat.replace(/\s+/g, '-').toLowerCase()).join(' ');
+            
+            const card = document.createElement('a');
+            card.href = catalogo.url;
+            card.target = "_blank";
+            card.className = `group rounded-lg shadow-md hover:shadow-lg transition-transform hover:scale-105 duration-300 bg-md-surface flex flex-col overflow-hidden catalog-item ${catalogo.marca.replace(/\s+/g, '-').toLowerCase()} ${categoryClasses}`;
+            
+            // 👇 Aquí guardamos prioridad como atributo de la tarjeta
+            if (catalogo.prioridad !== undefined) {
+                card.setAttribute("data-prioridad", catalogo.prioridad);
+            } else {
+                card.setAttribute("data-prioridad", 9999); // valor alto por defecto
+            }
+    
+            if (catalogo.evento_ga) {
+                card.addEventListener('click', () => {
+                    registerCardClickEvent(catalogo.evento_ga, catalogo);
+                });
+            }
+    
+            const imageWrapper = document.createElement('div');
+            imageWrapper.className = "relative w-full overflow-hidden";
+            const image = document.createElement('img');
+            image.src = catalogo.imagen;
+            image.alt = `Portada de ${catalogo.nombre}`;
+            image.className = "w-full h-full object-cover transition-transform duration-300 object-top";
+            imageWrapper.appendChild(image);
+    
+            const textContainer = document.createElement('div');
+            textContainer.className = "p-3 flex-grow text-center flex flex-col items-center";
+            const title = document.createElement('h3');
+            title.textContent = catalogo.nombre;
+            title.className = "text-md font-bold font-oswald text-md-on-surface"; 
+            textContainer.appendChild(title);
+    
+            card.appendChild(imageWrapper);
+            card.appendChild(textContainer);
+            grid.appendChild(card);
+        });
+    
+        iso = new Isotope(grid, {
+            itemSelector: '.catalog-item',
+            layoutMode: 'masonry',
+            masonry: {
+                columnWidth: '.catalog-item',
+                gutter: 16
+            },
+            getSortData: {
+                prioridad: itemElem => parseInt(itemElem.getAttribute('data-prioridad'), 10) || 9999,
+                name: '.font-oswald' // 👈 sigue funcionando
+            },
+            // 👇 primero ordena por prioridad, luego por nombre
+            sortBy: ['prioridad', 'name'],
+            sortAscending: {
+                prioridad: true, // menor prioridad primero
+                name: true       // orden alfabético
+            }
+        });
+    
         imagesLoaded(grid).on('progress', function() {
             iso.layout();
             checkUrlFilter();
@@ -703,13 +771,13 @@
     
     async function fetchCatalogos() {
         try {
-            const catalogosRef = db.collection('catalogo');
+            const catalogosRef = db.collection('catalogo').orderBy('prioridad', 'asc');
             const snapshot = await catalogosRef.get();
             catalogosData = [];
             snapshot.forEach(doc => {
                 catalogosData.push(doc.data());
             });
-            catalogosData.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            //catalogosData.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
             const brands = [...new Set(catalogosData.map(item => item.marca).filter(Boolean))].sort();
 
