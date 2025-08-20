@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta property="og:title" content="Aliy's Store | Distribuidora Price Shoes" />
+  <meta property="og:title" content="Aliy's Store | Venta por catálogo" />
   <meta property="og:description" content="Hola, soy Alicia y te ayudo a encontrar el producto perfecto para ti" />
   <meta property="og:image" content="https://aliysstore.github.io/Aliy-s-Store/img/perfil.jpg" />
   <meta property="og:url" content="https://aliysstore.github.io/Aliy-s-Store" />
   <meta property="og:type" content="website" />
   
-  <!-- Twitter Cards -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Aliy's Store | Distribuidora Price Shoes" />
+  <meta name="twitter:title" content="Aliy's Store | Venta por catálogo" />
   <meta name="twitter:description" content="Hola, soy Alicia y te ayudo a encontrar el producto perfecto para ti" />
   <meta name="twitter:image" content="https://aliysstore.github.io/Aliy-s-Store/img/perfil.jpg" />
     
@@ -30,8 +29,25 @@
   <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics-compat.js"></script>
+  <script>
+    // Define el estado de consentimiento predeterminado como "denegado"
+    // Esto debe ejecutarse antes de que se cargue la etiqueta de Google Analytics.
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      'ad_storage': 'denied',
+      'analytics_storage': 'denied',
+      'wait_for_update': 500 // Espera hasta 500ms para la actualización del consentimiento
+    });
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZW7YPM60FN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
+    gtag('config', 'G-ZW7YPM60FN');
+  </script>
   <script>
     tailwind.config = {
       theme: {
@@ -149,6 +165,45 @@
       background-color: #FF5277;
       color: #FFFFFF;
     }
+    /* NUEVOS ESTILOS PARA EL BANNER DE CONSENTIMIENTO */
+    .consent-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background-color: #1d1b1f; /* Color de fondo oscuro */
+      color: #fffafe; /* Color de texto claro */
+      padding: 1.5rem;
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+      transform: translateY(100%);
+      transition: transform 0.5s ease-in-out;
+    }
+    .consent-banner.show {
+      transform: translateY(0);
+    }
+    .consent-banner .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+    .consent-banner .btn-accept {
+      background-color: #FF5277;
+      color: #FFFFFF;
+      border: 1px solid #FF5277;
+    }
+    .consent-banner .btn-accept:hover {
+      background-color: #C63A5E;
+    }
+    .consent-banner .btn-deny {
+      background-color: transparent;
+      color: #FFFFFF;
+      border: 1px solid #FFFFFF;
+    }
+    .consent-banner .btn-deny:hover {
+      background-color: #ffffff33;
+    }
   </style>
 </head>
 <body class="bg-md-background font-nunito text-md-on-background">
@@ -232,7 +287,7 @@
       </aside>
       <main class="flex-grow bg-md-background p-5">
         <div id="filter-container" class="mb-8 flex flex-wrap gap-2 justify-center">
-            </div>
+        </div>
         
         <div id="catalog-grid" class="catalog-grid flex-wrap gap-4">
         </div>
@@ -243,7 +298,20 @@
     </footer>
   </div>
 
+  <div id="consent-banner" class="consent-banner">
+    <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-center md:text-left">
+        Este sitio utiliza cookies para mejorar la experiencia del usuario y analizar el tráfico.
+        <a href="#" class="underline font-bold" id="link-politica-cookies">Política de cookies</a>.
+      </p>
+      <div class="flex gap-4">
+        <button id="accept-cookies" class="btn btn-accept">Aceptar</button>
+        <button id="deny-cookies" class="btn btn-deny">Rechazar</button>
+      </div>
+    </div>
+  </div>
   <script>
+    // Tu código JavaScript existente
     const firebaseConfig = {
       apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
       authDomain: "formiik-dev.firebaseapp.com",
@@ -251,12 +319,12 @@
       storageBucket: "formiik-dev.firebasestorage.app",
       messagingSenderId: "91782576906",
       appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
-      measurementId: "G-ZW7YPM60FN"
+      // measurementId está definido en el script de GA
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const analytics = firebase.analytics();
+    // Ya no necesitas inicializar analytics aquí, se inicializa con la etiqueta gtag.js
 
     const menuButton = document.getElementById('menu-button');
     const closeButton = document.getElementById('close-button');
@@ -293,8 +361,9 @@
         closeSidebar();
     });
     
+    // Función para enviar eventos de GA, revisada para usar gtag
     function registerCardClickEvent(eventName, catalogo) {
-      analytics.logEvent(eventName, { 
+      gtag('event', eventName, { 
         'event_category': 'catalogo',
         'event_action': 'click_card',
         'event_label': catalogo.nombre,
@@ -302,17 +371,18 @@
       });
     }
 
+    // Función para el evento de contacto, también revisada para gtag
     function registerWhatsappClickEvent() {
-        analytics.logEvent('whatsapp_click', {
-            'event_category': 'contacto',
-            'event_action': 'click_whatsapp'
-        });
+      gtag('event', 'whatsapp_click', {
+        'event_category': 'contacto',
+        'event_action': 'click_whatsapp'
+      });
     }
 
-    whatsappButton.addEventListener('click', () => {
-        registerWhatsappClickEvent();
+    whatsappButton.addEventListener('click', (e) => {
+      registerWhatsappClickEvent();
     });
-
+    
     function applyFilters() {
         let combinedFilter;
 
@@ -497,6 +567,59 @@
     });
 
     document.addEventListener('DOMContentLoaded', fetchCatalogos);
+
+    // COMIENZO: LÓGICA DEL BANNER DE CONSENTIMIENTO
+    const consentBanner = document.getElementById('consent-banner');
+    const acceptButton = document.getElementById('accept-cookies');
+    const denyButton = document.getElementById('deny-cookies');
+
+    function checkConsent() {
+      // Revisa si ya existe una cookie de consentimiento
+      if (localStorage.getItem('cookie_consent') === 'granted') {
+        gtag('consent', 'update', {
+          'ad_storage': 'granted',
+          'analytics_storage': 'granted'
+        });
+        consentBanner.classList.remove('show');
+      } else if (localStorage.getItem('cookie_consent') === 'denied') {
+        gtag('consent', 'update', {
+          'ad_storage': 'denied',
+          'analytics_storage': 'denied'
+        });
+        consentBanner.classList.remove('show');
+      } else {
+        // Muestra el banner si no hay consentimiento guardado
+        setTimeout(() => {
+          consentBanner.classList.add('show');
+        }, 3000); // Pequeño retraso para que el usuario vea el contenido primero
+      }
+    }
+
+    function handleAccept() {
+      gtag('consent', 'update', {
+        'ad_storage': 'granted',
+        'analytics_storage': 'granted'
+      });
+      localStorage.setItem('cookie_consent', 'granted');
+      consentBanner.classList.remove('show');
+      console.log('Consentimiento aceptado. Google Analytics está habilitado.');
+    }
+
+    function handleDeny() {
+      gtag('consent', 'update', {
+        'ad_storage': 'denied',
+        'analytics_storage': 'denied'
+      });
+      localStorage.setItem('cookie_consent', 'denied');
+      consentBanner.classList.remove('show');
+      console.log('Consentimiento rechazado. Google Analytics está deshabilitado.');
+    }
+
+    acceptButton.addEventListener('click', handleAccept);
+    denyButton.addEventListener('click', handleDeny);
+
+    document.addEventListener('DOMContentLoaded', checkConsent);
+    // FIN: LÓGICA DEL BANNER DE CONSENTIMIENTO
   </script>
 </body>
 </html>
