@@ -771,7 +771,7 @@
     
     async function fetchCatalogos() {
         try {
-            const catalogosRef = db.collection('catalogo').orderBy('prioridad', 'asc');
+            const catalogosRef = db.collection('catalogo');
             const snapshot = await catalogosRef.get();
             catalogosData = [];
             snapshot.forEach(doc => {
