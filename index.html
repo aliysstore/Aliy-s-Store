@@ -777,8 +777,7 @@
             snapshot.forEach(doc => {
                 catalogosData.push(doc.data());
             });
-            //catalogosData.sort((a, b) => a.nombre.localeCompare(b.nombre));
-
+            
             const brands = [...new Set(catalogosData.map(item => item.marca).filter(Boolean))].sort();
 
             createFilterButtons(brands);
