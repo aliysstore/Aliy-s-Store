@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Aliy's Store | Panel de Administración" />
+  <meta property="og:description" content="Panel de control para gestionar las calificaciones de Aliy's Store." />
+  <meta property="og:url" content="https://aliysstore.github.io/Aliy-s-Store/panel-admin" />
+  <meta property="og:type" content="website" />
+    
+  <title>Aliy's Store | Panel de Administración</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'md-primary': '#FF5277',
+            'md-on-primary': '#FFFFFF',
+            'md-primary-container': '#FFD9E2',
+            'md-on-primary-container': '#660021',
+            'md-secondary': '#5B4F7B',
+            'md-on-secondary': '#FFFFFF',
+            'md-secondary-container': '#E2D9FF',
+            'md-on-secondary-container': '#1C0D37',
+            'md-background': '#FFFBFE',
+            'md-on-background': '#1D1B1F',
+            'md-surface': '#FFFBFE',
+            'md-on-surface': '#1D1B1F',
+            'md-surface-variant': '#F3DDE3',
+            'md-on-surface-variant': '#504147',
+            'md-outline': '#837078',
+            'md-surface-container-high': '#ECE6F0',
+          },
+          fontFamily: {
+            'nunito': ['Nunito', 'sans-serif'],
+            'oswald': ['Oswald', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-md-background font-nunito text-md-on-background">
+  <div class="flex flex-col min-h-screen">
+    <header class="bg-md-surface-variant p-5 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <span class="md:hidden text-2xl font-oswald font-bold text-md-on-surface-variant">Panel Admin</span>
+        <span class="hidden md:block text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store | Panel de Administración</span>
+      </div>
+      <a href="index.html" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-pink-100 font-bold py-2 px-4 rounded-full transition duration-300 flex items-center space-x-2">
+        <i class="fas fa-home text-lg"></i>
+        <span>Inicio</span>
+      </a>
+    </header>
+    
+    <main class="flex-grow p-5 md:p-10">
+      <div class="max-w-4xl mx-auto bg-md-surface rounded-lg shadow-lg p-6">
+        <h1 class="text-3xl font-oswald font-bold text-md-on-background mb-6 text-center">Crear Enlace de Calificación</h1>
+
+        <form id="create-form" class="space-y-6">
+          
+          <div class="space-y-4">
+            <h2 class="text-xl font-bold text-md-primary mb-2">Datos del Cliente</h2>
+            <div>
+              <label for="client-name" class="block font-semibold text-md-on-surface-variant mb-2">Nombre del Cliente:</label>
+              <input type="text" id="client-name" name="client-name" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" placeholder="Ej. Juan Pérez" required />
+            </div>
+          </div>
+
+          <div class="space-y-4 mt-6">
+            <h2 class="text-xl font-bold text-md-primary mb-2">Productos Comprados</h2>
+            <div id="products-container" class="space-y-4">
+              <div class="product-item p-4 bg-md-surface rounded-lg">
+                <div class="flex flex-col md:flex-row md:items-end space-y-4 md:space-y-0 md:space-x-4">
+                  <div class="flex-grow">
+                    <label class="block font-semibold text-md-on-surface-variant mb-1">Nombre del Producto</label>
+                    <input type="text" name="product-name[]" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" placeholder="Ej. Botas de Dama" required />
+                  </div>
+                  <div>
+                    <label class="block font-semibold text-md-on-surface-variant mb-1">ID</label>
+                    <input type="text" name="product-id[]" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" placeholder="Ej. 12345" required />
+                  </div>
+                  <div>
+                    <label class="block font-semibold text-md-on-surface-variant mb-1">Marca</label>
+                    <input type="text" name="product-brand[]" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" placeholder="Ej. Cklass" required />
+                  </div>
+                  <div class="w-full md:w-auto">
+                    <label class="block font-semibold text-md-on-surface-variant mb-1">Imagen</label>
+                    <input type="file" name="product-image[]" accept="image/*" class="w-full text-sm text-md-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-md-primary-container file:text-md-on-primary-container hover:file:bg-md-primary-container" />
+                  </div>
+                  <button type="button" class="remove-product-btn w-full md:w-auto bg-transparent border border-md-outline text-red-500 hover:bg-red-50 active:bg-red-100 font-bold py-2 px-4 rounded-full transition duration-300 flex-shrink-0">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <button type="button" id="add-product-btn" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-secondary-container hover:text-md-on-secondary-container active:bg-purple-100 font-bold py-2 px-4 rounded-full transition duration-300">
+              <i class="fas fa-plus mr-2"></i>Añadir otro producto
+            </button>
+          </div>
+
+          <div class="flex justify-end space-x-4 mt-6">
+            <button type="submit" class="bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-md-primary-container font-bold py-2 px-6 rounded-full transition duration-300">
+              Crear Enlace de Calificación
+            </button>
+          </div>
+        </form>
+
+        <div id="result-section" class="hidden mt-8 p-6 bg-green-50 rounded-lg border-2 border-green-300 text-center">
+          <h2 class="text-xl font-bold text-green-700 mb-4">¡Enlace Creado con Éxito!</h2>
+          <p class="text-green-800 mb-4">Copia el siguiente enlace y envíalo a tu cliente para que califique su compra:</p>
+          <div class="relative mb-4">
+            <input type="text" id="result-link" readonly class="w-full p-3 pr-12 border border-green-400 rounded-lg bg-white text-green-700" />
+            <button id="copy-btn" class="absolute right-0 top-0 mt-2 mr-2 text-green-600 hover:text-green-800 transition duration-300">
+              <i class="fas fa-copy text-2xl"></i>
+            </button>
+          </div>
+          <button id="new-link-btn" class="bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300">
+            Crear otro enlace
+          </button>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
+      Aliy's Store &copy; 2024. Todos los derechos reservados.
+    </footer>
+  </div>
+
+  <script>
+    // Configuración de Firebase - Reemplaza con tus datos
+    const firebaseConfig = {
+      apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
+      authDomain: "formiik-dev.firebaseapp.com",
+      projectId: "formiik-dev",
+      storageBucket: "formiik-dev.firebasestorage.app",
+      messagingSenderId: "91782576906",
+      appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
+    };
+
+    // Inicializa Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = app.firestore();
+    const storage = app.storage();
+
+    // Elementos del DOM
+    const createForm = document.getElementById('create-form');
+    const productsContainer = document.getElementById('products-container');
+    const addProductBtn = document.getElementById('add-product-btn');
+    const resultSection = document.getElementById('result-section');
+    const resultLinkInput = document.getElementById('result-link');
+    const copyBtn = document.getElementById('copy-btn');
+    const newLinkBtn = document.getElementById('new-link-btn');
+
+    // Función para subir una imagen a Firebase Storage
+    async function uploadImage(file) {
+      if (!file) {
+        return ''; // Retorna cadena vacía si no hay archivo
+      }
+      const storageRef = storage.ref();
+      const fileName = `${Date.now()}_${file.name}`;
+      const imageRef = storageRef.child(`products/${fileName}`);
+      await imageRef.put(file);
+      const imageUrl = await imageRef.getDownloadURL();
+      return imageUrl;
+    }
+
+    // Función para agregar un nuevo bloque de producto al formulario
+    function addProductField() {
+      const productHtml = `
+        <div class="product-item p-4 bg-md-surface rounded-lg">
+          <div class="flex flex-col md:flex-row md:items-end space-y-4 md:space-y-0 md:space-x-4">
+            <div class="flex-grow">
+              <label class="block font-semibold text-md-on-surface-variant mb-1">Nombre del Producto</label>
+              <input type="text" name="product-name[]" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" placeholder="Ej. Botas de Dama" required />
+            </div>
+            <div>
+              <label class="block font-semibold text-md-on-surface-variant mb-1">ID</label>
+              <input type="text" name="product-id[]" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" placeholder="Ej. 12345" required />
+            </div>
+            <div>
+              <label class="block font-semibold text-md-on-surface-variant mb-1">Marca</label>
+              <input type="text" name="product-brand[]" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" placeholder="Ej. Cklass" required />
+            </div>
+            <div class="w-full md:w-auto">
+              <label class="block font-semibold text-md-on-surface-variant mb-1">Imagen</label>
+              <input type="file" name="product-image[]" accept="image/*" class="w-full text-sm text-md-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-md-primary-container file:text-md-on-primary-container hover:file:bg-md-primary-container" />
+            </div>
+            <button type="button" class="remove-product-btn w-full md:w-auto bg-transparent border border-md-outline text-red-500 hover:bg-red-50 active:bg-red-100 font-bold py-2 px-4 rounded-full transition duration-300 flex-shrink-0">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        </div>
+      `;
+      productsContainer.insertAdjacentHTML('beforeend', productHtml);
+    }
+
+    // Evento para añadir productos
+    addProductBtn.addEventListener('click', addProductField);
+
+    // Evento para eliminar productos
+    productsContainer.addEventListener('click', (e) => {
+      if (e.target.classList.contains('remove-product-btn') || e.target.closest('.remove-product-btn')) {
+        const productItem = e.target.closest('.product-item');
+        if (productsContainer.querySelectorAll('.product-item').length > 1) {
+          productItem.remove();
+        } else {
+          alert('Debe haber al menos un producto.');
+        }
+      }
+    });
+
+    // Evento para enviar el formulario y guardar en Firestore
+    createForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const clientName = document.getElementById('client-name').value;
+      const productItems = document.querySelectorAll('.product-item');
+      
+      const products = [];
+      
+      // Procesa y sube cada imagen, luego crea el objeto de producto
+      for (const item of productItems) {
+        const productName = item.querySelector('input[name="product-name[]"]').value;
+        const productId = item.querySelector('input[name="product-id[]"]').value;
+        const productBrand = item.querySelector('input[name="product-brand[]"]').value;
+        const productImageFile = item.querySelector('input[name="product-image[]"]').files[0];
+        
+        const imageUrl = await uploadImage(productImageFile);
+
+        products.push({
+          nombre: productName,
+          id: productId,
+          marca: productBrand,
+          imagenUrl: imageUrl
+        });
+      }
+
+      const newPurchase = {
+        nombreCliente: clientName,
+        productos: products,
+        calificacionEnviada: false
+      };
+
+      try {
+        const docRef = await db.collection("compras").add(newPurchase);
+        
+        // Muestra el enlace al cliente
+        const currentUrl = window.location.origin;
+        const customerLink = `${currentUrl}/calificar-servicio.html?id=${docRef.id}`;
+        
+        createForm.classList.add('hidden');
+        resultSection.classList.remove('hidden');
+        resultLinkInput.value = customerLink;
+        
+        alert('Documento creado con éxito. Copia el enlace para tu cliente.');
+      } catch (error) {
+        console.error("Error al añadir el documento: ", error);
+        alert('Ocurrió un error al crear el enlace. Por favor, inténtalo de nuevo.');
+      }
+    });
+
+    // Evento para copiar el enlace
+    copyBtn.addEventListener('click', () => {
+      resultLinkInput.select();
+      document.execCommand('copy');
+      alert('¡Enlace copiado!');
+    });
+
+    // Evento para crear un nuevo enlace
+    newLinkBtn.addEventListener('click', () => {
+      resultSection.classList.add('hidden');
+      createForm.classList.remove('hidden');
+      createForm.reset();
+      // Asegura que solo quede un campo de producto
+      while (productsContainer.querySelectorAll('.product-item').length > 1) {
+        productsContainer.lastElementChild.remove();
+      }
+    });
+  </script>
+</body>
+</html>
