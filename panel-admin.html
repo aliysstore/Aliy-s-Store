@@ -258,7 +258,8 @@
         const docRef = await db.collection("compras").add(newPurchase);
         
         // Muestra el enlace al cliente
-        const currentUrl = window.location.origin;
+        //const currentUrl = window.location.origin;
+        const currentUrl = window.location.origin + window.location.pathname.split("/")[1] + "/";
         const customerLink = `${currentUrl}/calificar-servicio.html?id=${docRef.id}`;
         
         createForm.classList.add('hidden');
