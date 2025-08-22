@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta property="og:title" content="Aliy's Store | Califica tu compra" />
+  <meta property="og:description" content="Ayúdanos a mejorar nuestro servicio. Califica tu experiencia de compra en Aliy's Store." />
+  <meta property="og:url" content="https://aliysstore.github.io/Aliy-s-Store/calificar-servicio" />
+  <meta property="og:type" content="website" />
+    
+  <title>Aliy's Store | Califica tu Servicio</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'md-primary': '#FF5277',
+            'md-on-primary': '#FFFFFF',
+            'md-primary-container': '#FFD9E2',
+            'md-on-primary-container': '#660021',
+            'md-secondary': '#5B4F7B',
+            'md-on-secondary': '#FFFFFF',
+            'md-secondary-container': '#E2D9FF',
+            'md-on-secondary-container': '#1C0D37',
+            'md-background': '#FFFBFE',
+            'md-on-background': '#1D1B1F',
+            'md-surface': '#FFFBFE',
+            'md-on-surface': '#1D1B1F',
+            'md-surface-variant': '#F3DDE3',
+            'md-on-surface-variant': '#504147',
+            'md-outline': '#837078',
+            'md-surface-container-high': '#ECE6F0',
+          },
+          fontFamily: {
+            'nunito': ['Nunito', 'sans-serif'],
+            'oswald': ['Oswald', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .rating input {
+      display: none;
+    }
+    .rating label {
+      font-size: 2.5rem;
+      color: #ccc;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .rating input:checked ~ label,
+    .rating label:hover,
+    .rating label:hover ~ label {
+      color: #FFC107;
+    }
+    .rating {
+      display: inline-block;
+      direction: rtl;
+    }
+    .rating > label {
+      display: inline-block;
+    }
+  </style>
+</head>
+<body class="bg-md-background font-nunito text-md-on-background">
+  <div class="flex flex-col min-h-screen">
+    <header class="bg-md-surface-variant p-5 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <span class="text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store | Califica tu compra</span>
+      </div>
+      <a href="index.html" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-pink-100 font-bold py-2 px-4 rounded-full transition duration-300 flex items-center space-x-2">
+        <i class="fas fa-home text-lg"></i>
+        <span>Inicio</span>
+      </a>
+    </header>
+    
+    <main class="flex-grow p-5 md:p-10">
+      <div class="max-w-4xl mx-auto bg-md-surface rounded-lg shadow-lg p-6">
+        <h1 class="text-3xl font-oswald font-bold text-md-on-background mb-6 text-center">Califica tu Experiencia de Compra</h1>
+        
+        <div id="loading-message" class="text-center text-md-on-surface-variant">Cargando datos de la compra...</div>
+
+        <div id="thank-you-message" class="hidden text-center p-8">
+          <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
+          <h2 class="text-2xl font-oswald font-bold text-md-primary mb-2">¡Gracias por tu calificación!</h2>
+          <p class="text-lg text-md-on-surface-variant">Tu opinión nos ayuda a mejorar. Agradecemos tu tiempo y confianza.</p>
+        </div>
+
+        <div id="purchase-details" class="hidden">
+          
+          <section class="mb-8 p-6 bg-md-surface-container-high rounded-lg">
+            <h2 class="text-xl font-bold text-md-primary mb-4">Información de la Compra</h2>
+            <div class="space-y-4">
+              <div>
+                <p class="font-semibold text-md-on-surface-variant">Nombre del Cliente:</p>
+                <p id="client-name" class="text-md-on-surface"></p>
+              </div>
+              <div>
+                <p class="font-semibold text-md-on-surface-variant">Productos Comprados:</p>
+                <ul id="products-list" class="space-y-4 mt-2">
+                  </ul>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <form id="rating-form" action="#" method="POST" class="space-y-6">
+              <h2 class="text-xl font-bold text-md-primary mb-4">Tu Opinión es Muy Importante</h2>
+              
+              <div>
+                <p class="font-semibold text-md-on-surface-variant mb-2">Califica tu experiencia:</p>
+                <div class="rating">
+                  <input type="radio" id="star5" name="rating" value="5" /><label for="star5" title="5 estrellas"><i class="fas fa-star"></i></label>
+                  <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 estrellas"><i class="fas fa-star"></i></label>
+                  <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 estrellas"><i class="fas fa-star"></i></label>
+                  <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 estrellas"><i class="fas fa-star"></i></label>
+                  <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 estrella"><i class="fas fa-star"></i></label>
+                </div>
+              </div>
+
+              <div>
+                <label for="comentarios" class="block font-semibold text-md-on-surface-variant mb-2">Comentarios:</label>
+                <textarea id="comentarios" name="comentarios" rows="5" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" placeholder="Escribe aquí tu opinión sobre la compra y el servicio..." required></textarea>
+              </div>
+
+              <div class="flex items-center">
+                <input type="checkbox" id="publicar" name="publicar" class="h-4 w-4 text-md-primary focus:ring-md-primary border-md-outline rounded" />
+                <label for="publicar" class="ml-2 block text-sm text-md-on-surface">Acepto que mi comentario, junto con mi nombre, sea publicado en el sitio web con fines de testimonio.</label>
+              </div>
+              
+              <div class="flex justify-end space-x-4 mt-6">
+                <button type="button" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-surface-variant active:bg-gray-100 font-bold py-2 px-6 rounded-full transition duration-300">
+                  Cancelar
+                </button>
+                <button type="submit" class="bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-md-primary-container font-bold py-2 px-6 rounded-full transition duration-300">
+                  Enviar Calificación
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
+      Aliy's Store &copy; 2024. Todos los derechos reservados.
+    </footer>
+  </div>
+
+  <script>
+    // Configuración de Firebase - Reemplaza con tus datos
+    const firebaseConfig = {
+      apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
+      authDomain: "formiik-dev.firebaseapp.com",
+      projectId: "formiik-dev",
+      storageBucket: "formiik-dev.firebasestorage.app",
+      messagingSenderId: "91782576906",
+      appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
+    };
+
+    // Inicializa Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = app.firestore();
+    const urlParams = new URLSearchParams(window.location.search);
+    const docId = urlParams.get('id');
+
+    const loadingMessage = document.getElementById('loading-message');
+    const purchaseDetails = document.getElementById('purchase-details');
+    const thankYouMessage = document.getElementById('thank-you-message');
+    const clientNameElem = document.getElementById('client-name');
+    const productsListElem = document.getElementById('products-list');
+    const ratingForm = document.getElementById('rating-form');
+
+    // Función para mostrar el mensaje de "Ya calificado"
+    function showThankYouMessage() {
+      loadingMessage.classList.add('hidden');
+      purchaseDetails.classList.add('hidden');
+      thankYouMessage.classList.remove('hidden');
+    }
+
+    // Función para mostrar el formulario
+    function showFormAndData(data) {
+      loadingMessage.classList.add('hidden');
+      purchaseDetails.classList.remove('hidden');
+      
+      clientNameElem.textContent = data.nombreCliente || "N/A";
+      productsListElem.innerHTML = ''; // Limpia la lista
+
+      if (data.productos && data.productos.length > 0) {
+        data.productos.forEach(producto => {
+          const productItem = `
+            <li class="flex items-start space-x-4 p-4 bg-md-surface rounded-lg flex-wrap sm:flex-nowrap">
+              <img src="${producto.imagenUrl || 'https://via.placeholder.com/100'}" alt="${producto.nombre}" class="w-24 h-24 object-cover rounded-lg shadow-sm mb-2 sm:mb-0" />
+              <div>
+                <h3 class="font-bold text-lg text-md-on-surface">${producto.nombre}</h3>
+                <p class="text-sm text-md-on-surface-variant">ID: <span class="font-medium">${producto.id || 'N/A'}</span> | Marca: <span class="font-medium">${producto.marca || 'N/A'}</span></p>
+              </div>
+            </li>
+          `;
+          productsListElem.innerHTML += productItem;
+        });
+      }
+    }
+
+    // Lógica principal: Leer el documento de Firestore
+    async function fetchPurchaseData() {
+      if (!docId) {
+        loadingMessage.textContent = 'Error: No se encontró el ID de la compra.';
+        return;
+      }
+      
+      try {
+        const docRef = db.collection("compras").doc(docId);
+        const docSnap = await docRef.get();
+
+        if (docSnap.exists) {
+          const data = docSnap.data();
+          if (data.calificacionEnviada) {
+            showThankYouMessage();
+          } else {
+            showFormAndData(data);
+          }
+        } else {
+          loadingMessage.textContent = 'Error: La compra no existe o el enlace es incorrecto.';
+        }
+      } catch (error) {
+        console.error("Error al obtener el documento: ", error);
+        loadingMessage.textContent = 'Ocurrió un error al cargar la información.';
+      }
+    }
+
+    // Lógica para enviar el formulario
+    ratingForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(ratingForm);
+      const rating = formData.get('rating');
+      const comentarios = formData.get('comentarios');
+      const publicar = formData.get('publicar') === 'on';
+
+      if (!rating || !comentarios) {
+        alert('Por favor, selecciona una calificación y añade un comentario.');
+        return;
+      }
+
+      try {
+        const docRef = db.collection("compras").doc(docId);
+        await docRef.update({
+          calificacion: parseInt(rating, 10),
+          comentarios: comentarios,
+          aceptarPublicacion: publicar,
+          calificacionEnviada: true,
+          fechaCalificacion: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        console.log("Calificación guardada con éxito.");
+        showThankYouMessage();
+      } catch (error) {
+        console.error("Error al guardar la calificación: ", error);
+        alert('Ocurrió un error al enviar tu calificación. Por favor, inténtalo de nuevo.');
+      }
+    });
+
+    // Inicia la carga de datos al cargar la página
+    document.addEventListener('DOMContentLoaded', fetchPurchaseData);
+  </script>
+</body>
+</html>
