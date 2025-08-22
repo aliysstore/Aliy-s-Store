@@ -30,14 +30,12 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script>
-    // Define el estado de consentimiento predeterminado como "denegado"
-    // Esto debe ejecutarse antes de que se cargue la etiqueta de Google Analytics.
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('consent', 'default', {
       'ad_storage': 'denied',
       'analytics_storage': 'denied',
-      'wait_for_update': 500 // Espera hasta 500ms para la actualización del consentimiento
+      'wait_for_update': 500
     });
   </script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZW7YPM60FN"></script>
@@ -45,7 +43,6 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-ZW7YPM60FN');
   </script>
   <script>
@@ -137,7 +134,6 @@
         transform: rotate(45deg);
         box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     }
-    /* Styles for the filter buttons */
     .filter-button {
       padding: 8px 16px;
       border-radius: 9999px;
@@ -152,28 +148,26 @@
       border-color: #FF5277;
       color: #FFFFFF;
     }
-    /* NEW STYLES FOR SIDEBAR LINKS */
     .sidebar-link {
       padding: 8px 12px;
       border-radius: 8px;
       transition: all 0.3s ease;
       background-color: transparent;
       color: #504147;
-      border: 1px solid transparent; /* Added for consistency */
+      border: 1px solid transparent;
     }
     .sidebar-link.active, .sidebar-link:hover {
       background-color: #FF5277;
       color: #FFFFFF;
     }
-    /* NUEVOS ESTILOS PARA EL BANNER DE CONSENTIMIENTO */
     .consent-banner {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
       z-index: 1000;
-      background-color: #1d1b1f; /* Color de fondo oscuro */
-      color: #fffafe; /* Color de texto claro */
+      background-color: #1d1b1f;
+      color: #fffafe;
       padding: 1.5rem;
       box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
       transform: translateY(100%);
@@ -204,8 +198,6 @@
     .consent-banner .btn-deny:hover {
       background-color: #ffffff33;
     }
-
-    /* Nuevos estilos para la modal de configuración */
     .consent-modal {
         position: fixed;
         top: 0;
@@ -213,16 +205,14 @@
         right: 0;
         bottom: 0;
         background-color: rgba(0, 0, 0, 0.7);
-        display: none; /* Oculto por defecto */
+        display: none;
         z-index: 1001;
         justify-content: center;
         align-items: center;
     }
-
     .consent-modal.show {
         display: flex;
     }
-
     .consent-modal-content {
         background-color: #fff;
         padding: 2rem;
@@ -231,21 +221,18 @@
         max-width: 500px;
         color: #1d1b1f;
         position: relative;
-        max-height: 80vh; /* Limita la altura en pantallas pequeñas */
-        display: flex; /* Nuevo: para organizar los elementos */
-        flex-direction: column; /* Nuevo: para organizar los elementos */
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
     }
-
     .consent-modal-content h3 {
         font-size: 1.5rem;
         font-weight: bold;
         margin-bottom: 1rem;
     }
-    
     .consent-modal-content p {
         margin-bottom: 1.5rem;
     }
-    
     .consent-modal-content .close-btn {
         position: absolute;
         top: 10px;
@@ -253,15 +240,13 @@
         font-size: 1.5rem;
         cursor: pointer;
     }
-
     .consent-options {
         display: flex;
         flex-direction: column;
         gap: 1rem;
-        overflow-y: auto; /* Nuevo: permite el scroll vertical */
-        padding-right: 0.5rem; /* Nuevo: evita que el scrollbar se pegue a los bordes */
+        overflow-y: auto;
+        padding-right: 0.5rem;
     }
-
     .consent-option {
         display: flex;
         justify-content: space-between;
@@ -270,39 +255,32 @@
         border: 1px solid #e0e0e0;
         border-radius: 8px;
     }
-    
     .consent-option .option-info {
         display: flex;
         flex-direction: column;
-        flex-grow: 1; /* Allow text to take more space */
+        flex-grow: 1;
     }
-
     .consent-option .option-info h4 {
         font-weight: bold;
     }
-    
     .consent-option .option-info p {
         font-size: 0.875rem;
         color: #504147;
     }
-
-    .consent-option .toggle-container { /* New container for better spacing */
-        margin-left: 1rem; /* Add some left margin to the toggle container */
+    .consent-option .toggle-container {
+        margin-left: 1rem;
     }
-
     .consent-option .toggle {
         position: relative;
         display: inline-block;
         width: 60px;
         height: 34px;
     }
-    
     .consent-option .toggle input {
         opacity: 0;
         width: 0;
         height: 0;
     }
-    
     .consent-option .slider {
         position: absolute;
         cursor: pointer;
@@ -314,7 +292,6 @@
         transition: .4s;
         border-radius: 34px;
     }
-    
     .consent-option .slider:before {
         position: absolute;
         content: "";
@@ -326,19 +303,59 @@
         transition: .4s;
         border-radius: 50%;
     }
-    
     .consent-option input:checked + .slider {
         background-color: #FF5277;
     }
-    
     .consent-option input:focus + .slider {
         box-shadow: 0 0 1px #FF5277;
     }
-    
     .consent-option input:checked + .slider:before {
         transform: translateX(26px);
     }
-    
+    .loading-spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border-left-color: #FF5277;
+        animation: spin 1s ease infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    /* Estilos para el modal de catálogo */
+    .catalog-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: none;
+        z-index: 1002;
+        justify-content: center;
+        align-items: center;
+    }
+    .catalog-modal.show {
+        display: flex;
+    }
+    .catalog-modal-content {
+        background-color: #fff;
+        padding: 1.5rem;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 400px;
+        color: #1d1b1f;
+        position: relative;
+        text-align: center;
+    }
+    .catalog-modal-image {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body class="bg-md-background font-nunito text-md-on-background">
@@ -420,10 +437,24 @@
         </nav>
       </aside>
       <main class="flex-grow bg-md-background p-5">
-        <div id="filter-container" class="mb-8 flex flex-wrap gap-2 justify-center">
+        <div id="loading-state" class="flex flex-col items-center justify-center min-h-[50vh]">
+          <div class="loading-spinner"></div>
+          <p class="mt-4 text-md-on-surface-variant text-lg">Cargando catálogo...</p>
         </div>
-        
-        <div id="catalog-grid" class="catalog-grid flex-wrap gap-4">
+
+        <div id="error-state" class="hidden flex flex-col items-center justify-center min-h-[50vh] text-center">
+            <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+            <p class="text-md-on-surface-variant text-lg">No pudimos cargar el catálogo. Por favor, revisa tu conexión a internet.</p>
+            <button id="retry-button" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300">
+                Intentar de nuevo
+            </button>
+        </div>
+
+        <div id="content-container" class="hidden">
+          <div id="filter-container" class="mb-8 flex flex-wrap gap-2 justify-center">
+          </div>
+          <div id="catalog-grid" class="catalog-grid flex-wrap gap-4">
+          </div>
         </div>
       </main>
     </div>
@@ -494,9 +525,31 @@
     </div>
   </div>
 
+  <div id="catalog-modal" class="catalog-modal">
+    <div class="catalog-modal-content">
+      <span class="close-btn" id="close-catalog-modal">&times;</span>
+      <img id="modal-image" class="catalog-modal-image" src="" alt="Portada del catálogo">
+      <h3 id="modal-title" class="text-xl font-bold font-oswald text-md-on-surface"></h3>
+      <a id="modal-button" href="#" target="_blank" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300 inline-block">
+        Ver Catálogo
+      </a>
+    </div>
+  </div>
+
+  <div id="not-found-modal" class="catalog-modal">
+      <div class="catalog-modal-content">
+          <span class="close-btn" id="close-not-found-modal">&times;</span>
+          <i class="fas fa-exclamation-circle text-4xl text-yellow-500 mb-4"></i>
+          <h3 class="text-xl font-bold font-oswald text-md-on-surface">Catálogo no encontrado</h3>
+          <p class="mt-2 text-md-on-surface-variant">El enlace del catálogo que intentas ver no es válido o ha sido retirado.</p>
+          <button id="close-not-found-button" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300">
+              Aceptar
+          </button>
+      </div>
+  </div>
+
 
   <script>
-    // Tu código JavaScript existente
     const firebaseConfig = {
       apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
       authDomain: "formiik-dev.firebaseapp.com",
@@ -504,11 +557,9 @@
       storageBucket: "formiik-dev.firebasestorage.app",
       messagingSenderId: "91782576906",
       appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
-      // measurementId está definido en el script de GA
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    // Ya no necesitas inicializar analytics aquí, se inicializa con la etiqueta gtag.js
 
     const menuButton = document.getElementById('menu-button');
     const closeButton = document.getElementById('close-button');
@@ -518,6 +569,24 @@
     const filterContainer = document.getElementById('filter-container');
     const whatsappButton = document.getElementById('whatsapp-contact-button');
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    
+    const loadingState = document.getElementById('loading-state');
+    const errorState = document.getElementById('error-state');
+    const retryButton = document.getElementById('retry-button');
+    const contentContainer = document.getElementById('content-container');
+
+    // Elementos del nuevo modal de catálogo
+    const catalogModal = document.getElementById('catalog-modal');
+    const closeCatalogModal = document.getElementById('close-catalog-modal');
+    const modalImage = document.getElementById('modal-image');
+    const modalTitle = document.getElementById('modal-title');
+    const modalButton = document.getElementById('modal-button');
+
+    // Elementos del nuevo modal de error
+    const notFoundModal = document.getElementById('not-found-modal');
+    const closeNotFoundModal = document.getElementById('close-not-found-modal');
+    const closeNotFoundButton = document.getElementById('close-not-found-button');
+
 
     let catalogosData = [];
     let iso;
@@ -540,7 +609,7 @@
     sidebarOverlay.addEventListener('click', () => {
         closeSidebar();
     });
-    // Función para enviar eventos de GA, revisada para usar gtag
+
     function registerCardClickEvent(eventName, catalogo) {
       gtag('event', eventName, { 
         'event_category': 'catalogo',
@@ -550,7 +619,6 @@
       });
     }
 
-    // Función para el evento de contacto, también revisada para gtag
     function registerWhatsappClickEvent() {
       gtag('event', 'whatsapp_click', {
         'event_category': 'contacto',
@@ -561,6 +629,7 @@
     whatsappButton.addEventListener('click', (e) => {
       registerWhatsappClickEvent();
     });
+
     function applyFilters() {
         let combinedFilter;
         if (filters.brand === '*' && filters.category === '*') {
@@ -579,61 +648,9 @@
         }
     }
     
-    /*function displayCatalogos() {
-        const grid = document.getElementById('catalog-grid');
-        catalogosData.forEach(catalogo => {
-            const categoryClasses = catalogo.categoria.map(cat => cat.replace(/\s+/g, '-').toLowerCase()).join(' ');
-            
-            const card = document.createElement('a');
-            card.href = catalogo.url;
-            card.target = "_blank";
-            card.className = `group rounded-lg shadow-md hover:shadow-lg transition-transform hover:scale-105 duration-300 bg-md-surface flex flex-col overflow-hidden catalog-item ${catalogo.marca.replace(/\s+/g, '-').toLowerCase()} ${categoryClasses}`;
-            
-            if (catalogo.evento_ga) {
-                card.addEventListener('click', () => {
-                    registerCardClickEvent(catalogo.evento_ga, catalogo);
-                });
-            }
-
-            const imageWrapper = document.createElement('div');
-            imageWrapper.className = "relative w-full overflow-hidden";
-            const image = document.createElement('img');
-            image.src = catalogo.imagen;
-            image.alt = `Portada de ${catalogo.nombre}`;
-            image.className = "w-full h-full object-cover transition-transform duration-300 object-top";
-            imageWrapper.appendChild(image);
-
-            const textContainer = document.createElement('div');
-            textContainer.className = "p-3 flex-grow text-center flex flex-col items-center";
-            const title = document.createElement('h3');
-            title.textContent = catalogo.nombre;
-            title.className = "text-md font-bold font-oswald text-md-on-surface"; 
-            textContainer.appendChild(title);
-
-            card.appendChild(imageWrapper);
-            card.appendChild(textContainer);
-            grid.appendChild(card);
-        });
-        iso = new Isotope(grid, {
-            itemSelector: '.catalog-item',
-            layoutMode: 'masonry',
-            masonry: {
-                columnWidth: '.catalog-item',
-                gutter: 16
-            },
-            getSortData: {
-                name: '.font-oswald'
-            },
-            sortBy: 'name'
-        });
-        imagesLoaded(grid).on('progress', function() {
-            iso.layout();
-            checkUrlFilter();
-        });
-    }*/
-    
     function displayCatalogos() {
         const grid = document.getElementById('catalog-grid');
+        grid.innerHTML = '';
         catalogosData.forEach(catalogo => {
             const categoryClasses = catalogo.categoria.map(cat => cat.replace(/\s+/g, '-').toLowerCase()).join(' ');
             
@@ -642,11 +659,10 @@
             card.target = "_blank";
             card.className = `group rounded-lg shadow-md hover:shadow-lg transition-transform hover:scale-105 duration-300 bg-md-surface flex flex-col overflow-hidden catalog-item ${catalogo.marca.replace(/\s+/g, '-').toLowerCase()} ${categoryClasses}`;
             
-            // 👇 Aquí guardamos prioridad como atributo de la tarjeta
             if (catalogo.prioridad !== undefined) {
                 card.setAttribute("data-prioridad", catalogo.prioridad);
             } else {
-                card.setAttribute("data-prioridad", 9999); // valor alto por defecto
+                card.setAttribute("data-prioridad", 9999);
             }
     
             if (catalogo.evento_ga) {
@@ -675,6 +691,10 @@
             grid.appendChild(card);
         });
     
+        if (iso) {
+            iso.destroy();
+        }
+
         iso = new Isotope(grid, {
             itemSelector: '.catalog-item',
             layoutMode: 'masonry',
@@ -684,13 +704,12 @@
             },
             getSortData: {
                 prioridad: itemElem => parseInt(itemElem.getAttribute('data-prioridad'), 10) || 9999,
-                name: '.font-oswald' // 👈 sigue funcionando
+                name: '.font-oswald'
             },
-            // 👇 primero ordena por prioridad, luego por nombre
             sortBy: ['prioridad', 'name'],
             sortAscending: {
-                prioridad: true, // menor prioridad primero
-                name: true       // orden alfabético
+                prioridad: true,
+                name: true
             }
         });
     
@@ -701,6 +720,7 @@
     }
 
     function createFilterButtons(brands) {
+        filterContainer.innerHTML = '';
         const allButton = document.createElement('button');
         allButton.textContent = 'Todo';
         allButton.className = 'filter-button active';
@@ -770,6 +790,10 @@
     }
     
     async function fetchCatalogos() {
+        loadingState.classList.remove('hidden');
+        errorState.classList.add('hidden');
+        contentContainer.classList.add('hidden');
+
         try {
             const catalogosRef = db.collection('catalogo');
             const snapshot = await catalogosRef.get();
@@ -781,11 +805,60 @@
             const brands = [...new Set(catalogosData.map(item => item.marca).filter(Boolean))].sort();
 
             createFilterButtons(brands);
-
             displayCatalogos();
+
+            loadingState.classList.add('hidden');
+            contentContainer.classList.remove('hidden');
+            
+            // Llama a la nueva función después de cargar los datos
+            checkUrlCatalog();
+
         } catch (error) {
             console.error("Error fetching documents: ", error);
+            loadingState.classList.add('hidden');
+            errorState.classList.remove('hidden');
         }
+    }
+
+    function checkUrlCatalog() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const catalogoUrlParam = urlParams.get('catalogo');
+
+      if (catalogoUrlParam) {
+        const foundCatalogo = catalogosData.find(c => c.evento_ga === catalogoUrlParam);
+
+        if (foundCatalogo) {
+          showCatalogModal(foundCatalogo);
+        } else {
+          showNotFoundModal();
+        }
+      }
+    }
+
+    function showCatalogModal(catalogo) {
+        modalImage.src = catalogo.imagen;
+        modalImage.alt = `Portada de ${catalogo.nombre}`;
+        modalTitle.textContent = catalogo.nombre;
+        modalButton.href = catalogo.url;
+        
+        modalButton.onclick = () => {
+            registerCardClickEvent(catalogo.evento_ga, catalogo);
+            hideCatalogModal();
+        };
+
+        catalogModal.classList.add('show');
+    }
+
+    function hideCatalogModal() {
+        catalogModal.classList.remove('show');
+    }
+
+    function showNotFoundModal() {
+        notFoundModal.classList.add('show');
+    }
+
+    function hideNotFoundModal() {
+        notFoundModal.classList.remove('show');
     }
 
     sidebarLinks.forEach(link => {
@@ -801,9 +874,14 @@
             closeSidebar();
         });
     });
+
+    retryButton.addEventListener('click', fetchCatalogos);
+    closeCatalogModal.addEventListener('click', hideCatalogModal);
+    closeNotFoundModal.addEventListener('click', hideNotFoundModal);
+    closeNotFoundButton.addEventListener('click', hideNotFoundModal);
+
     document.addEventListener('DOMContentLoaded', fetchCatalogos);
 
-    // COMIENZO: LÓGICA DEL BANNER DE CONSENTIMIENTO
     const consentBanner = document.getElementById('consent-banner');
     const acceptAllButton = document.getElementById('accept-all-cookies');
     const openModalButton = document.getElementById('open-consent-modal');
@@ -825,7 +903,6 @@
         adToggle.checked = consent.ad_storage === 'granted';
         consentBanner.classList.remove('show');
       } else {
-        // Muestra el banner si no hay consentimiento guardado
         setTimeout(() => {
           consentBanner.classList.add('show');
         }, 3000);
@@ -866,7 +943,7 @@
 
     function handleCloseModal() {
         consentModal.classList.remove('show');
-        checkConsent(); // Vuelve a mostrar el banner si no hay consentimiento guardado
+        checkConsent();
     }
 
     acceptAllButton.addEventListener('click', handleAcceptAll);
@@ -875,7 +952,6 @@
     saveConsentButton.addEventListener('click', handleSaveConsent);
 
     document.addEventListener('DOMContentLoaded', checkConsent);
-    // FIN: LÓGICA DEL BANNER DE CONSENTIMIENTO
   </script>
 </body>
 </html>
