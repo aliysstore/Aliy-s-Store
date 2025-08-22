@@ -200,19 +200,10 @@
             <div>
                 <label for="product-category" class="block font-semibold text-md-on-surface-variant mb-2">Categoría (Selecciona una o más):</label>
                 <select id="product-category" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" multiple>
-                    <!-- <option value="todo">Todo</option> -->
-                    <optgroup label="Calzado">
-                        <option value="calzado">Calzado</option>
-                        <option value="dama">Dama</option>
-                        <option value="caballeros">Caballeros</option>
-                        <option value="niños">Niños</option>
-                        <option value="outlet">Outlet</option>
-                    </optgroup>
-                    <option value="ropa">Ropa</option>
-                    <option value="accesorios">Accesorios</option>
-                    <option value="hogar">Hogar</option>
-                    <option value="belleza-y-fragancias">Belleza y fragancias</option>
-                    <option value="catalogos-especiales">Catálogos especiales</option>
+                    <option value="Calzado">Calzado</option>
+                    <option value="Ropa">Ropa</option>
+                    <option value="Accesorios">Accesorios</option>
+                    <option value="Maquillaje">Maquillaje</option>
                 </select>
             </div>
             
@@ -321,7 +312,7 @@
                             <td class="py-3 px-4">${product.nombre}</td>
                             <td class="py-3 px-4">${product.marca}</td>
                             <td class="py-3 px-4">${product.prioridad || 0}</td>
-                            <td class="py-3 px-4 flex items-center space-x-2 align-middle">
+                            <td class="py-3 px-4 flex items-center space-x-2">
                                 <button onclick="shareProduct('${product.evento_ga}')" class="text-green-600 hover:text-green-800 transition-colors" title="Compartir"><i class="fas fa-share-alt"></i></button>
                                 <button onclick="editProduct('${doc.id}')" class="text-blue-600 hover:text-blue-800 transition-colors" title="Editar"><i class="fas fa-edit"></i></button>
                                 <button onclick="deleteProduct('${doc.id}', '${product.imagen}')" class="text-red-600 hover:text-red-800 transition-colors" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
