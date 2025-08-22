@@ -200,7 +200,6 @@
             <div>
                 <label for="product-category" class="block font-semibold text-md-on-surface-variant mb-2">Categoría (Selecciona una o más):</label>
                 <select id="product-category" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" multiple>
-                    <!-- <option value="todo">Todo</option> -->
                     <optgroup label="Calzado">
                         <option value="calzado">Calzado</option>
                         <option value="dama">Dama</option>
@@ -306,15 +305,27 @@
             query = query.where("marca", "==", brandFilter);
         }
         
-        query = query.orderBy(sortOrder);
-        
         try {
             const snapshot = await query.get();
-            if (snapshot.empty) {
-                noProductsMessage.classList.remove('hidden');
-            } else {
+            let products = [];
+            if (!snapshot.empty) {
                 snapshot.forEach(doc => {
-                    const product = doc.data();
+                    products.push({ id: doc.id, ...doc.data() });
+                });
+            }
+
+            // Ordenamiento en el lado del cliente
+            if (sortOrder === "nombre") {
+                products.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+            } else if (sortOrder === "marca") {
+                products.sort((a, b) => (a.marca || '').localeCompare(b.marca || ''));
+            } else if (sortOrder === "prioridad") {
+                products.sort((a, b) => (a.prioridad || 0) - (b.prioridad || 0));
+            }
+
+            // Mostrar los productos ordenados
+            if (products.length > 0) {
+                products.forEach(product => {
                     const row = `
                         <tr class="border-t border-md-outline hover:bg-md-surface-container-high transition-colors">
                             <td class="py-3 px-4"><img src="${product.imagen}" alt="${product.nombre}" class="w-16 h-16 object-cover rounded-md" /></td>
@@ -323,13 +334,15 @@
                             <td class="py-3 px-4">${product.prioridad || 0}</td>
                             <td class="py-3 px-4 flex items-center space-x-2 align-middle">
                                 <button onclick="shareProduct('${product.evento_ga}')" class="text-green-600 hover:text-green-800 transition-colors" title="Compartir"><i class="fas fa-share-alt"></i></button>
-                                <button onclick="editProduct('${doc.id}')" class="text-blue-600 hover:text-blue-800 transition-colors" title="Editar"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteProduct('${doc.id}', '${product.imagen}')" class="text-red-600 hover:text-red-800 transition-colors" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+                                <button onclick="editProduct('${product.id}')" class="text-blue-600 hover:text-blue-800 transition-colors" title="Editar"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteProduct('${product.id}', '${product.imagen}')" class="text-red-600 hover:text-red-800 transition-colors" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
                             </td>
                         </tr>
                     `;
                     productsTableBody.insertAdjacentHTML('beforeend', row);
                 });
+            } else {
+                noProductsMessage.classList.remove('hidden');
             }
         } catch (error) {
             console.error("Error al obtener los productos: ", error);
