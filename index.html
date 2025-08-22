@@ -3,12 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta property="og:title" content="Aliy's Store | Panel de Catálogo" />
-  <meta property="og:description" content="Panel de control para gestionar el catálogo de productos de Aliy's Store." />
-  <meta property="og:url" content="https://aliysstore.github.io/Aliy-s-Store/admin-catalogo" />
+  <meta property="og:title" content="Aliy's Store | Venta por catálogo" />
+  <meta property="og:description" content="Hola, soy Alicia y te ayudo a encontrar el producto perfecto para ti" />
+  <meta property="og:image" content="https://aliysstore.github.io/Aliy-s-Store/img/perfil.jpg" />
+  <meta property="og:url" content="https://aliysstore.github.io/Aliy-s-Store" />
   <meta property="og:type" content="website" />
+  
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Aliy's Store | Venta por catálogo" />
+  <meta name="twitter:description" content="Hola, soy Alicia y te ayudo a encontrar el producto perfecto para ti" />
+  <meta name="twitter:image" content="https://aliysstore.github.io/Aliy-s-Store/img/perfil.jpg" />
     
-  <title>Aliy's Store | Panel de Catálogo</title>
+  <meta name="google-site-verification" content="OJZCwNFA7qoGBq9oi98SAslM7bHUFF-6A_8wYiELeVU" />
+  
+  <title>Aliy's Store | Calzado, ropa y accesorios por catálogo</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,11 +24,30 @@
   <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+  <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-  
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Define el estado de consentimiento predeterminado como "denegado"
+    // Esto debe ejecutarse antes de que se cargue la etiqueta de Google Analytics.
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('consent', 'default', {
+      'ad_storage': 'denied',
+      'analytics_storage': 'denied',
+      'wait_for_update': 500 // Espera hasta 500ms para la actualización del consentimiento
+    });
+  </script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZW7YPM60FN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZW7YPM60FN');
+  </script>
   <script>
     tailwind.config = {
       theme: {
@@ -52,460 +79,803 @@
     }
   </script>
   <style>
-    /* Estilos para el modal */
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000;
-        left: 0;
+    .catalog-grid {
+      position: relative;
+    }
+    .catalog-item {
+      width: calc(50% - 8px);
+      margin-bottom: 16px;
+      transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+    }
+    .catalog-item.isotope-hidden {
+      opacity: 0;
+      transform: scale(0.001);
+    }
+    @media (min-width: 640px) {
+       .catalog-item {
+         width: calc(33.333% - 11px);
+       }
+    }
+    @media (min-width: 1024px) {
+       .catalog-item {
+         width: calc(25% - 12px);
+       }
+    }
+    @media (min-width: 1280px) {
+       .catalog-item {
+         width: calc(20% - 13px);
+       }
+    }
+    @media (min-width: 1536px) {
+       .catalog-item {
+         width: calc(16.666% - 13px);
+       }
+    }
+    .catalog-item .h-full {
+      min-height: 250px;
+    }
+    .new-ribbon-wrapper {
+        position: absolute;
         top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgb(0,0,0);
-        background-color: rgba(0,0,0,0.4);
-        padding-top: 60px;
+        right: 0;
+        overflow: hidden;
+        width: 100px;
+        height: 100px;
+        z-index: 10;
     }
-    .modal-content {
-        background-color: #fefefe;
-        margin: 5% auto;
-        padding: 20px;
-        border-radius: 8px;
-        width: 90%;
-        max-width: 600px;
-    }
-    .close-btn {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
+    .new-ribbon-wrapper span {
+        position: absolute;
+        top: 20px;
+        right: -30px;
+        width: 120px;
+        text-align: center;
+        text-transform: uppercase;
         font-weight: bold;
+        padding: 5px 0;
+        background-color: #FF5277;
+        color: #FFFFFF;
+        transform: rotate(45deg);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     }
-    .close-btn:hover,
-    .close-btn:focus {
-        color: black;
-        text-decoration: none;
+    /* Styles for the filter buttons */
+    .filter-button {
+      padding: 8px 16px;
+      border-radius: 9999px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      background-color: transparent;
+      border: 1px solid #837078;
+      color: #504147;
+    }
+    .filter-button.active, .filter-button:hover {
+      background-color: #FF5277;
+      border-color: #FF5277;
+      color: #FFFFFF;
+    }
+    /* NEW STYLES FOR SIDEBAR LINKS */
+    .sidebar-link {
+      padding: 8px 12px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      background-color: transparent;
+      color: #504147;
+      border: 1px solid transparent; /* Added for consistency */
+    }
+    .sidebar-link.active, .sidebar-link:hover {
+      background-color: #FF5277;
+      color: #FFFFFF;
+    }
+    /* NUEVOS ESTILOS PARA EL BANNER DE CONSENTIMIENTO */
+    .consent-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background-color: #1d1b1f; /* Color de fondo oscuro */
+      color: #fffafe; /* Color de texto claro */
+      padding: 1.5rem;
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
+      transform: translateY(100%);
+      transition: transform 0.5s ease-in-out;
+    }
+    .consent-banner.show {
+      transform: translateY(0);
+    }
+    .consent-banner .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+    .consent-banner .btn-accept {
+      background-color: #FF5277;
+      color: #FFFFFF;
+      border: 1px solid #FF5277;
+    }
+    .consent-banner .btn-accept:hover {
+      background-color: #C63A5E;
+    }
+    .consent-banner .btn-deny {
+      background-color: transparent;
+      color: #FFFFFF;
+      border: 1px solid #FFFFFF;
+    }
+    .consent-banner .btn-deny:hover {
+      background-color: #ffffff33;
+    }
+
+    /* Nuevos estilos para la modal de configuración */
+    .consent-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: none; /* Oculto por defecto */
+        z-index: 1001;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .consent-modal.show {
+        display: flex;
+    }
+
+    .consent-modal-content {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        color: #1d1b1f;
+        position: relative;
+        max-height: 80vh; /* Limita la altura en pantallas pequeñas */
+        display: flex; /* Nuevo: para organizar los elementos */
+        flex-direction: column; /* Nuevo: para organizar los elementos */
+    }
+
+    .consent-modal-content h3 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+    
+    .consent-modal-content p {
+        margin-bottom: 1.5rem;
+    }
+    
+    .consent-modal-content .close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 1.5rem;
         cursor: pointer;
     }
+
+    .consent-options {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        overflow-y: auto; /* Nuevo: permite el scroll vertical */
+        padding-right: 0.5rem; /* Nuevo: evita que el scrollbar se pegue a los bordes */
+    }
+
+    .consent-option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+    }
+    
+    .consent-option .option-info {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1; /* Allow text to take more space */
+    }
+
+    .consent-option .option-info h4 {
+        font-weight: bold;
+    }
+    
+    .consent-option .option-info p {
+        font-size: 0.875rem;
+        color: #504147;
+    }
+
+    .consent-option .toggle-container { /* New container for better spacing */
+        margin-left: 1rem; /* Add some left margin to the toggle container */
+    }
+
+    .consent-option .toggle {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+    
+    .consent-option .toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .consent-option .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 34px;
+    }
+    
+    .consent-option .slider:before {
+        position: absolute;
+        content: "";
+        height: 26px;
+        width: 26px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    
+    .consent-option input:checked + .slider {
+        background-color: #FF5277;
+    }
+    
+    .consent-option input:focus + .slider {
+        box-shadow: 0 0 1px #FF5277;
+    }
+    
+    .consent-option input:checked + .slider:before {
+        transform: translateX(26px);
+    }
+    
   </style>
 </head>
 <body class="bg-md-background font-nunito text-md-on-background">
   <div class="flex flex-col min-h-screen">
     <header class="bg-md-surface-variant p-5 flex justify-between items-center">
+      <div class="md:hidden">
+        <button id="menu-button" class="text-md-on-surface-variant">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
       <div class="flex items-center space-x-2">
-        <span class="md:hidden text-2xl font-oswald font-bold text-md-on-surface-variant">Catálogo</span>
-        <span class="hidden md:block text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store | Panel de Catálogo</span>
+        <span class="md:hidden text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store</span>
+        <span class="hidden md:block text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store | Venta por catálogo</span>
       </div>
-      <nav class="flex space-x-4">
-        <a href="index.html" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-pink-100 font-bold py-2 px-4 rounded-full transition duration-300 flex items-center space-x-2">
-          <i class="fas fa-home text-lg"></i>
-          <span>Inicio</span>
-        </a>
-        <a href="panel-admin.html" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-pink-100 font-bold py-2 px-4 rounded-full transition duration-300 flex items-center space-x-2">
-            <i class="fas fa-link text-lg"></i>
-            <span>Enlaces</span>
-        </a>
-      </nav>
+      <a href="https://wa.me/5212285722185" id="whatsapp-contact-button" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-pink-100 font-bold py-2 px-4 rounded-full transition duration-300 flex items-center space-x-2">
+        <i class="fab fa-whatsapp text-lg"></i>
+        <span>Contacto</span>
+      </a>
     </header>
-    
-    <main class="flex-grow p-5 md:p-10">
-      <div class="max-w-7xl mx-auto bg-md-surface rounded-lg shadow-lg p-6">
-        <h1 class="text-3xl font-oswald font-bold text-md-on-background mb-6 text-center">Gestión de Catálogo</h1>
-        
-        <div class="flex flex-wrap justify-between items-center mb-4 space-y-4 md:space-y-0">
-          <button id="add-product-btn" class="w-full md:w-auto bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
-            <i class="fas fa-plus mr-2"></i>Añadir Nuevo Producto
-          </button>
-          
-          <div class="flex items-center space-x-4 w-full md:w-auto">
-              <div class="flex-1">
-                  <label for="filter-brand" class="sr-only">Filtrar por Marca</label>
-                  <select id="filter-brand" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300">
-                      <option value="">Todas las marcas</option>
-                      <option value="Andrea">Andrea</option>
-                      <option value="Cklass">Cklass</option>
-                      <option value="Price Shoes">Price Shoes</option>
-                  </select>
-              </div>
-              <div class="flex-1">
-                  <label for="sort-by" class="sr-only">Ordenar por</label>
-                  <select id="sort-by" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300">
-                      <option value="nombre">Nombre (A-Z)</option>
-                      <option value="marca">Marca</option>
-                      <option value="prioridad">Prioridad (asc.)</option>
-                  </select>
-              </div>
-          </div>
-        </div>
-
-        <div class="overflow-x-auto">
-          <table class="min-w-full bg-white rounded-lg shadow-lg">
-            <thead>
-              <tr class="bg-md-surface-variant text-md-on-surface-variant text-left">
-                <th class="py-3 px-4">Imagen</th>
-                <th class="py-3 px-4">Nombre</th>
-                <th class="py-3 px-4">Marca</th>
-                <th class="py-3 px-4">Prioridad</th>
-                <th class="py-3 px-4">Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="products-table-body">
-              </tbody>
-          </table>
-        </div>
-        
-        <div id="no-products-message" class="text-center text-md-on-surface-variant mt-8 hidden">
-            <p class="text-lg">No hay productos en el catálogo. ¡Añade el primero!</p>
-        </div>
-
-      </div>
-    </main>
-
-    <div id="product-modal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2 id="modal-title" class="text-2xl font-oswald font-bold mb-4">Añadir Nuevo Producto</h2>
-        <form id="product-form" class="space-y-4">
-            <input type="hidden" id="product-id" />
-            
-            <div>
-              <label for="product-name" class="block font-semibold text-md-on-surface-variant mb-2">Nombre del Producto:</label>
-              <input type="text" id="product-name" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" required />
-            </div>
-
-            <div>
-              <label for="product-brand" class="block font-semibold text-md-on-surface-variant mb-2">Marca:</label>
-              <select id="product-brand" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" required>
-                  <option value="">Selecciona una marca</option>
-                  <option value="Andrea">Andrea</option>
-                  <option value="Cklass">Cklass</option>
-                  <option value="Price Shoes">Price Shoes</option>
-              </select>
-            </div>
-            
-            <div>
-                <label for="product-priority" class="block font-semibold text-md-on-surface-variant mb-2">Prioridad:</label>
-                <input type="number" id="product-priority" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" value="0" />
-            </div>
-
-            <div>
-                <label for="ga-event" class="block font-semibold text-md-on-surface-variant mb-2">Evento GA:</label>
-                <input type="text" id="ga-event" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" readonly />
-            </div>
-            
-            <div>
-                <label for="product-url" class="block font-semibold text-md-on-surface-variant mb-2">URL del Producto:</label>
-                <input type="url" id="product-url" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" required />
-            </div>
-
-            <div>
-                <label for="product-category" class="block font-semibold text-md-on-surface-variant mb-2">Categoría (Selecciona una o más):</label>
-                <select id="product-category" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" multiple>
-                    <!-- <option value="todo">Todo</option> -->
-                    <optgroup label="Calzado">
-                        <option value="calzado">Calzado</option>
-                        <option value="dama">Dama</option>
-                        <option value="caballeros">Caballeros</option>
-                        <option value="niños">Niños</option>
-                        <option value="outlet">Outlet</option>
-                    </optgroup>
-                    <option value="ropa">Ropa</option>
-                    <option value="accesorios">Accesorios</option>
-                    <option value="hogar">Hogar</option>
-                    <option value="belleza-y-fragancias">Belleza y fragancias</option>
-                    <option value="catalogos-especiales">Catálogos especiales</option>
-                </select>
-            </div>
-            
-            <div>
-              <label for="product-image" class="block font-semibold text-md-on-surface-variant mb-2">Imagen del Producto:</label>
-              <input type="file" id="product-image" accept="image/*" class="w-full text-sm text-md-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-md-primary-container file:text-md-on-primary-container hover:file:bg-md-primary-container" />
-              <div id="current-image-preview" class="mt-2 hidden">
-                  <p class="text-sm text-gray-500">Imagen actual:</p>
-                  <img id="image-preview" src="" alt="Vista previa" class="w-24 h-24 object-cover rounded-lg mt-1" />
-              </div>
-            </div>
-
-            <button type="submit" class="w-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
-              Guardar Producto
+    <div class="flex flex-col md:flex-row flex-grow">
+      <div id="sidebar-overlay" class="fixed inset-0 bg-md-surface/50 hidden z-40 md:hidden"></div>
+      <aside id="sidebar" class="bg-md-surface-variant p-5 flex-shrink-0 z-50 fixed inset-y-0 left-0 w-64 transform -translate-x-full transition-transform duration-300 md:relative md:w-48 md:transform-none md:block">
+        <div class="text-right md:hidden">
+            <button id="close-button" class="text-md-on-surface-variant">
+                <i class="fas fa-times text-xl"></i>
             </button>
-        </form>
-      </div>
+        </div>
+        <nav class="mt-8">
+          <ul class="space-y-4">
+            <li>
+              <a href="#" class="sidebar-link block flex items-center space-x-2 active" data-filter="*">
+                <i class="fas fa-th-large"></i>
+                <span>Todo</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".calzado">
+                <i class="fas fa-shoe-prints"></i>
+                <span>Calzado</span>
+              </a>
+              <ul class="ml-4 mt-2 space-y-2">
+                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".dama"><i class="fas fa-female"></i><span>Dama</span></a></li>
+                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".caballeros"><i class="fas fa-male"></i><span>Caballeros</span></a></li>
+                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".niños"><i class="fas fa-child"></i><span>Niños</span></a></li>
+                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".outlet"><i class="fas fa-tag"></i><span>Outlet</span></a></li>
+              </ul>
+            </li>
+            <li>
+              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".ropa">
+                <i class="fas fa-tshirt"></i>
+                <span>Ropa</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".accesorios">
+                <i class="fas fa-hat-cowboy"></i>
+                <span>Accesorios</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".hogar">
+                <i class="fas fa-house"></i>
+                <span>Hogar</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".belleza-y-fragancias">
+                <i class="fas fa-spa"></i>
+                <span>Belleza y fragancias</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".catalogos-especiales">
+                <i class="fas fa-book-open"></i>
+                <span>Catálogos especiales</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      <main class="flex-grow bg-md-background p-5">
+        <div id="filter-container" class="mb-8 flex flex-wrap gap-2 justify-center">
+        </div>
+        
+        <div id="catalog-grid" class="catalog-grid flex-wrap gap-4">
+        </div>
+      </main>
     </div>
-    
     <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
-      Aliy's Store &copy; 2024. Todos los derechos reservados.
+      Los catálogos y precios están sujetos a cambios sin previo aviso.
     </footer>
   </div>
 
+  <div id="consent-banner" class="consent-banner">
+    <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-sm text-center md:text-left">
+        Este sitio utiliza cookies para mejorar la experiencia del usuario y analizar el tráfico.
+        <a href="#" class="underline font-bold" id="link-politica-cookies">Política de cookies</a>.
+      </p>
+      <div class="flex gap-4">
+        <button id="accept-all-cookies" class="btn btn-accept">Aceptar todas</button>
+        <button id="open-consent-modal" class="btn btn-deny">Configurar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="consent-modal" class="consent-modal">
+    <div class="consent-modal-content">
+        <span class="close-btn" id="close-modal">&times;</span>
+        <h3>Configuración de privacidad</h3>
+        <p>Selecciona qué tipos de cookies deseas aceptar. Los cambios se aplicarán a tu próxima visita.</p>
+        <div class="consent-options">
+            <div class="consent-option">
+                <div class="option-info">
+                    <h4>Cookies necesarias</h4>
+                    <p>Necesarias para el funcionamiento básico del sitio. No se pueden desactivar.</p>
+                </div>
+                <div class="toggle-container">
+                    <div class="toggle">
+                        <input type="checkbox" checked disabled />
+                        <span class="slider"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="consent-option">
+                <div class="option-info">
+                    <h4>Cookies de analíticas</h4>
+                    <p>Nos ayudan a entender cómo los visitantes interactúan con la página, como el número de visitantes y la fuente del tráfico.</p>
+                </div>
+                <div class="toggle-container">
+                    <label class="toggle">
+                        <input type="checkbox" id="analytics-toggle" checked disabled />
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="consent-option">
+                <div class="option-info">
+                    <h4>Cookies de publicidad</h4>
+                    <p>Utilizadas para rastrear a los visitantes a través de los sitios web con el fin de mostrar anuncios relevantes y atractivos.</p>
+                </div>
+                <div class="toggle-container">
+                    <label class="toggle">
+                        <input type="checkbox" id="ad-toggle" checked />
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-end mt-6">
+            <button id="save-consent" class="btn btn-accept">Guardar mis elecciones</button>
+        </div>
+    </div>
+  </div>
+
+
   <script>
-    // Configuración de Firebase - Reemplaza con tus datos
+    // Tu código JavaScript existente
     const firebaseConfig = {
-        apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
-        authDomain: "formiik-dev.firebaseapp.com",
-        projectId: "formiik-dev",
-        storageBucket: "formiik-dev.firebasestorage.app",
-        messagingSenderId: "91782576906",
-        appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
+      apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
+      authDomain: "formiik-dev.firebaseapp.com",
+      projectId: "formiik-dev",
+      storageBucket: "formiik-dev.firebasestorage.app",
+      messagingSenderId: "91782576906",
+      appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
+      // measurementId está definido en el script de GA
     };
-    
-    // Inicializa Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = app.firestore();
-    const storage = app.storage();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    // Ya no necesitas inicializar analytics aquí, se inicializa con la etiqueta gtag.js
 
-    // Elementos del DOM
-    const productsTableBody = document.getElementById('products-table-body');
-    const noProductsMessage = document.getElementById('no-products-message');
-    const addProductBtn = document.getElementById('add-product-btn');
-    const productModal = document.getElementById('product-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const productForm = document.getElementById('product-form');
-    const productIdInput = document.getElementById('product-id');
-    const productNameInput = document.getElementById('product-name');
-    const productBrandInput = document.getElementById('product-brand');
-    const productPriorityInput = document.getElementById('product-priority');
-    const gaEventInput = document.getElementById('ga-event');
-    const productUrlInput = document.getElementById('product-url');
-    const productCategorySelect = document.getElementById('product-category');
-    const productImageInput = document.getElementById('product-image');
-    const currentImagePreview = document.getElementById('current-image-preview');
-    const imagePreview = document.getElementById('image-preview');
-    const closeBtn = document.querySelector('.close-btn');
-    const filterBrandSelect = document.getElementById('filter-brand');
-    const sortBySelect = document.getElementById('sort-by');
-    
-    // Funciones de utilidad
-    function normalizeString(str) {
-      if (!str) return '';
-      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, "_");
+    const menuButton = document.getElementById('menu-button');
+    const closeButton = document.getElementById('close-button');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const catalogGrid = document.getElementById('catalog-grid');
+    const filterContainer = document.getElementById('filter-container');
+    const whatsappButton = document.getElementById('whatsapp-contact-button');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    let catalogosData = [];
+    let iso;
+    let filters = {
+        brand: '*',
+        category: '*'
+    };
+    function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        sidebarOverlay.classList.add('hidden');
     }
 
-    function generateGAEvent() {
-        const brand = productBrandInput.value;
-        const name = productNameInput.value;
-        if (brand && name) {
-            gaEventInput.value = `${normalizeString(brand)}_${normalizeString(name)}`;
+    menuButton.addEventListener('click', () => {
+      sidebar.classList.remove('-translate-x-full');
+      sidebarOverlay.classList.remove('hidden');
+    });
+    closeButton.addEventListener('click', () => {
+        closeSidebar();
+    });
+    sidebarOverlay.addEventListener('click', () => {
+        closeSidebar();
+    });
+    // Función para enviar eventos de GA, revisada para usar gtag
+    function registerCardClickEvent(eventName, catalogo) {
+      gtag('event', eventName, { 
+        'event_category': 'catalogo',
+        'event_action': 'click_card',
+        'event_label': catalogo.nombre,
+        'brand': catalogo.marca
+      });
+    }
+
+    // Función para el evento de contacto, también revisada para gtag
+    function registerWhatsappClickEvent() {
+      gtag('event', 'whatsapp_click', {
+        'event_category': 'contacto',
+        'event_action': 'click_whatsapp'
+      });
+    }
+
+    whatsappButton.addEventListener('click', (e) => {
+      registerWhatsappClickEvent();
+    });
+    function applyFilters() {
+        let combinedFilter;
+        if (filters.brand === '*' && filters.category === '*') {
+            combinedFilter = '*';
+        } else if (filters.brand === '*') {
+            combinedFilter = filters.category;
+        } else if (filters.category === '*') {
+            combinedFilter = filters.brand;
         } else {
-            gaEventInput.value = '';
+            combinedFilter = filters.brand + filters.category;
+        }
+
+        if (iso) {
+            iso.arrange({ filter: combinedFilter });
+            updateUrlParameter(filters.brand, filters.category);
         }
     }
     
-    productNameInput.addEventListener('input', generateGAEvent);
-    productBrandInput.addEventListener('change', generateGAEvent);
-
-    // Función para obtener y mostrar productos con filtros y orden
-    async function fetchProducts() {
-        productsTableBody.innerHTML = '';
-        noProductsMessage.classList.add('hidden');
-        
-        let query = db.collection("catalogo");
-        const brandFilter = filterBrandSelect.value;
-        const sortOrder = sortBySelect.value;
-        
-        if (brandFilter) {
-            query = query.where("marca", "==", brandFilter);
-        }
-        
-        query = query.orderBy(sortOrder);
-        
-        try {
-            const snapshot = await query.get();
-            if (snapshot.empty) {
-                noProductsMessage.classList.remove('hidden');
-            } else {
-                snapshot.forEach(doc => {
-                    const product = doc.data();
-                    const row = `
-                        <tr class="border-t border-md-outline hover:bg-md-surface-container-high transition-colors">
-                            <td class="py-3 px-4"><img src="${product.imagen}" alt="${product.nombre}" class="w-16 h-16 object-cover rounded-md" /></td>
-                            <td class="py-3 px-4">${product.nombre}</td>
-                            <td class="py-3 px-4">${product.marca}</td>
-                            <td class="py-3 px-4">${product.prioridad || 0}</td>
-                            <td class="py-3 px-4 flex items-center space-x-2 align-middle">
-                                <button onclick="shareProduct('${product.evento_ga}')" class="text-green-600 hover:text-green-800 transition-colors" title="Compartir"><i class="fas fa-share-alt"></i></button>
-                                <button onclick="editProduct('${doc.id}')" class="text-blue-600 hover:text-blue-800 transition-colors" title="Editar"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteProduct('${doc.id}', '${product.imagen}')" class="text-red-600 hover:text-red-800 transition-colors" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                    productsTableBody.insertAdjacentHTML('beforeend', row);
+    /*function displayCatalogos() {
+        const grid = document.getElementById('catalog-grid');
+        catalogosData.forEach(catalogo => {
+            const categoryClasses = catalogo.categoria.map(cat => cat.replace(/\s+/g, '-').toLowerCase()).join(' ');
+            
+            const card = document.createElement('a');
+            card.href = catalogo.url;
+            card.target = "_blank";
+            card.className = `group rounded-lg shadow-md hover:shadow-lg transition-transform hover:scale-105 duration-300 bg-md-surface flex flex-col overflow-hidden catalog-item ${catalogo.marca.replace(/\s+/g, '-').toLowerCase()} ${categoryClasses}`;
+            
+            if (catalogo.evento_ga) {
+                card.addEventListener('click', () => {
+                    registerCardClickEvent(catalogo.evento_ga, catalogo);
                 });
             }
-        } catch (error) {
-            console.error("Error al obtener los productos: ", error);
-        }
-    }
 
-    // Eventos para filtrar y ordenar
-    filterBrandSelect.addEventListener('change', fetchProducts);
-    sortBySelect.addEventListener('change', fetchProducts);
+            const imageWrapper = document.createElement('div');
+            imageWrapper.className = "relative w-full overflow-hidden";
+            const image = document.createElement('img');
+            image.src = catalogo.imagen;
+            image.alt = `Portada de ${catalogo.nombre}`;
+            image.className = "w-full h-full object-cover transition-transform duration-300 object-top";
+            imageWrapper.appendChild(image);
 
-    // Función para abrir el modal en modo 'Añadir'
-    addProductBtn.addEventListener('click', () => {
-        modalTitle.textContent = 'Añadir Nuevo Producto';
-        productForm.reset();
-        productIdInput.value = '';
-        currentImagePreview.classList.add('hidden');
-        productImageInput.required = true;
-        productModal.style.display = 'block';
-        gaEventInput.value = '';
-    });
+            const textContainer = document.createElement('div');
+            textContainer.className = "p-3 flex-grow text-center flex flex-col items-center";
+            const title = document.createElement('h3');
+            title.textContent = catalogo.nombre;
+            title.className = "text-md font-bold font-oswald text-md-on-surface"; 
+            textContainer.appendChild(title);
+
+            card.appendChild(imageWrapper);
+            card.appendChild(textContainer);
+            grid.appendChild(card);
+        });
+        iso = new Isotope(grid, {
+            itemSelector: '.catalog-item',
+            layoutMode: 'masonry',
+            masonry: {
+                columnWidth: '.catalog-item',
+                gutter: 16
+            },
+            getSortData: {
+                name: '.font-oswald'
+            },
+            sortBy: 'name'
+        });
+        imagesLoaded(grid).on('progress', function() {
+            iso.layout();
+            checkUrlFilter();
+        });
+    }*/
     
-    // Función para abrir el modal en modo 'Editar'
-    async function editProduct(docId) {
-        try {
-            const docRef = db.collection("catalogo").doc(docId);
-            const doc = await docRef.get();
-            if (doc.exists) {
-                const product = doc.data();
-                modalTitle.textContent = 'Editar Producto';
-                productIdInput.value = doc.id;
-                productNameInput.value = product.nombre;
-                productBrandInput.value = product.marca;
-                productPriorityInput.value = product.prioridad || 0;
-                gaEventInput.value = product.evento_ga || '';
-                productUrlInput.value = product.url || '';
-                
-                // Selecciona las categorías existentes
-                const categories = product.categoria || [];
-                for (let i = 0; i < productCategorySelect.options.length; i++) {
-                    const option = productCategorySelect.options[i];
-                    option.selected = categories.includes(option.value);
-                }
-
-                imagePreview.src = product.imagen;
-                currentImagePreview.classList.remove('hidden');
-                productImageInput.required = false; 
-                productModal.style.display = 'block';
+    function displayCatalogos() {
+        const grid = document.getElementById('catalog-grid');
+        catalogosData.forEach(catalogo => {
+            const categoryClasses = catalogo.categoria.map(cat => cat.replace(/\s+/g, '-').toLowerCase()).join(' ');
+            
+            const card = document.createElement('a');
+            card.href = catalogo.url;
+            card.target = "_blank";
+            card.className = `group rounded-lg shadow-md hover:shadow-lg transition-transform hover:scale-105 duration-300 bg-md-surface flex flex-col overflow-hidden catalog-item ${catalogo.marca.replace(/\s+/g, '-').toLowerCase()} ${categoryClasses}`;
+            
+            // 👇 Aquí guardamos prioridad como atributo de la tarjeta
+            if (catalogo.prioridad !== undefined) {
+                card.setAttribute("data-prioridad", catalogo.prioridad);
             } else {
-                alert("El producto no existe.");
+                card.setAttribute("data-prioridad", 9999); // valor alto por defecto
             }
-        } catch (error) {
-            console.error("Error al obtener el producto para editar: ", error);
-        }
-    }
-
-    // Función para cerrar el modal
-    closeBtn.addEventListener('click', () => {
-        productModal.style.display = 'none';
-    });
-
-    // Cierra el modal si se hace clic fuera de él
-    window.addEventListener('click', (e) => {
-        if (e.target == productModal) {
-            productModal.style.display = 'none';
-        }
-    });
-
-    // Función para subir una imagen a Storage
-    async function uploadImage(file, oldImageUrl) {
-      if (!file) {
-        return oldImageUrl;
-      }
-      if (oldImageUrl) {
-        try {
-          const imageRef = storage.refFromURL(oldImageUrl);
-          await imageRef.delete();
-        } catch (error) {
-          console.error("Error al eliminar la imagen antigua: ", error);
-        }
-      }
-      const storageRef = storage.ref();
-      const fileName = `${Date.now()}_${file.name}`;
-      const imageRef = storageRef.child(`catalogo/${fileName}`);
-      await imageRef.put(file);
-      return await imageRef.getDownloadURL();
-    }
-
-    // Manejo del formulario de Añadir/Editar
-    productForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const docId = productIdInput.value;
-      const productName = productNameInput.value;
-      const productBrand = productBrandInput.value;
-      const productPriority = productPriorityInput.value;
-      const gaEvent = gaEventInput.value;
-      const productUrl = productUrlInput.value;
-      const productImageFile = productImageInput.files[0];
-
-      let imageUrl = imagePreview.src; 
-
-      // Obtener categorías seleccionadas
-      const selectedCategories = Array.from(productCategorySelect.options)
-                                      .filter(option => option.selected)
-                                      .map(option => option.value);
-
-      try {
-        if (productImageFile) {
-            imageUrl = await uploadImage(productImageFile, docId ? imageUrl : '');
-        }
-
-        const productData = {
-          nombre: productName,
-          marca: productBrand,
-          prioridad: parseInt(productPriority),
-          evento_ga: gaEvent,
-          url: productUrl,
-          categoria: selectedCategories,
-          imagen: imageUrl,
-        };
-
-        if (docId) {
-            // Modo Editar
-            await db.collection("catalogo").doc(docId).update(productData);
-            alert('Producto actualizado con éxito!');
-        } else {
-            // Modo Añadir
-            await db.collection("catalogo").add(productData);
-            alert('Producto añadido con éxito!');
-        }
-        
-        productModal.style.display = 'none';
-        fetchProducts(); // Refresca la tabla
-      } catch (error) {
-        console.error("Error al guardar el producto: ", error);
-        alert('Ocurrió un error al guardar el producto.');
-      }
-    });
-
-    // Función para eliminar un producto
-    async function deleteProduct(docId, imageUrl) {
-      if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
-        try {
-          await db.collection("catalogo").doc(docId).delete();
-          if (imageUrl) {
-            try {
-              const imageRef = storage.refFromURL(imageUrl);
-              await imageRef.delete();
-            } catch (error) {
-              console.error("Error al eliminar la imagen: ", error);
+    
+            if (catalogo.evento_ga) {
+                card.addEventListener('click', () => {
+                    registerCardClickEvent(catalogo.evento_ga, catalogo);
+                });
             }
-          }
-          alert('Producto eliminado con éxito!');
-          fetchProducts(); // Refresca la tabla
-        } catch (error) {
-          console.error("Error al eliminar el producto: ", error);
-          alert('Ocurrió un error al eliminar el producto.');
-        }
-      }
-    }
-
-    // Función para compartir el producto
-    function shareProduct(evento_ga) {
-        const currentUrl = window.location.origin;
-        const shareLink = `${currentUrl}/Aliy-s-Store/index.html?catalogo=${evento_ga}`;
-        
-        navigator.clipboard.writeText(shareLink).then(() => {
-            alert('¡Enlace de catálogo copiado! Puedes compartirlo ahora.');
-        }).catch(err => {
-            console.error('Error al copiar el enlace: ', err);
-            alert('Error al copiar el enlace. Por favor, cópialo manualmente: ' + shareLink);
+    
+            const imageWrapper = document.createElement('div');
+            imageWrapper.className = "relative w-full overflow-hidden";
+            const image = document.createElement('img');
+            image.src = catalogo.imagen;
+            image.alt = `Portada de ${catalogo.nombre}`;
+            image.className = "w-full h-full object-cover transition-transform duration-300 object-top";
+            imageWrapper.appendChild(image);
+    
+            const textContainer = document.createElement('div');
+            textContainer.className = "p-3 flex-grow text-center flex flex-col items-center";
+            const title = document.createElement('h3');
+            title.textContent = catalogo.nombre;
+            title.className = "text-md font-bold font-oswald text-md-on-surface"; 
+            textContainer.appendChild(title);
+    
+            card.appendChild(imageWrapper);
+            card.appendChild(textContainer);
+            grid.appendChild(card);
+        });
+    
+        iso = new Isotope(grid, {
+            itemSelector: '.catalog-item',
+            layoutMode: 'masonry',
+            masonry: {
+                columnWidth: '.catalog-item',
+                gutter: 16
+            },
+            getSortData: {
+                prioridad: itemElem => parseInt(itemElem.getAttribute('data-prioridad'), 10) || 9999,
+                name: '.font-oswald' // 👈 sigue funcionando
+            },
+            // 👇 primero ordena por prioridad, luego por nombre
+            sortBy: ['prioridad', 'name'],
+            sortAscending: {
+                prioridad: true, // menor prioridad primero
+                name: true       // orden alfabético
+            }
+        });
+    
+        imagesLoaded(grid).on('progress', function() {
+            iso.layout();
+            checkUrlFilter();
         });
     }
 
-    // Carga los productos al iniciar
-    document.addEventListener('DOMContentLoaded', fetchProducts);
+    function createFilterButtons(brands) {
+        const allButton = document.createElement('button');
+        allButton.textContent = 'Todo';
+        allButton.className = 'filter-button active';
+        allButton.dataset.filter = '*';
+        filterContainer.appendChild(allButton);
+        brands.forEach(brand => {
+            const button = document.createElement('button');
+            button.textContent = brand;
+            button.className = 'filter-button';
+            button.dataset.filter = `.${brand.replace(/\s+/g, '-').toLowerCase()}`;
+            filterContainer.appendChild(button);
+        });
+        filterContainer.addEventListener('click', (event) => {
+            if (event.target.classList.contains('filter-button')) {
+                document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+                filters.brand = event.target.dataset.filter;
+                applyFilters();
+            }
+        });
+    }
+
+    function checkUrlFilter() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const brandFromUrl = urlParams.get('brand');
+        const categoryFromUrl = urlParams.get('category');
+
+        if (brandFromUrl) {
+            const filterButton = document.querySelector(`.filter-button[data-filter=".${brandFromUrl}"]`);
+            if (filterButton) {
+                document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+                filterButton.classList.add('active');
+                filters.brand = `.${brandFromUrl}`;
+            }
+        }
+
+        if (categoryFromUrl) {
+            const sidebarLink = document.querySelector(`.sidebar-link[data-filter=".${categoryFromUrl}"]`);
+            if (sidebarLink) {
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+                sidebarLink.classList.add('active');
+                filters.category = `.${categoryFromUrl}`;
+            }
+        }
+        
+        if (iso) {
+            applyFilters();
+        }
+    }
+
+    function updateUrlParameter(brandName, categoryName) {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (brandName === '*') {
+          urlParams.delete('brand');
+      } else {
+          urlParams.set('brand', brandName.replace('.', ''));
+      }
+
+      if (categoryName === '*') {
+          urlParams.delete('category');
+      } else {
+          urlParams.set('category', categoryName.replace('.', ''));
+      }
+      
+      const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
+      window.history.replaceState({path: newUrl}, '', newUrl);
+    }
+    
+    async function fetchCatalogos() {
+        try {
+            const catalogosRef = db.collection('catalogo');
+            const snapshot = await catalogosRef.get();
+            catalogosData = [];
+            snapshot.forEach(doc => {
+                catalogosData.push(doc.data());
+            });
+            
+            const brands = [...new Set(catalogosData.map(item => item.marca).filter(Boolean))].sort();
+
+            createFilterButtons(brands);
+
+            displayCatalogos();
+        } catch (error) {
+            console.error("Error fetching documents: ", error);
+        }
+    }
+
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault(); 
+            sidebarLinks.forEach(l => l.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            const categoryValue = event.currentTarget.dataset.filter;
+            filters.category = categoryValue;
+            applyFilters();
+            
+            closeSidebar();
+        });
+    });
+    document.addEventListener('DOMContentLoaded', fetchCatalogos);
+
+    // COMIENZO: LÓGICA DEL BANNER DE CONSENTIMIENTO
+    const consentBanner = document.getElementById('consent-banner');
+    const acceptAllButton = document.getElementById('accept-all-cookies');
+    const openModalButton = document.getElementById('open-consent-modal');
+    const consentModal = document.getElementById('consent-modal');
+    const closeModalButton = document.getElementById('close-modal');
+    const saveConsentButton = document.getElementById('save-consent');
+    const analyticsToggle = document.getElementById('analytics-toggle');
+    const adToggle = document.getElementById('ad-toggle');
+
+    function checkConsent() {
+      const storedConsent = localStorage.getItem('cookie_consent');
+      if (storedConsent) {
+        const consent = JSON.parse(storedConsent);
+        gtag('consent', 'update', {
+          'ad_storage': consent.ad_storage,
+          'analytics_storage': consent.analytics_storage
+        });
+        analyticsToggle.checked = consent.analytics_storage === 'granted';
+        adToggle.checked = consent.ad_storage === 'granted';
+        consentBanner.classList.remove('show');
+      } else {
+        // Muestra el banner si no hay consentimiento guardado
+        setTimeout(() => {
+          consentBanner.classList.add('show');
+        }, 3000);
+      }
+    }
+
+    function handleAcceptAll() {
+      const consent = {
+        analytics_storage: 'granted',
+        ad_storage: 'granted'
+      };
+      gtag('consent', 'update', consent);
+      localStorage.setItem('cookie_consent', JSON.stringify(consent));
+      consentBanner.classList.remove('show');
+      console.log('Consentimiento total aceptado. Google Analytics y publicidad habilitados.');
+    }
+
+    function handleSaveConsent() {
+        const analyticsGranted = analyticsToggle.checked ? 'granted' : 'denied';
+        const adGranted = adToggle.checked ? 'granted' : 'denied';
+
+        const consent = {
+            analytics_storage: analyticsGranted,
+            ad_storage: adGranted
+        };
+
+        gtag('consent', 'update', consent);
+        localStorage.setItem('cookie_consent', JSON.stringify(consent));
+        consentModal.classList.remove('show');
+        consentBanner.classList.remove('show');
+        console.log('Consentimiento guardado. Analytics:', analyticsGranted, 'Publicidad:', adGranted);
+    }
+    
+    function handleOpenModal() {
+        consentBanner.classList.remove('show');
+        consentModal.classList.add('show');
+    }
+
+    function handleCloseModal() {
+        consentModal.classList.remove('show');
+        checkConsent(); // Vuelve a mostrar el banner si no hay consentimiento guardado
+    }
+
+    acceptAllButton.addEventListener('click', handleAcceptAll);
+    openModalButton.addEventListener('click', handleOpenModal);
+    closeModalButton.addEventListener('click', handleCloseModal);
+    saveConsentButton.addEventListener('click', handleSaveConsent);
+
+    document.addEventListener('DOMContentLoaded', checkConsent);
+    // FIN: LÓGICA DEL BANNER DE CONSENTIMIENTO
   </script>
 </body>
 </html>
