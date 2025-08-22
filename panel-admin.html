@@ -119,10 +119,11 @@
     <div id="create-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
       <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-md-surface">
         <div class="flex justify-between items-center pb-3 border-b border-md-outline mb-4">
-          <h3 class="text-2xl font-oswald font-bold text-md-on-background">Crear Enlace de Calificación</h3>
+          <h3 class="text-2xl font-oswald font-bold text-md-on-background" id="modal-title">Crear Enlace de Calificación</h3>
           <button id="close-modal-btn" class="text-md-on-surface-variant hover:text-red-500 text-2xl font-bold">&times;</button>
         </div>
         <form id="create-form" class="space-y-6">
+          <input type="hidden" id="doc-id" name="doc-id" value="">
           <div class="space-y-4">
             <h4 class="text-xl font-bold text-md-primary mb-2">Datos del Cliente</h4>
             <div>
@@ -163,12 +164,12 @@
           </div>
           <div class="flex justify-end space-x-4 mt-6">
             <button type="submit" class="bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-md-primary-container font-bold py-2 px-6 rounded-full transition duration-300">
-              Crear Enlace de Calificación
+              Guardar
             </button>
           </div>
         </form>
         <div id="result-section" class="hidden mt-8 p-6 bg-green-50 rounded-lg border-2 border-green-300 text-center">
-          <h4 class="text-xl font-bold text-green-700 mb-4">¡Enlace Creado con Éxito!</h4>
+          <h4 class="text-xl font-bold text-green-700 mb-4" id="result-title">¡Enlace Creado con Éxito!</h4>
           <p class="text-green-800 mb-4">Copia el siguiente enlace y envíalo a tu cliente para que califique su compra:</p>
           <div class="relative mb-4">
             <input type="text" id="result-link" readonly class="w-full p-3 pr-12 border border-green-400 rounded-lg bg-white text-green-700" />
@@ -208,7 +209,9 @@
     const createModal = document.getElementById('create-modal');
     const createNewLinkBtn = document.getElementById('create-new-link-btn');
     const closeModalBtn = document.getElementById('close-modal-btn');
+    const modalTitle = document.getElementById('modal-title');
     const createForm = document.getElementById('create-form');
+    const docIdInput = document.getElementById('doc-id');
     const productsContainer = document.getElementById('products-container');
     const addProductBtn = document.getElementById('add-product-btn');
     const resultSection = document.getElementById('result-section');
@@ -274,9 +277,10 @@
             const productsList = review.productos.map(p => p.nombre).join(', ');
             const rating = review.calificacion || 'N/A';
             const isAuthorized = review.autorizado || false;
+            const link = `${window.location.origin}/Aliy-s-Store/calificar-servicio.html?id=${review.id}`;
 
             const row = `
-                <tr data-id="${review.id}">
+                <tr data-id="${review.id}" data-link="${link}">
                     <td class="px-6 py-4 whitespace-nowrap">${review.nombreCliente}</td>
                     <td class="px-6 py-4 whitespace-nowrap">${productsList}</td>
                     <td class="px-6 py-4 whitespace-nowrap">${rating}</td>
@@ -284,6 +288,9 @@
                         <input type="checkbox" class="authorized-toggle" ${isAuthorized ? 'checked' : ''} />
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button class="share-btn text-blue-500 hover:text-blue-700 mr-2" title="Compartir enlace">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
                         <button class="edit-btn text-md-secondary hover:text-md-on-secondary-container mr-2" title="Editar">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -317,7 +324,7 @@
             try {
                 await db.collection("compras").doc(docId).delete();
                 alert('Compra eliminada con éxito.');
-                await fetchReviews(); // Recargar la tabla
+                await fetchReviews();
             } catch (error) {
                 console.error("Error al eliminar el documento: ", error);
                 alert('Ocurrió un error al eliminar la compra.');
@@ -325,7 +332,18 @@
         }
     }
 
-    // --- Lógica del formulario de creación de enlace (modal) ---
+    // Función para cargar los datos en el modal para editar
+    function populateFormForEdit(review) {
+        modalTitle.textContent = 'Editar Enlace de Calificación';
+        docIdInput.value = review.id;
+        document.getElementById('client-name').value = review.nombreCliente;
+        productsContainer.innerHTML = '';
+        review.productos.forEach(product => {
+            addProductField(product);
+        });
+    }
+
+    // --- Lógica del formulario de creación/edición (modal) ---
 
     // Función para subir una imagen a Firebase Storage
     async function uploadImage(file) {
@@ -341,21 +359,21 @@
     }
 
     // Función para agregar un nuevo bloque de producto al formulario
-    function addProductField() {
+    function addProductField(product = {}) {
         const productHtml = `
             <div class="product-item p-4 bg-md-surface rounded-lg">
             <div class="flex flex-col md:flex-row md:items-end space-y-4 md:space-y-0 md:space-x-4">
                 <div class="flex-grow">
                 <label class="block font-semibold text-md-on-surface-variant mb-1">Nombre del Producto</label>
-                <input type="text" name="product-name[]" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" placeholder="Ej. Botas de Dama" required />
+                <input type="text" name="product-name[]" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" placeholder="Ej. Botas de Dama" value="${product.nombre || ''}" required />
                 </div>
                 <div>
                 <label class="block font-semibold text-md-on-surface-variant mb-1">ID</label>
-                <input type="text" name="product-id[]" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" placeholder="Ej. 12345" required />
+                <input type="text" name="product-id[]" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" placeholder="Ej. 12345" value="${product.id || ''}" required />
                 </div>
                 <div>
                 <label class="block font-semibold text-md-on-surface-variant mb-1">Marca</label>
-                <input type="text" name="product-brand[]" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" placeholder="Ej. Cklass" required />
+                <input type="text" name="product-brand[]" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" placeholder="Ej. Cklass" value="${product.marca || ''}" required />
                 </div>
                 <div class="w-full md:w-auto">
                 <label class="block font-semibold text-md-on-surface-variant mb-1">Imagen</label>
@@ -380,8 +398,9 @@
         createModal.classList.remove('hidden');
         createForm.classList.remove('hidden');
         resultSection.classList.add('hidden');
+        modalTitle.textContent = 'Crear Enlace de Calificación';
         createForm.reset();
-        // Asegura que solo quede un campo de producto
+        docIdInput.value = '';
         while (productsContainer.querySelectorAll('.product-item').length > 1) {
             productsContainer.lastElementChild.remove();
         }
@@ -393,7 +412,7 @@
     });
 
     // Evento para añadir productos al formulario
-    addProductBtn.addEventListener('click', addProductField);
+    addProductBtn.addEventListener('click', () => addProductField());
 
     // Evento para eliminar productos del formulario
     productsContainer.addEventListener('click', (e) => {
@@ -407,13 +426,13 @@
         }
     });
 
-    // Evento para enviar el formulario de creación de enlace
+    // Evento para enviar el formulario de creación/edición
     createForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        const docId = docIdInput.value;
         const clientName = document.getElementById('client-name').value;
         const productItems = document.querySelectorAll('.product-item');
-
         const products = [];
 
         for (const item of productItems) {
@@ -421,38 +440,43 @@
             const productId = item.querySelector('input[name="product-id[]"]').value;
             const productBrand = item.querySelector('input[name="product-brand[]"]').value;
             const productImageFile = item.querySelector('input[name="product-image[]"]').files[0];
-
-            const imageUrl = await uploadImage(productImageFile);
+            const imageUrl = productImageFile ? await uploadImage(productImageFile) : '';
 
             products.push({
                 nombre: productName,
                 id: productId,
                 marca: productBrand,
-                imagenUrl: imageUrl
+                imagenUrl: imageUrl || null
             });
         }
 
         const newPurchase = {
             nombreCliente: clientName,
             productos: products,
-            calificacionEnviada: false,
-            autorizado: false
         };
 
         try {
-            const docRef = await db.collection("compras").add(newPurchase);
-
-            const currentUrl = window.location.origin;
-            const customerLink = `${currentUrl}/Aliy-s-Store/calificar-servicio.html?id=${docRef.id}`;
+            if (docId) {
+                await db.collection("compras").doc(docId).update(newPurchase);
+                document.getElementById('result-title').textContent = '¡Enlace Actualizado con Éxito!';
+                resultLinkInput.value = `${window.location.origin}/Aliy-s-Store/calificar-servicio.html?id=${docId}`;
+            } else {
+                const docRef = await db.collection("compras").add({
+                    ...newPurchase,
+                    calificacionEnviada: false,
+                    autorizado: false
+                });
+                document.getElementById('result-title').textContent = '¡Enlace Creado con Éxito!';
+                resultLinkInput.value = `${window.location.origin}/Aliy-s-Store/calificar-servicio.html?id=${docRef.id}`;
+            }
 
             createForm.classList.add('hidden');
             resultSection.classList.remove('hidden');
-            resultLinkInput.value = customerLink;
 
-            await fetchReviews(); // Recargar la tabla para ver el nuevo registro
+            await fetchReviews();
         } catch (error) {
-            console.error("Error al añadir el documento: ", error);
-            alert('Ocurrió un error al crear el enlace. Por favor, inténtalo de nuevo.');
+            console.error("Error al guardar el documento: ", error);
+            alert('Ocurrió un error al guardar. Por favor, inténtalo de nuevo.');
         }
     });
 
@@ -467,8 +491,9 @@
     newLinkBtn.addEventListener('click', () => {
         resultSection.classList.add('hidden');
         createForm.classList.remove('hidden');
+        modalTitle.textContent = 'Crear Enlace de Calificación';
         createForm.reset();
-        // Asegura que solo quede un campo de producto
+        docIdInput.value = '';
         while (productsContainer.querySelectorAll('.product-item').length > 1) {
             productsContainer.lastElementChild.remove();
         }
@@ -480,11 +505,23 @@
         if (!row) return;
 
         const docId = row.dataset.id;
+        const review = allReviews.find(r => r.id === docId);
 
         if (e.target.closest('.delete-btn')) {
             deleteReview(docId);
         } else if (e.target.closest('.edit-btn')) {
-            alert('La función de edición está en desarrollo para este panel.');
+            if (review) {
+                populateFormForEdit(review);
+                createModal.classList.remove('hidden');
+            }
+        } else if (e.target.closest('.share-btn')) {
+            const link = row.dataset.link;
+            navigator.clipboard.writeText(link).then(() => {
+                alert('Enlace copiado al portapapeles.');
+            }).catch(err => {
+                console.error('Error al copiar el enlace: ', err);
+                alert('Error al copiar el enlace. Inténtalo de nuevo.');
+            });
         } else if (e.target.classList.contains('authorized-toggle')) {
             toggleAuthorization(docId, e.target.checked);
         }
@@ -505,7 +542,6 @@
                 currentSort.field = field;
                 currentSort.direction = 'asc';
             }
-            // Actualizar íconos de ordenación
             sortBtns.forEach(b => {
                 b.querySelector('i').className = 'fas fa-sort ml-2 text-gray-500';
             });
