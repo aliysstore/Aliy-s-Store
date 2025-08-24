@@ -451,12 +451,18 @@
                 Intentar de nuevo
             </button>
         </div>
-
         <div id="content-container" class="hidden">
           <div id="filter-container" class="mb-8 flex flex-wrap gap-2 justify-center">
           </div>
           <div id="catalog-grid" class="catalog-grid flex-wrap gap-4">
           </div>
+          
+          <div id="no-results-state" class="hidden flex flex-col items-center justify-center min-h-[50vh] text-center">
+            <i class="fas fa-search-minus text-6xl text-md-primary-container mb-6"></i>
+            <p class="text-md-on-surface-variant text-lg">No se encontraron productos que coincidan con tu búsqueda.</p>
+            <p class="text-md-on-surface-variant text-md mt-2">Intenta cambiando los filtros.</p>
+          </div>
+          
         </div>
       </main>
     </div>
@@ -574,6 +580,7 @@
     
     const loadingState = document.getElementById('loading-state');
     const errorState = document.getElementById('error-state');
+    const noResultsState = document.getElementById('no-results-state'); // Nuevo
     const retryButton = document.getElementById('retry-button');
     const contentContainer = document.getElementById('content-container');
 
@@ -647,12 +654,31 @@
         if (iso) {
             iso.arrange({ filter: combinedFilter });
             updateUrlParameter(filters.brand, filters.category);
+
+            // Nuevo: Comprobar si hay elementos visibles después de filtrar
+            const visibleItems = iso.getFilteredItemElements();
+            if (visibleItems.length === 0) {
+                noResultsState.classList.remove('hidden');
+                catalogGrid.classList.add('hidden');
+            } else {
+                noResultsState.classList.add('hidden');
+                catalogGrid.classList.remove('hidden');
+            }
         }
     }
     
     function displayCatalogos() {
         const grid = document.getElementById('catalog-grid');
         grid.innerHTML = '';
+        if (catalogosData.length === 0) {
+            noResultsState.classList.remove('hidden');
+            catalogGrid.classList.add('hidden');
+            return;
+        } else {
+            noResultsState.classList.add('hidden');
+            catalogGrid.classList.remove('hidden');
+        }
+
         catalogosData.forEach(catalogo => {
             const categoryClasses = catalogo.categoria.map(cat => cat.replace(/\s+/g, '-').toLowerCase()).join(' ');
             
@@ -794,6 +820,7 @@
     async function fetchCatalogos() {
         loadingState.classList.remove('hidden');
         errorState.classList.add('hidden');
+        noResultsState.classList.add('hidden'); // Nuevo
         contentContainer.classList.add('hidden');
 
         try {
