@@ -341,19 +341,17 @@
       createUserMessage.className = 'text-center mt-2 text-md-on-surface-variant';
 
       try {
-        const response = await fetch('/api/create-user', { // Reemplaza con la URL de tu Cloud Function
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, password, name, role }),
+        // 1. Crea el usuario en Firebase Authentication (¡No es una buena práctica para administradores!)
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+
+        // 2. Guarda el rol y otros datos en Firestore
+        await db.collection('users').doc(userCredential.user.uid).set({
+            displayName: name,
+            email: email,
+            rol: role,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.message || 'Error al crear el usuario.');
-        }
-
+        
         createUserMessage.textContent = 'Usuario creado con éxito.';
         createUserMessage.className = 'text-center mt-2 text-green-600';
         createUserForm.reset();
@@ -361,7 +359,13 @@
         fetchUsers(); // Actualiza la lista de usuarios
       } catch (error) {
         console.error('Error al crear el usuario:', error);
-        createUserMessage.textContent = error.message || 'Error desconocido al crear el usuario.';
+        let errorMessage = 'Error desconocido al crear el usuario.';
+        if (error.code === 'auth/email-already-in-use') {
+            errorMessage = 'El correo electrónico ya está en uso.';
+        } else if (error.code === 'auth/weak-password') {
+            errorMessage = 'La contraseña debe tener al menos 6 caracteres.';
+        }
+        createUserMessage.textContent = errorMessage;
         createUserMessage.className = 'text-center mt-2 text-red-600';
       }
     });
@@ -372,7 +376,7 @@
         const docRef = db.collection('users').doc(user.uid);
         const doc = await docRef.get();
         if (doc.exists && doc.data().rol === 'admin') {
-          userNameDisplay.textContent = user.displayName || 'Administrador';
+          userNameDisplay.textContent = doc.data().displayName || 'Administrador';
           fetchUsers();
         } else {
           // Si el usuario no es admin, redirige al panel
