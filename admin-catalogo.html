@@ -19,6 +19,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -89,7 +90,13 @@
   </style>
 </head>
 <body class="bg-md-background font-nunito text-md-on-background">
-  <div class="flex flex-col min-h-screen">
+
+  <div id="loading-screen" class="fixed inset-0 bg-md-background z-50 flex flex-col items-center justify-center">
+    <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
+    <p class="mt-4 text-md-on-surface-variant">Verificando tu acceso...</p>
+  </div>
+
+  <div id="main-content" class="hidden min-h-screen flex flex-col">
     <header class="bg-md-surface-variant p-5 flex justify-between items-center">
       <div class="flex items-center space-x-2">
         <span class="md:hidden text-2xl font-oswald font-bold text-md-on-surface-variant">Catálogo</span>
@@ -104,6 +111,9 @@
             <i class="fas fa-link text-lg"></i>
             <span>Enlaces</span>
         </a>
+        <button id="logout-button" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+            Cerrar sesión
+        </button>
       </nav>
     </header>
     
@@ -251,8 +261,11 @@
     const app = firebase.initializeApp(firebaseConfig);
     const db = app.firestore();
     const storage = app.storage();
+    const auth = app.auth();
 
     // Elementos del DOM
+    const loadingScreen = document.getElementById('loading-screen');
+    const mainContent = document.getElementById('main-content');
     const productsTableBody = document.getElementById('products-table-body');
     const noProductsMessage = document.getElementById('no-products-message');
     const addProductBtn = document.getElementById('add-product-btn');
@@ -272,6 +285,7 @@
     const closeBtn = document.querySelector('.close-btn');
     const filterBrandSelect = document.getElementById('filter-brand');
     const sortBySelect = document.getElementById('sort-by');
+    const logoutButton = document.getElementById('logout-button');
     
     // Funciones de utilidad
     function normalizeString(str) {
@@ -291,6 +305,15 @@
     
     productNameInput.addEventListener('input', generateGAEvent);
     productBrandInput.addEventListener('change', generateGAEvent);
+
+    // Lógica para cerrar sesión
+    logoutButton.addEventListener('click', () => {
+      auth.signOut().then(() => {
+        window.location.href = 'login.html';
+      }).catch((error) => {
+        console.error('Error al cerrar sesión:', error);
+      });
+    });
 
     // Función para obtener y mostrar productos con filtros y orden
     async function fetchProducts() {
@@ -517,8 +540,23 @@
         });
     }
 
-    // Carga los productos al iniciar
-    document.addEventListener('DOMContentLoaded', fetchProducts);
+    // Validación de usuario y carga inicial
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const docRef = db.collection('users').doc(user.uid);
+        const doc = await docRef.get();
+        if (doc.exists && doc.data().rol === 'admin') {
+          loadingScreen.classList.add('hidden');
+          mainContent.classList.remove('hidden');
+          fetchProducts();
+        } else {
+          alert('No tienes permisos para acceder a esta página.');
+          window.location.href = 'panel.html';
+        }
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
   </script>
 </body>
 </html>

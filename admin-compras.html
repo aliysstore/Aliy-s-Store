@@ -19,6 +19,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -53,16 +54,26 @@
   </script>
 </head>
 <body class="bg-md-background font-nunito text-md-on-background">
-  <div class="flex flex-col min-h-screen">
+  <div id="loading-screen" class="fixed inset-0 bg-md-background z-50 flex flex-col items-center justify-center">
+    <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
+    <p class="mt-4 text-md-on-surface-variant">Verificando tu acceso...</p>
+  </div>
+  
+  <div id="main-content" class="hidden min-h-screen flex flex-col">
     <header class="bg-md-surface-variant p-5 flex justify-between items-center">
       <div class="flex items-center space-x-2">
         <span class="md:hidden text-2xl font-oswald font-bold text-md-on-surface-variant">Panel Admin</span>
         <span class="hidden md:block text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store | Panel de Administración</span>
       </div>
-      <a href="index.html" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-pink-100 font-bold py-2 px-4 rounded-full transition duration-300 flex items-center space-x-2">
-        <i class="fas fa-home text-lg"></i>
-        <span>Inicio</span>
-      </a>
+      <div class="flex space-x-4">
+        <a href="index.html" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-pink-100 font-bold py-2 px-4 rounded-full transition duration-300 flex items-center space-x-2">
+          <i class="fas fa-home text-lg"></i>
+          <span>Inicio</span>
+        </a>
+        <button id="logout-button" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+          Cerrar sesión
+        </button>
+      </div>
     </header>
     
     <main class="flex-grow p-5 md:p-10">
@@ -204,8 +215,12 @@
     const app = firebase.initializeApp(firebaseConfig);
     const db = app.firestore();
     const storage = app.storage();
+    const auth = app.auth();
 
     // Elementos del DOM
+    const loadingScreen = document.getElementById('loading-screen');
+    const mainContent = document.getElementById('main-content');
+    const logoutButton = document.getElementById('logout-button');
     const createModal = document.getElementById('create-modal');
     const createNewLinkBtn = document.getElementById('create-new-link-btn');
     const closeModalBtn = document.getElementById('close-modal-btn');
@@ -229,6 +244,15 @@
     };
 
     // --- Funciones del Panel de Administración (CRUD) ---
+
+    // Función para cerrar sesión
+    logoutButton.addEventListener('click', () => {
+      auth.signOut().then(() => {
+        window.location.href = 'login.html';
+      }).catch((error) => {
+        console.error('Error al cerrar sesión:', error);
+      });
+    });
 
     // Función para cargar los datos de Firestore
     async function fetchReviews() {
@@ -390,9 +414,6 @@
 
     // --- Event Listeners ---
 
-    // Cargar los datos al iniciar la página
-    document.addEventListener('DOMContentLoaded', fetchReviews);
-
     // Abrir el modal
     createNewLinkBtn.addEventListener('click', () => {
         createModal.classList.remove('hidden');
@@ -550,6 +571,24 @@
             
             renderReviews();
         });
+    });
+
+    // Validación de usuario y carga inicial
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const docRef = db.collection('users').doc(user.uid);
+        const doc = await docRef.get();
+        if (doc.exists && doc.data().rol === 'admin') {
+          loadingScreen.classList.add('hidden');
+          mainContent.classList.remove('hidden');
+          fetchReviews();
+        } else {
+          alert('No tienes permisos para acceder a esta página.');
+          window.location.href = 'panel.html';
+        }
+      } else {
+        window.location.href = 'login.html';
+      }
     });
   </script>
 </body>
