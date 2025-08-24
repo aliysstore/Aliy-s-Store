@@ -14,6 +14,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -75,7 +76,6 @@
 
     <div id="main-content-wrapper" class="hidden w-full flex flex-col items-center justify-center">
       <div id="user-info-container" class="bg-md-surface-container-high p-6 rounded-lg shadow-md max-w-lg w-full text-center mb-8">
-        <img id="user-photo" src="" alt="Foto de perfil del usuario" class="w-20 h-20 rounded-full mx-auto mb-4 hidden">
         <h2 id="welcome-message" class="text-xl font-oswald font-bold text-md-on-surface-variant"></h2>
       </div>
 
@@ -88,7 +88,7 @@
           <i class="fas fa-shopping-cart text-4xl mb-4 text-md-on-surface-variant"></i>
           <span class="text-lg font-bold font-oswald">Administrar compras</span>
         </a>
-        <a href="admin-compras.html" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
+        <a href="admin-usuarios.html" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
           <i class="fas fa-users-cog text-4xl mb-4 text-md-on-surface-variant"></i>
           <span class="text-lg font-bold font-oswald">Administrar usuarios</span>
         </a>
@@ -117,31 +117,43 @@
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.firestore();
 
     const loadingSpinner = document.getElementById('loading-spinner');
     const mainContentWrapper = document.getElementById('main-content-wrapper');
     const userInfoContainer = document.getElementById('user-info-container');
-    const userPhoto = document.getElementById('user-photo');
     const welcomeMessage = document.getElementById('welcome-message');
     const userNameDisplay = document.getElementById('user-name');
     const logoutButton = document.getElementById('logout-button');
 
-    auth.onAuthStateChanged(user => {
-      // Oculta el spinner tan pronto como Firebase termine de verificar
+    auth.onAuthStateChanged(async user => {
+      // Oculta el spinner tan pronto como Firebase termine de verificar la autenticación
       loadingSpinner.classList.add('hidden');
       
       if (user) {
-        // Muestra el contenido principal si el usuario está logueado
-        mainContentWrapper.classList.remove('hidden');
-
-        userInfoContainer.classList.remove('hidden');
-        if (user.photoURL) {
-          userPhoto.src = user.photoURL;
-          userPhoto.classList.remove('hidden');
+        // Si hay un usuario, consulta su documento en Firestore
+        try {
+          const docRef = db.collection('users').doc(user.uid);
+          const doc = await docRef.get();
+          
+          if (doc.exists && doc.data().rol === 'admin') {
+            // Si el usuario existe y es admin, muestra el contenido
+            mainContentWrapper.classList.remove('hidden');
+            userInfoContainer.classList.remove('hidden');
+            const userData = doc.data();
+            welcomeMessage.textContent = `Bienvenido, ${userData.displayName || 'Administrador'}!`;
+            userNameDisplay.textContent = userData.displayName || 'Administrador';
+            console.log('Usuario logueado:', userData.displayName);
+          } else {
+            // Si el usuario no es admin o no tiene documento, redirige a index
+            alert('No tienes permisos para acceder a esta página.');
+            window.location.href = 'index.html';
+          }
+        } catch (error) {
+          console.error('Error al obtener el rol del usuario:', error);
+          alert('Error de acceso. Vuelve a iniciar sesión.');
+          auth.signOut();
         }
-        welcomeMessage.textContent = `Bienvenido, ${user.displayName || 'Administrador'}!`;
-        userNameDisplay.textContent = user.displayName || 'Administrador';
-        console.log('Usuario logueado:', user.displayName);
       } else {
         // Si no hay usuario, redirige al login
         window.location.href = 'login.html'; 
