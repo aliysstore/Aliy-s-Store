@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar sesión | Aliy's Store</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'md-primary': '#FF5277',
+            'md-on-primary': '#FFFFFF',
+            'md-primary-container': '#FFD9E2',
+            'md-on-primary-container': '#660021',
+            'md-secondary': '#5B4F7B',
+            'md-on-secondary': '#FFFFFF',
+            'md-secondary-container': '#E2D9FF',
+            'md-on-secondary-container': '#1C0D37',
+            'md-background': '#FFFBFE',
+            'md-on-background': '#1D1B1F',
+            'md-surface': '#FFFBFE',
+            'md-on-surface': '#1D1B1F',
+            'md-surface-variant': '#F3DDE3',
+            'md-on-surface-variant': '#504147',
+            'md-outline': '#837078',
+            'md-surface-container-high': '#ECE6F0',
+          },
+          fontFamily: {
+            'nunito': ['Nunito', 'sans-serif'],
+            'oswald': ['Oswald', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-md-background font-nunito text-md-on-background flex flex-col min-h-screen">
+  <header class="bg-md-surface-variant p-5 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <h1 class="text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store</h1>
+    </div>
+    <a href="index.html" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-pink-100 font-bold py-2 px-4 rounded-full transition duration-300 flex items-center space-x-2">
+      <i class="fas fa-home text-lg"></i>
+      <span>Inicio</span>
+    </a>
+  </header>
+  
+  <main class="flex-grow flex items-center justify-center p-4 md:p-10">
+    <div class="max-w-md mx-auto bg-md-surface rounded-lg shadow-lg p-6">
+      <h2 class="text-3xl font-oswald font-bold text-md-on-background mb-6 text-center">Iniciar Sesión</h2>
+      
+      <form id="login-form">
+        <div class="mb-4">
+          <label for="email" class="block font-semibold text-md-on-surface-variant mb-2">Correo electrónico</label>
+          <input type="email" id="email" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+        </div>
+        <div class="mb-6">
+          <label for="password" class="block font-semibold text-md-on-surface-variant mb-2">Contraseña</label>
+          <input type="password" id="password" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+        </div>
+        
+        <button type="submit" id="login-button" class="w-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-md-primary-container font-bold py-3 px-6 rounded-full transition duration-300">
+          Iniciar sesión
+        </button>
+      </form>
+
+      <div id="login-error-message" class="mt-4 text-center text-red-500 text-sm hidden">
+        Hubo un error al iniciar sesión. Verifica tu correo y contraseña.
+      </div>
+    </div>
+  </main>
+  
+  <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
+      Aliy's Store &copy; 2024. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    // Configuración de Firebase - Reemplaza con tus datos
+    const firebaseConfig = {
+      apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
+      authDomain: "formiik-dev.firebaseapp.com",
+      projectId: "formiik-dev",
+      storageBucket: "formiik-dev.firebasestorage.app",
+      messagingSenderId: "91782576906",
+      appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const loginForm = document.getElementById('login-form');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const loginErrorMessage = document.getElementById('login-error-message');
+
+    // Manejar el envío del formulario
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      loginErrorMessage.classList.add('hidden');
+
+      const email = emailInput.value;
+      const password = passwordInput.value;
+
+      // Iniciar sesión con correo y contraseña de Firebase
+      auth.signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          console.log('Inicio de sesión exitoso:', userCredential.user);
+          window.location.href = 'panel.html';
+        })
+        .catch((error) => {
+          console.error('Error de inicio de sesión:', error);
+          loginErrorMessage.textContent = 'Hubo un error al iniciar sesión. Verifica tu correo y contraseña.';
+          loginErrorMessage.classList.remove('hidden');
+        });
+    });
+
+    // Redirige automáticamente si el usuario ya está logueado
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        window.location.href = 'panel.html';
+      }
+    });
+  </script>
+</body>
+</html>

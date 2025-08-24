@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de control | Aliy's Store</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'md-primary': '#FF5277',
+            'md-on-primary': '#FFFFFF',
+            'md-primary-container': '#FFD9E2',
+            'md-on-primary-container': '#660021',
+            'md-secondary': '#5B4F7B',
+            'md-on-secondary': '#FFFFFF',
+            'md-secondary-container': '#E2D9FF',
+            'md-on-secondary-container': '#1C0D37',
+            'md-background': '#FFFBFE',
+            'md-on-background': '#1D1B1F',
+            'md-surface': '#FFFBFE',
+            'md-on-surface': '#1D1B1F',
+            'md-surface-variant': '#F3DDE3',
+            'md-on-surface-variant': '#504147',
+            'md-outline': '#837078',
+            'md-surface-container-high': '#ECE6F0',
+          },
+          fontFamily: {
+            'nunito': ['Nunito', 'sans-serif'],
+            'oswald': ['Oswald', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .card-button {
+      transition: all 0.3s ease;
+    }
+    .card-button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body class="bg-md-background font-nunito text-md-on-background min-h-screen flex flex-col">
+  <header class="bg-md-surface-variant p-5 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <h1 class="text-2xl font-oswald font-bold text-md-on-surface-variant">Panel de control</h1>
+    </div>
+    <div class="flex items-center space-x-4">
+      <span id="user-name" class="hidden md:inline text-md-on-surface-variant"></span>
+      <button id="logout-button" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+  
+  <main class="flex-grow p-5 flex flex-col items-center justify-center">
+    <div id="user-info-container" class="bg-md-surface-container-high p-6 rounded-lg shadow-md max-w-lg w-full text-center mb-8 hidden">
+      <img id="user-photo" src="" alt="Foto de perfil del usuario" class="w-20 h-20 rounded-full mx-auto mb-4 hidden">
+      <h2 id="welcome-message" class="text-xl font-oswald font-bold text-md-on-surface-variant"></h2>
+    </div>
+
+    <div id="admin-buttons-grid" class="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <a href="#" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
+        <i class="fas fa-box-open text-4xl mb-4 text-md-on-surface-variant"></i>
+        <span class="text-lg font-bold font-oswald">Administrar catálogo</span>
+      </a>
+      <a href="#" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
+        <i class="fas fa-shopping-cart text-4xl mb-4 text-md-on-surface-variant"></i>
+        <span class="text-lg font-bold font-oswald">Administrar compras</span>
+      </a>
+      <a href="#" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
+        <i class="fas fa-users-cog text-4xl mb-4 text-md-on-surface-variant"></i>
+        <span class="text-lg font-bold font-oswald">Administrar usuarios</span>
+      </a>
+      <a href="#" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
+        <i class="fas fa-chart-line text-4xl mb-4 text-md-on-surface-variant"></i>
+        <span class="text-lg font-bold font-oswald">Ver reportes</span>
+      </a>
+      </div>
+  </main>
+  
+  <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
+    Aliy's Store &copy; 2024. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    // Reemplaza con tus datos de configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
+      authDomain: "formiik-dev.firebaseapp.com",
+      projectId: "formiik-dev",
+      storageBucket: "formiik-dev.firebasestorage.app",
+      messagingSenderId: "91782576906",
+      appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    const userInfoContainer = document.getElementById('user-info-container');
+    const userPhoto = document.getElementById('user-photo');
+    const welcomeMessage = document.getElementById('welcome-message');
+    const userNameDisplay = document.getElementById('user-name');
+    const logoutButton = document.getElementById('logout-button');
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        userInfoContainer.classList.remove('hidden');
+        if (user.photoURL) {
+          userPhoto.src = user.photoURL;
+          userPhoto.classList.remove('hidden');
+        }
+        welcomeMessage.textContent = `Bienvenido, ${user.displayName || 'Administrador'}!`;
+        userNameDisplay.textContent = user.displayName || 'Administrador';
+        console.log('Usuario logueado:', user.displayName);
+      } else {
+        window.location.href = 'login.html'; 
+      }
+    });
+
+    logoutButton.addEventListener('click', () => {
+      auth.signOut().then(() => {
+        window.location.href = 'login.html';
+      }).catch((error) => {
+        console.error('Error al cerrar sesión:', error);
+        alert('Hubo un problema al cerrar la sesión. Intenta de nuevo.');
+      });
+    });
+  </script>
+</body>
+</html>

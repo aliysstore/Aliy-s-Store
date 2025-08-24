@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administrar Usuarios | Panel de control</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'md-primary': '#FF5277',
+            'md-on-primary': '#FFFFFF',
+            'md-primary-container': '#FFD9E2',
+            'md-on-primary-container': '#660021',
+            'md-secondary': '#5B4F7B',
+            'md-on-secondary': '#FFFFFF',
+            'md-secondary-container': '#E2D9FF',
+            'md-on-secondary-container': '#1C0D37',
+            'md-background': '#FFFBFE',
+            'md-on-background': '#1D1B1F',
+            'md-surface': '#FFFBFE',
+            'md-on-surface': '#1D1B1F',
+            'md-surface-variant': '#F3DDE3',
+            'md-on-surface-variant': '#504147',
+            'md-outline': '#837078',
+            'md-surface-container-high': '#ECE6F0',
+          },
+          fontFamily: {
+            'nunito': ['Nunito', 'sans-serif'],
+            'oswald': ['Oswald', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Estilos para el modal */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+        padding-top: 60px;
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+    }
+    .close-btn {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .close-btn:hover,
+    .close-btn:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+  </style>
+</head>
+<body class="bg-md-background font-nunito text-md-on-background min-h-screen flex flex-col">
+  <header class="bg-md-surface-variant p-5 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <a href="panel.html" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+        <i class="fas fa-arrow-left"></i>
+        <span class="ml-2 hidden md:inline">Volver al panel</span>
+      </a>
+      <h1 class="text-2xl font-oswald font-bold text-md-on-surface-variant ml-4">Administrar Usuarios</h1>
+    </div>
+    <div class="flex items-center space-x-4">
+      <span id="user-name" class="hidden md:inline text-md-on-surface-variant"></span>
+      <button id="logout-button" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+  
+  <main class="flex-grow p-5 md:p-10">
+    <div class="max-w-4xl mx-auto">
+      <div class="mb-6 flex flex-col sm:flex-row items-center justify-between">
+        <h2 class="text-xl font-bold font-oswald text-md-on-surface-variant mb-4 sm:mb-0">Lista de usuarios registrados</h2>
+        <div class="flex items-center space-x-2 w-full sm:w-auto">
+          <input type="text" id="user-search" placeholder="Buscar por nombre o correo" class="w-full sm:w-64 p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+        </div>
+      </div>
+      
+      <div class="w-full flex justify-end mb-4">
+        <button id="add-user-button" class="bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+          <i class="fas fa-plus mr-2"></i>Crear nuevo usuario
+        </button>
+      </div>
+
+      <div id="loading-spinner" class="text-center p-8">
+        <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
+        <p class="mt-2 text-md-on-surface-variant">Cargando usuarios...</p>
+      </div>
+
+      <div id="users-list" class="bg-md-surface rounded-lg shadow-lg overflow-x-auto">
+        <table class="min-w-full divide-y divide-md-surface-variant">
+          <thead class="bg-md-surface-container-high">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                Nombre
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                Correo
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                Rol
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody id="users-table-body" class="bg-md-surface divide-y divide-md-surface-variant">
+            </tbody>
+        </table>
+      </div>
+      
+      <div id="no-users-message" class="hidden text-center p-8 text-md-on-surface-variant">
+        <p>No se encontraron usuarios.</p>
+      </div>
+    </div>
+
+    <div id="create-user-modal" class="modal">
+      <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2 class="text-2xl font-oswald font-bold mb-4">Crear nuevo usuario</h2>
+        <form id="create-user-form" class="space-y-4">
+          <div>
+            <label for="new-user-name" class="block font-semibold text-md-on-surface-variant mb-2">Nombre:</label>
+            <input type="text" id="new-user-name" required class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+          </div>
+          <div>
+            <label for="new-user-email" class="block font-semibold text-md-on-surface-variant mb-2">Correo electrónico:</label>
+            <input type="email" id="new-user-email" required class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+          </div>
+          <div>
+            <label for="new-user-password" class="block font-semibold text-md-on-surface-variant mb-2">Contraseña:</label>
+            <input type="password" id="new-user-password" required minlength="6" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+          </div>
+          <div>
+            <label for="new-user-role" class="block font-semibold text-md-on-surface-variant mb-2">Rol:</label>
+            <select id="new-user-role" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+              <option value="cliente">Cliente</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+          <div id="create-user-message" class="text-center mt-2"></div>
+          <button type="submit" class="w-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+            Crear Usuario
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+  
+  <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
+    Aliy's Store &copy; 2024. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    // Configuración de Firebase - Reemplaza con tus datos
+    const firebaseConfig = {
+      apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
+      authDomain: "formiik-dev.firebaseapp.com",
+      projectId: "formiik-dev",
+      storageBucket: "formiik-dev.firebasestorage.app",
+      messagingSenderId: "91782576906",
+      appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const usersTableBody = document.getElementById('users-table-body');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const noUsersMessage = document.getElementById('no-users-message');
+    const logoutButton = document.getElementById('logout-button');
+    const userNameDisplay = document.getElementById('user-name');
+    const userSearchInput = document.getElementById('user-search');
+
+    // Elementos del modal de creación de usuario
+    const addUserButton = document.getElementById('add-user-button');
+    const createUserModal = document.getElementById('create-user-modal');
+    const closeBtn = document.querySelector('.modal .close-btn');
+    const createUserForm = document.getElementById('create-user-form');
+    const newUserEmailInput = document.getElementById('new-user-email');
+    const newUserPasswordInput = document.getElementById('new-user-password');
+    const newUserNameInput = document.getElementById('new-user-name');
+    const newUserRoleInput = document.getElementById('new-user-role');
+    const createUserMessage = document.getElementById('create-user-message');
+
+
+    // Lógica para cerrar sesión
+    logoutButton.addEventListener('click', () => {
+      auth.signOut().then(() => {
+        window.location.href = 'login.html';
+      }).catch((error) => {
+        console.error('Error al cerrar sesión:', error);
+      });
+    });
+
+    // Función para renderizar la tabla de usuarios
+    function renderUsers(users) {
+      usersTableBody.innerHTML = '';
+      if (users.length === 0) {
+        noUsersMessage.classList.remove('hidden');
+        return;
+      }
+      noUsersMessage.classList.add('hidden');
+
+      users.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-md-on-surface">
+            ${user.displayName || 'N/A'}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-md-on-surface">
+            ${user.email || 'N/A'}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-md-on-surface">
+            ${user.rol || 'Cliente'}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <button class="bg-md-secondary text-md-on-secondary hover:bg-md-secondary-container hover:text-md-on-secondary-container font-bold py-1 px-3 rounded-full transition duration-300 action-button" data-uid="${user.uid}" data-action="toggle-admin">
+              ${user.rol === 'admin' ? 'Degradar' : 'Hacer admin'}
+            </button>
+            <button class="bg-red-500 text-white hover:bg-red-600 font-bold py-1 px-3 rounded-full transition duration-300 action-button ml-2" data-uid="${user.uid}" data-action="delete">
+              Eliminar
+            </button>
+          </td>
+        `;
+        usersTableBody.appendChild(row);
+      });
+    }
+
+    // Lógica de búsqueda
+    userSearchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const filteredUsers = allUsers.filter(user => 
+        (user.displayName && user.displayName.toLowerCase().includes(searchTerm)) ||
+        (user.email && user.email.toLowerCase().includes(searchTerm))
+      );
+      renderUsers(filteredUsers);
+    });
+
+    let allUsers = [];
+
+    // Cargar usuarios al cargar la página
+    async function fetchUsers() {
+      loadingSpinner.classList.remove('hidden');
+      try {
+        const usersRef = db.collection('users');
+        const snapshot = await usersRef.get();
+        allUsers = snapshot.docs.map(doc => ({ uid: doc.id, ...doc.data() }));
+        renderUsers(allUsers);
+      } catch (error) {
+        console.error("Error al cargar los usuarios:", error);
+        noUsersMessage.textContent = 'Hubo un error al cargar la lista de usuarios.';
+        noUsersMessage.classList.remove('hidden');
+      } finally {
+        loadingSpinner.classList.add('hidden');
+      }
+    }
+
+    // Manejar el clic en los botones de acción
+    usersTableBody.addEventListener('click', async (e) => {
+      const button = e.target.closest('.action-button');
+      if (!button) return;
+
+      const uid = button.dataset.uid;
+      const action = button.dataset.action;
+
+      if (action === 'toggle-admin') {
+        const userToUpdate = allUsers.find(user => user.uid === uid);
+        const newRole = userToUpdate.rol === 'admin' ? 'cliente' : 'admin';
+        await db.collection('users').doc(uid).update({ rol: newRole });
+        fetchUsers();
+      } else if (action === 'delete') {
+        if (confirm('¿Estás seguro de que quieres eliminar a este usuario? Esta acción es irreversible.')) {
+            await db.collection('users').doc(uid).delete();
+            fetchUsers();
+        }
+      }
+    });
+
+    // Lógica del modal de creación de usuario
+    addUserButton.addEventListener('click', () => {
+      createUserModal.style.display = 'block';
+    });
+
+    closeBtn.addEventListener('click', () => {
+      createUserModal.style.display = 'none';
+      createUserForm.reset();
+      createUserMessage.textContent = '';
+    });
+    
+    // Cierra el modal si se hace clic fuera de él
+    window.addEventListener('click', (e) => {
+        if (e.target == createUserModal) {
+            createUserModal.style.display = 'none';
+        }
+    });
+
+    createUserForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = newUserNameInput.value;
+      const email = newUserEmailInput.value;
+      const password = newUserPasswordInput.value;
+      const role = newUserRoleInput.value;
+
+      createUserMessage.textContent = 'Creando usuario...';
+      createUserMessage.className = 'text-center mt-2 text-md-on-surface-variant';
+
+      try {
+        const response = await fetch('/api/create-user', { // Reemplaza con la URL de tu Cloud Function
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password, name, role }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'Error al crear el usuario.');
+        }
+
+        createUserMessage.textContent = 'Usuario creado con éxito.';
+        createUserMessage.className = 'text-center mt-2 text-green-600';
+        createUserForm.reset();
+        createUserModal.style.display = 'none';
+        fetchUsers(); // Actualiza la lista de usuarios
+      } catch (error) {
+        console.error('Error al crear el usuario:', error);
+        createUserMessage.textContent = error.message || 'Error desconocido al crear el usuario.';
+        createUserMessage.className = 'text-center mt-2 text-red-600';
+      }
+    });
+
+    // Autenticación y autorización
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const docRef = db.collection('users').doc(user.uid);
+        const doc = await docRef.get();
+        if (doc.exists && doc.data().rol === 'admin') {
+          userNameDisplay.textContent = user.displayName || 'Administrador';
+          fetchUsers();
+        } else {
+          // Si el usuario no es admin, redirige al panel
+          alert('No tienes permisos para acceder a esta página.');
+          window.location.href = 'panel.html';
+        }
+      } else {
+        // No hay usuario, redirige al login
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
+</body>
+</html>
