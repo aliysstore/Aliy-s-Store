@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 | Aliy's Store</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'md-primary': '#FF5277',
+            'md-on-primary': '#FFFFFF',
+            'md-primary-container': '#FFD9E2',
+            'md-on-primary-container': '#660021',
+            'md-secondary': '#5B4F7B',
+            'md-on-secondary': '#FFFFFF',
+            'md-secondary-container': '#E2D9FF',
+            'md-on-secondary-container': '#1C0D37',
+            'md-background': '#FFFBFE',
+            'md-on-background': '#1D1B1F',
+            'md-surface': '#FFFBFE',
+            'md-on-surface': '#1D1B1F',
+            'md-surface-variant': '#F3DDE3',
+            'md-on-surface-variant': '#504147',
+            'md-outline': '#837078',
+            'md-surface-container-high': '#ECE6F0',
+          },
+          fontFamily: {
+            'nunito': ['Nunito', 'sans-serif'],
+            'oswald': ['Oswald', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-md-background font-nunito text-md-on-background">
+  <div class="flex flex-col min-h-screen">
+    <header class="bg-md-surface-variant p-5 flex justify-between items-center">
+      <div class="md:hidden">
+        <button id="menu-button" class="text-md-on-surface-variant">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span class="md:hidden text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store</span>
+        <span class="hidden md:block text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store | Venta por catálogo</span>
+      </div>
+      <a href="https://wa.me/5212285722185" id="whatsapp-contact-button" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-pink-100 font-bold py-2 px-4 rounded-full transition duration-300 flex items-center space-x-2">
+        <i class="fab fa-whatsapp text-lg"></i>
+        <span>Contacto</span>
+      </a>
+    </header>
+
+    <main class="flex-grow flex flex-col items-center justify-center p-5 text-center">
+      <i class="fas fa-search-location text-8xl text-md-primary-container mb-6"></i>
+      <h1 class="text-6xl md:text-8xl font-oswald font-bold text-md-on-background mb-4">404</h1>
+      <h2 class="text-3xl font-oswald text-md-on-surface-variant mb-2">Página no encontrada</h2>
+      <p class="text-lg text-md-on-surface-variant mb-6">Lo sentimos, la página que buscas no existe o ha sido movida.</p>
+      <a href="/" class="bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-3 px-8 rounded-full transition duration-300">
+        Ir a la página de inicio
+      </a>
+    </main>
+
+    <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
+      Aliy's Store &copy; 2024. Todos los derechos reservados.
+    </footer>
+  </div>
+</body>
+</html>
