@@ -61,7 +61,6 @@
       <h1 class="text-2xl font-oswald font-bold text-md-on-surface-variant">Panel de control</h1>
     </div>
     <div class="flex items-center space-x-4">
-      <span id="user-name" class="hidden md:inline text-md-on-surface-variant"></span>
       <button id="logout-button" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
         Cerrar sesión
       </button>
@@ -119,7 +118,7 @@
     const mainContentWrapper = document.getElementById('main-content-wrapper');
     const userInfoContainer = document.getElementById('user-info-container');
     const welcomeMessage = document.getElementById('welcome-message');
-    const userNameDisplay = document.getElementById('user-name');
+    //const userNameDisplay = document.getElementById('user-name');
     const logoutButton = document.getElementById('logout-button');
 
     auth.onAuthStateChanged(async user => {
@@ -138,7 +137,7 @@
             userInfoContainer.classList.remove('hidden');
             const userData = doc.data();
             welcomeMessage.textContent = `Bienvenido, ${userData.displayName || 'Administrador'}!`;
-            userNameDisplay.textContent = userData.displayName || 'Administrador';
+            //userNameDisplay.textContent = userData.displayName || 'Administrador';
             console.log('Usuario logueado:', userData.displayName);
           } else {
             // Si el usuario no es admin o no tiene documento, redirige a index

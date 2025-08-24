@@ -99,11 +99,12 @@
         <h1 class="text-2xl font-oswald font-bold text-md-on-surface-variant ml-4">Administrar Usuarios</h1>
       </div>
       <div class="flex items-center space-x-4">
-        <span id="user-name" class="hidden md:inline text-md-on-surface-variant"></span>
-        <button id="logout-button" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
-          Cerrar sesión
-        </button>
+          <button id="logout-button" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+            <i class="fas fa-sign-out-alt"></i> 
+            <span class="hidden md:inline ml-2">Cerrar sesión</span>
+          </button>
       </div>
+
     </header>
     
     <main class="flex-grow p-5 md:p-10">
@@ -213,7 +214,6 @@
     const loadingSpinner = document.getElementById('loading-spinner');
     const noUsersMessage = document.getElementById('no-users-message');
     const logoutButton = document.getElementById('logout-button');
-    const userNameDisplay = document.getElementById('user-name');
     const userSearchInput = document.getElementById('user-search');
 
     // Elementos del modal de creación de usuario
@@ -231,7 +231,7 @@
     // Lógica para cerrar sesión
     logoutButton.addEventListener('click', () => {
       auth.signOut().then(() => {
-        window.location.href = 'login.html';
+        window.location.replace('login.html');
       }).catch((error) => {
         console.error('Error al cerrar sesión:', error);
       });
@@ -384,7 +384,6 @@
         const doc = await docRef.get();
         if (doc.exists && doc.data().rol === 'admin') {
           // El usuario es admin, mostrar el contenido
-          userNameDisplay.textContent = doc.data().displayName || 'Administrador';
           loadingScreen.classList.add('hidden');
           mainContent.classList.remove('hidden');
           fetchUsers();
