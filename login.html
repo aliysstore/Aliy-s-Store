@@ -129,7 +129,7 @@
     // Redirige automáticamente si el usuario ya está logueado
     auth.onAuthStateChanged(user => {
       if (user) {
-        window.location.href = 'panel.html';
+        window.location.replace('panel.html');
       }
     });
   </script>
