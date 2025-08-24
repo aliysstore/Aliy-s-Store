@@ -68,29 +68,36 @@
   </header>
   
   <main class="flex-grow p-5 flex flex-col items-center justify-center">
-    <div id="user-info-container" class="bg-md-surface-container-high p-6 rounded-lg shadow-md max-w-lg w-full text-center mb-8 hidden">
-      <img id="user-photo" src="" alt="Foto de perfil del usuario" class="w-20 h-20 rounded-full mx-auto mb-4 hidden">
-      <h2 id="welcome-message" class="text-xl font-oswald font-bold text-md-on-surface-variant"></h2>
+    <div id="loading-spinner" class="flex flex-col items-center justify-center p-8">
+      <i class="fas fa-spinner fa-spin text-5xl text-md-primary"></i>
+      <p class="mt-4 text-lg text-md-on-surface-variant">Cargando...</p>
     </div>
 
-    <div id="admin-buttons-grid" class="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <a href="#" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
-        <i class="fas fa-box-open text-4xl mb-4 text-md-on-surface-variant"></i>
-        <span class="text-lg font-bold font-oswald">Administrar catálogo</span>
-      </a>
-      <a href="#" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
-        <i class="fas fa-shopping-cart text-4xl mb-4 text-md-on-surface-variant"></i>
-        <span class="text-lg font-bold font-oswald">Administrar compras</span>
-      </a>
-      <a href="#" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
-        <i class="fas fa-users-cog text-4xl mb-4 text-md-on-surface-variant"></i>
-        <span class="text-lg font-bold font-oswald">Administrar usuarios</span>
-      </a>
-      <a href="#" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
-        <i class="fas fa-chart-line text-4xl mb-4 text-md-on-surface-variant"></i>
-        <span class="text-lg font-bold font-oswald">Ver reportes</span>
-      </a>
+    <div id="main-content-wrapper" class="hidden w-full flex flex-col items-center justify-center">
+      <div id="user-info-container" class="bg-md-surface-container-high p-6 rounded-lg shadow-md max-w-lg w-full text-center mb-8">
+        <img id="user-photo" src="" alt="Foto de perfil del usuario" class="w-20 h-20 rounded-full mx-auto mb-4 hidden">
+        <h2 id="welcome-message" class="text-xl font-oswald font-bold text-md-on-surface-variant"></h2>
       </div>
+
+      <div id="admin-buttons-grid" class="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <a href="admin-catalogo.html" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
+          <i class="fas fa-box-open text-4xl mb-4 text-md-on-surface-variant"></i>
+          <span class="text-lg font-bold font-oswald">Administrar catálogo</span>
+        </a>
+        <a href="admin-compras.html" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
+          <i class="fas fa-shopping-cart text-4xl mb-4 text-md-on-surface-variant"></i>
+          <span class="text-lg font-bold font-oswald">Administrar compras</span>
+        </a>
+        <a href="admin-compras.html" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
+          <i class="fas fa-users-cog text-4xl mb-4 text-md-on-surface-variant"></i>
+          <span class="text-lg font-bold font-oswald">Administrar usuarios</span>
+        </a>
+        <a href="#" class="card-button flex flex-col items-center justify-center bg-md-surface p-6 rounded-lg shadow-md text-md-on-surface-variant hover:bg-md-primary-container">
+          <i class="fas fa-chart-line text-4xl mb-4 text-md-on-surface-variant"></i>
+          <span class="text-lg font-bold font-oswald">Ver reportes</span>
+        </a>
+      </div>
+    </div>
   </main>
   
   <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
@@ -111,6 +118,8 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const mainContentWrapper = document.getElementById('main-content-wrapper');
     const userInfoContainer = document.getElementById('user-info-container');
     const userPhoto = document.getElementById('user-photo');
     const welcomeMessage = document.getElementById('welcome-message');
@@ -118,7 +127,13 @@
     const logoutButton = document.getElementById('logout-button');
 
     auth.onAuthStateChanged(user => {
+      // Oculta el spinner tan pronto como Firebase termine de verificar
+      loadingSpinner.classList.add('hidden');
+      
       if (user) {
+        // Muestra el contenido principal si el usuario está logueado
+        mainContentWrapper.classList.remove('hidden');
+
         userInfoContainer.classList.remove('hidden');
         if (user.photoURL) {
           userPhoto.src = user.photoURL;
@@ -128,6 +143,7 @@
         userNameDisplay.textContent = user.displayName || 'Administrador';
         console.log('Usuario logueado:', user.displayName);
       } else {
+        // Si no hay usuario, redirige al login
         window.location.href = 'login.html'; 
       }
     });
