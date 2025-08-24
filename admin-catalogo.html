@@ -8,7 +8,7 @@
   <meta property="og:url" content="https://aliysstore.github.io/Aliy-s-Store/admin-catalogo" />
   <meta property="og:type" content="website" />
     
-  <title>Aliy's Store | Panel de Catálogo</title>
+  <title>Administrar Catálogos | Panel de control</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,12 +16,12 @@
   <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  
-  <script src="https://cdn.tailwindcss.com"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -89,13 +89,13 @@
     }
   </style>
 </head>
-<body class="bg-md-background font-nunito text-md-on-background">
+<body class="bg-md-background font-nunito text-md-on-background min-h-screen flex flex-col">
 
   <div id="loading-screen" class="fixed inset-0 bg-md-background z-50 flex flex-col items-center justify-center">
     <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
     <p class="mt-4 text-md-on-surface-variant">Verificando tu acceso...</p>
   </div>
-
+  
   <div id="main-content" class="hidden min-h-screen flex flex-col">
     <header class="bg-md-surface-variant p-5 flex justify-between items-center">
       <div class="flex items-center space-x-2">
@@ -114,128 +114,131 @@
     </header>
     
     <main class="flex-grow p-5 md:p-10">
-      <div class="max-w-7xl mx-auto bg-md-surface rounded-lg shadow-lg p-6">
-        <h1 class="text-3xl font-oswald font-bold text-md-on-background mb-6 text-center">Gestión de Catálogo</h1>
-        
-        <div class="flex flex-wrap justify-between items-center mb-4 space-y-4 md:space-y-0">
-          <button id="add-product-btn" class="w-full md:w-auto bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
-            <i class="fas fa-plus mr-2"></i>Añadir Nuevo Producto
-          </button>
-          
-          <div class="flex items-center space-x-4 w-full md:w-auto">
-              <div class="flex-1">
-                  <label for="filter-brand" class="sr-only">Filtrar por Marca</label>
-                  <select id="filter-brand" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300">
-                      <option value="">Todas las marcas</option>
-                      <option value="Andrea">Andrea</option>
-                      <option value="Cklass">Cklass</option>
-                      <option value="Price Shoes">Price Shoes</option>
-                  </select>
-              </div>
-              <div class="flex-1">
-                  <label for="sort-by" class="sr-only">Ordenar por</label>
-                  <select id="sort-by" class="w-full p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300">
-                      <option value="nombre">Nombre (A-Z)</option>
-                      <option value="marca">Marca</option>
-                      <option value="prioridad">Prioridad (asc.)</option>
-                  </select>
-              </div>
+      <div class="max-w-4xl mx-auto">
+        <div class="mb-6 flex flex-col sm:flex-row items-center justify-between">
+          <h2 class="text-xl font-bold font-oswald text-md-on-surface-variant mb-4 sm:mb-0">Lista de catálogos registrados</h2>
+          <div class="flex items-center space-x-2 w-full sm:w-auto">
+            <input type="text" id="catalog-search" placeholder="Buscar por nombre o marca" class="w-full sm:w-64 p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+            
+            <select id="filter-brand" class="hidden sm:inline-block w-40 p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+              <option value="">Todas</option>
+              <option value="Andrea">Andrea</option>
+              <option value="Cklass">Cklass</option>
+              <option value="Price Shoes">Price Shoes</option>
+            </select>
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="min-w-full bg-white rounded-lg shadow-lg">
-            <thead>
-              <tr class="bg-md-surface-variant text-md-on-surface-variant text-left">
-                <th class="py-3 px-4">Imagen</th>
-                <th class="py-3 px-4">Nombre</th>
-                <th class="py-3 px-4">Marca</th>
-                <th class="py-3 px-4">Prioridad</th>
-                <th class="py-3 px-4">Acciones</th>
+        <div class="w-full flex justify-end mb-4">
+          <button id="add-product-btn" class="bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+            <i class="fas fa-plus mr-2"></i>Añadir nuevo catálogo
+          </button>
+        </div>
+
+        <div id="loading-spinner" class="text-center p-8">
+          <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
+          <p class="mt-2 text-md-on-surface-variant">Cargando catálogos...</p>
+        </div>
+
+        <div id="catalogs-list" class="bg-md-surface rounded-lg shadow-lg overflow-x-auto">
+          <table class="min-w-full divide-y divide-md-surface-variant">
+            <thead class="bg-md-surface-container-high">
+              <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                  Imagen
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                  Nombre
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                  Marca
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">
+                  Acciones
+                </th>
               </tr>
             </thead>
-            <tbody id="products-table-body">
+            <tbody id="products-table-body" class="bg-md-surface divide-y divide-md-surface-variant">
               </tbody>
           </table>
         </div>
         
-        <div id="no-products-message" class="text-center text-md-on-surface-variant mt-8 hidden">
-            <p class="text-lg">No hay productos en el catálogo. ¡Añade el primero!</p>
+        <div id="no-products-message" class="hidden text-center p-8 text-md-on-surface-variant">
+          <p>No se encontraron catálogos.</p>
         </div>
+      </div>
 
+      <div id="product-modal" class="modal">
+        <div class="modal-content">
+          <span class="close-btn">&times;</span>
+          <h2 id="modal-title" class="text-2xl font-oswald font-bold mb-4">Añadir Nuevo Producto</h2>
+          <form id="product-form" class="space-y-4">
+              <input type="hidden" id="product-id" />
+              
+              <div>
+                <label for="product-name" class="block font-semibold text-md-on-surface-variant mb-2">Nombre del Producto:</label>
+                <input type="text" id="product-name" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" required />
+              </div>
+  
+              <div>
+                <label for="product-brand" class="block font-semibold text-md-on-surface-variant mb-2">Marca:</label>
+                <select id="product-brand" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" required>
+                    <option value="">Selecciona una marca</option>
+                    <option value="Andrea">Andrea</option>
+                    <option value="Cklass">Cklass</option>
+                    <option value="Price Shoes">Price Shoes</option>
+                </select>
+              </div>
+              
+              <div>
+                  <label for="product-priority" class="block font-semibold text-md-on-surface-variant mb-2">Prioridad:</label>
+                  <input type="number" id="product-priority" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" value="0" />
+              </div>
+  
+              <div>
+                  <label for="ga-event" class="block font-semibold text-md-on-surface-variant mb-2">Evento GA:</label>
+                  <input type="text" id="ga-event" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" readonly />
+              </div>
+              
+              <div>
+                  <label for="product-url" class="block font-semibold text-md-on-surface-variant mb-2">URL del Producto:</label>
+                  <input type="url" id="product-url" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" required />
+              </div>
+  
+              <div>
+                  <label for="product-category" class="block font-semibold text-md-on-surface-variant mb-2">Categoría (Selecciona una o más):</label>
+                  <select id="product-category" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" multiple>
+                      <optgroup label="Calzado">
+                          <option value="calzado">Calzado</option>
+                          <option value="dama">Dama</option>
+                          <option value="caballeros">Caballeros</option>
+                          <option value="niños">Niños</option>
+                          <option value="outlet">Outlet</option>
+                      </optgroup>
+                      <option value="ropa">Ropa</option>
+                      <option value="accesorios">Accesorios</option>
+                      <option value="hogar">Hogar</option>
+                      <option value="belleza-y-fragancias">Belleza y fragancias</option>
+                      <option value="catalogos-especiales">Catálogos especiales</option>
+                  </select>
+              </div>
+              
+              <div>
+                <label for="product-image" class="block font-semibold text-md-on-surface-variant mb-2">Imagen del Producto:</label>
+                <input type="file" id="product-image" accept="image/*" class="w-full text-sm text-md-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-md-primary-container file:text-md-on-primary-container hover:file:bg-md-primary-container" />
+                <div id="current-image-preview" class="mt-2 hidden">
+                    <p class="text-sm text-gray-500">Imagen actual:</p>
+                    <img id="image-preview" src="" alt="Vista previa" class="w-24 h-24 object-cover rounded-lg mt-1" />
+                </div>
+              </div>
+  
+              <button type="submit" class="w-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+                Guardar Catálogo
+              </button>
+          </form>
+        </div>
       </div>
     </main>
-
-    <div id="product-modal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn">&times;</span>
-        <h2 id="modal-title" class="text-2xl font-oswald font-bold mb-4">Añadir Nuevo Producto</h2>
-        <form id="product-form" class="space-y-4">
-            <input type="hidden" id="product-id" />
-            
-            <div>
-              <label for="product-name" class="block font-semibold text-md-on-surface-variant mb-2">Nombre del Producto:</label>
-              <input type="text" id="product-name" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" required />
-            </div>
-
-            <div>
-              <label for="product-brand" class="block font-semibold text-md-on-surface-variant mb-2">Marca:</label>
-              <select id="product-brand" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" required>
-                  <option value="">Selecciona una marca</option>
-                  <option value="Andrea">Andrea</option>
-                  <option value="Cklass">Cklass</option>
-                  <option value="Price Shoes">Price Shoes</option>
-              </select>
-            </div>
-            
-            <div>
-                <label for="product-priority" class="block font-semibold text-md-on-surface-variant mb-2">Prioridad:</label>
-                <input type="number" id="product-priority" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" value="0" />
-            </div>
-
-            <div>
-                <label for="ga-event" class="block font-semibold text-md-on-surface-variant mb-2">Evento GA:</label>
-                <input type="text" id="ga-event" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" readonly />
-            </div>
-            
-            <div>
-                <label for="product-url" class="block font-semibold text-md-on-surface-variant mb-2">URL del Producto:</label>
-                <input type="url" id="product-url" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" required />
-            </div>
-
-            <div>
-                <label for="product-category" class="block font-semibold text-md-on-surface-variant mb-2">Categoría (Selecciona una o más):</label>
-                <select id="product-category" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary" multiple>
-                    <optgroup label="Calzado">
-                        <option value="calzado">Calzado</option>
-                        <option value="dama">Dama</option>
-                        <option value="caballeros">Caballeros</option>
-                        <option value="niños">Niños</option>
-                        <option value="outlet">Outlet</option>
-                    </optgroup>
-                    <option value="ropa">Ropa</option>
-                    <option value="accesorios">Accesorios</option>
-                    <option value="hogar">Hogar</option>
-                    <option value="belleza-y-fragancias">Belleza y fragancias</option>
-                    <option value="catalogos-especiales">Catálogos especiales</option>
-                </select>
-            </div>
-            
-            <div>
-              <label for="product-image" class="block font-semibold text-md-on-surface-variant mb-2">Imagen del Producto:</label>
-              <input type="file" id="product-image" accept="image/*" class="w-full text-sm text-md-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-md-primary-container file:text-md-on-primary-container hover:file:bg-md-primary-container" />
-              <div id="current-image-preview" class="mt-2 hidden">
-                  <p class="text-sm text-gray-500">Imagen actual:</p>
-                  <img id="image-preview" src="" alt="Vista previa" class="w-24 h-24 object-cover rounded-lg mt-1" />
-              </div>
-            </div>
-
-            <button type="submit" class="w-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
-              Guardar Producto
-            </button>
-        </form>
-      </div>
-    </div>
     
     <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
       Aliy's Store &copy; 2024. Todos los derechos reservados.
@@ -263,6 +266,7 @@
     const loadingScreen = document.getElementById('loading-screen');
     const mainContent = document.getElementById('main-content');
     const productsTableBody = document.getElementById('products-table-body');
+    const loadingSpinner = document.getElementById('loading-spinner');
     const noProductsMessage = document.getElementById('no-products-message');
     const addProductBtn = document.getElementById('add-product-btn');
     const productModal = document.getElementById('product-modal');
@@ -280,9 +284,11 @@
     const imagePreview = document.getElementById('image-preview');
     const closeBtn = document.querySelector('.close-btn');
     const filterBrandSelect = document.getElementById('filter-brand');
-    const sortBySelect = document.getElementById('sort-by');
+    const catalogSearchInput = document.getElementById('catalog-search');
     const logoutButton = document.getElementById('logout-button');
     
+    let allProducts = [];
+
     // Funciones de utilidad
     function normalizeString(str) {
       if (!str) return '';
@@ -311,70 +317,81 @@
       });
     });
 
-    // Función para obtener y mostrar productos con filtros y orden
+    // Función para renderizar la tabla de productos
+    function renderProducts(products) {
+      productsTableBody.innerHTML = '';
+      if (products.length === 0) {
+        noProductsMessage.classList.remove('hidden');
+        return;
+      }
+      noProductsMessage.classList.add('hidden');
+
+      products.forEach(product => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-md-on-surface">
+              <img src="${product.imagen}" alt="${product.nombre}" class="w-16 h-16 object-cover rounded-md" />
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-md-on-surface">
+            ${product.nombre || 'N/A'}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-md-on-surface">
+            ${product.marca || 'N/A'}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <button onclick="shareProduct('${product.evento_ga}')" class="bg-blue-500 text-white hover:bg-blue-600 font-bold py-1 px-3 rounded-full transition duration-300 action-button" title="Compartir">
+              <i class="fas fa-share-alt"></i>
+            </button>
+            <button onclick="editProduct('${product.id}')" class="bg-md-secondary text-md-on-secondary hover:bg-md-secondary-container hover:text-md-on-secondary-container font-bold py-1 px-3 rounded-full transition duration-300 action-button" title="Editar">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button onclick="deleteProduct('${product.id}', '${product.imagen}')" class="bg-red-500 text-white hover:bg-red-600 font-bold py-1 px-3 rounded-full transition duration-300 action-button ml-2" title="Eliminar">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </td>
+        `;
+        productsTableBody.appendChild(row);
+      });
+    }
+
+    // Lógica de búsqueda y filtros
+    catalogSearchInput.addEventListener('input', applyFiltersAndSort);
+    filterBrandSelect.addEventListener('change', applyFiltersAndSort);
+
+    function applyFiltersAndSort() {
+        const searchTerm = catalogSearchInput.value.toLowerCase();
+        const brandFilter = filterBrandSelect.value;
+        const filteredProducts = allProducts.filter(product => {
+            const matchesSearch = (product.nombre && product.nombre.toLowerCase().includes(searchTerm)) ||
+                                (product.marca && product.marca.toLowerCase().includes(searchTerm));
+            const matchesBrand = !brandFilter || (product.marca && product.marca === brandFilter);
+            return matchesSearch && matchesBrand;
+        });
+        renderProducts(filteredProducts);
+    }
+    
+    // Función para obtener y mostrar productos
     async function fetchProducts() {
+        loadingSpinner.classList.remove('hidden');
         productsTableBody.innerHTML = '';
         noProductsMessage.classList.add('hidden');
         
-        let query = db.collection("catalogo");
-        const brandFilter = filterBrandSelect.value;
-        const sortOrder = sortBySelect.value;
-        
-        if (brandFilter) {
-            query = query.where("marca", "==", brandFilter);
-        }
-        
         try {
-            const snapshot = await query.get();
-            let products = [];
-            if (!snapshot.empty) {
-                snapshot.forEach(doc => {
-                    products.push({ id: doc.id, ...doc.data() });
-                });
-            }
-
-            // Ordenamiento en el lado del cliente
-            if (sortOrder === "nombre") {
-                products.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
-            } else if (sortOrder === "marca") {
-                products.sort((a, b) => (a.marca || '').localeCompare(b.marca || ''));
-            } else if (sortOrder === "prioridad") {
-                products.sort((a, b) => (a.prioridad || 0) - (b.prioridad || 0));
-            }
-
-            // Mostrar los productos ordenados
-            if (products.length > 0) {
-                products.forEach(product => {
-                    const row = `
-                        <tr class="border-t border-md-outline hover:bg-md-surface-container-high transition-colors">
-                            <td class="py-3 px-4"><img src="${product.imagen}" alt="${product.nombre}" class="w-16 h-16 object-cover rounded-md" /></td>
-                            <td class="py-3 px-4">${product.nombre}</td>
-                            <td class="py-3 px-4">${product.marca}</td>
-                            <td class="py-3 px-4">${product.prioridad || 0}</td>
-                            <td class="py-3 px-4 flex items-center space-x-2 align-middle">
-                                <button onclick="shareProduct('${product.evento_ga}')" class="text-green-600 hover:text-green-800 transition-colors" title="Compartir"><i class="fas fa-share-alt"></i></button>
-                                <button onclick="editProduct('${product.id}')" class="text-blue-600 hover:text-blue-800 transition-colors" title="Editar"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteProduct('${product.id}', '${product.imagen}')" class="text-red-600 hover:text-red-800 transition-colors" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                    productsTableBody.insertAdjacentHTML('beforeend', row);
-                });
-            } else {
-                noProductsMessage.classList.remove('hidden');
-            }
+            const snapshot = await db.collection("catalogo").orderBy("nombre").get();
+            allProducts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            applyFiltersAndSort();
         } catch (error) {
             console.error("Error al obtener los productos: ", error);
+            noProductsMessage.textContent = 'Hubo un error al cargar la lista de catálogos.';
+            noProductsMessage.classList.remove('hidden');
+        } finally {
+            loadingSpinner.classList.add('hidden');
         }
     }
 
-    // Eventos para filtrar y ordenar
-    filterBrandSelect.addEventListener('change', fetchProducts);
-    sortBySelect.addEventListener('change', fetchProducts);
-
     // Función para abrir el modal en modo 'Añadir'
     addProductBtn.addEventListener('click', () => {
-        modalTitle.textContent = 'Añadir Nuevo Producto';
+        modalTitle.textContent = 'Añadir Nuevo Catálogo';
         productForm.reset();
         productIdInput.value = '';
         currentImagePreview.classList.add('hidden');
@@ -390,7 +407,7 @@
             const doc = await docRef.get();
             if (doc.exists) {
                 const product = doc.data();
-                modalTitle.textContent = 'Editar Producto';
+                modalTitle.textContent = 'Editar Catálogo';
                 productIdInput.value = doc.id;
                 productNameInput.value = product.nombre;
                 productBrandInput.value = product.marca;
@@ -410,10 +427,10 @@
                 productImageInput.required = false; 
                 productModal.style.display = 'block';
             } else {
-                alert("El producto no existe.");
+                alert("El catálogo no existe.");
             }
         } catch (error) {
-            console.error("Error al obtener el producto para editar: ", error);
+            console.error("Error al obtener el catálogo para editar: ", error);
         }
     }
 
@@ -463,6 +480,10 @@
 
       let imageUrl = imagePreview.src; 
 
+      const submitButton = e.target.querySelector('button[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Guardando...';
+
       // Obtener categorías seleccionadas
       const selectedCategories = Array.from(productCategorySelect.options)
                                       .filter(option => option.selected)
@@ -486,24 +507,27 @@
         if (docId) {
             // Modo Editar
             await db.collection("catalogo").doc(docId).update(productData);
-            alert('Producto actualizado con éxito!');
+            alert('Catálogo actualizado con éxito!');
         } else {
             // Modo Añadir
             await db.collection("catalogo").add(productData);
-            alert('Producto añadido con éxito!');
+            alert('Catálogo añadido con éxito!');
         }
         
         productModal.style.display = 'none';
         fetchProducts(); // Refresca la tabla
       } catch (error) {
-        console.error("Error al guardar el producto: ", error);
-        alert('Ocurrió un error al guardar el producto.');
+        console.error("Error al guardar el catálogo: ", error);
+        alert('Ocurrió un error al guardar el catálogo.');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Guardar Catálogo';
       }
     });
 
     // Función para eliminar un producto
     async function deleteProduct(docId, imageUrl) {
-      if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+      if (confirm('¿Estás seguro de que quieres eliminar este catálogo?')) {
         try {
           await db.collection("catalogo").doc(docId).delete();
           if (imageUrl) {
@@ -514,11 +538,11 @@
               console.error("Error al eliminar la imagen: ", error);
             }
           }
-          alert('Producto eliminado con éxito!');
+          alert('Catálogo eliminado con éxito!');
           fetchProducts(); // Refresca la tabla
         } catch (error) {
-          console.error("Error al eliminar el producto: ", error);
-          alert('Ocurrió un error al eliminar el producto.');
+          console.error("Error al eliminar el catálogo: ", error);
+          alert('Ocurrió un error al eliminar el catálogo.');
         }
       }
     }
