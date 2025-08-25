@@ -314,18 +314,6 @@
     .consent-option input:checked + .slider:before {
         transform: translateX(26px);
     }
-    .loading-spinner {
-        border: 4px solid rgba(0, 0, 0, 0.1);
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        border-left-color: #FF5277;
-        animation: spin 1s ease infinite;
-    }
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
     /* Estilos para el modal de catálogo */
     .catalog-modal {
         position: fixed;
@@ -440,7 +428,7 @@
       </aside>
       <main class="flex-grow bg-md-background p-5">
         <div id="loading-state" class="flex flex-col items-center justify-center min-h-[50vh]">
-          <div class="loading-spinner"></div>
+          <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
           <p class="mt-4 text-md-on-surface-variant text-lg">Cargando catálogo...</p>
         </div>
 
