@@ -358,6 +358,50 @@
         border-radius: 8px;
         margin-bottom: 1rem;
     }
+    
+    /* Nuevos estilos para el carrusel de marcas */
+    .brands-container {
+      width: 100%;
+      overflow: hidden;
+      margin-top: 3rem;
+      margin-bottom: 3rem;
+    }
+    .brands-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      color: #1D1B1F;
+    }
+    .brands-wrapper {
+      display: flex;
+      animation: scroll 60s linear infinite;
+      width: fit-content;
+    }
+    .brands-wrapper:hover {
+        animation-play-state: paused;
+    }
+    .brand-image {
+      flex-shrink: 0;
+      width: 120px;
+      height: auto;
+      margin-right: 2rem;
+      filter: grayscale(100%);
+      opacity: 0.6;
+      transition: filter 0.3s ease, opacity 0.3s ease;
+    }
+    .brand-image:hover {
+        filter: grayscale(0%);
+        opacity: 1;
+    }
+    @keyframes scroll {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
   </style>
 </head>
 <body class="bg-md-background font-nunito text-md-on-background">
@@ -457,6 +501,11 @@
           <div id="catalog-grid" class="catalog-grid flex-wrap gap-4">
           </div>
           
+          <div id="brands-scroll" class="brands-container hidden">
+            <h2 class="brands-title font-oswald">Elige entre más de 200 marcas</h2>
+            <div id="brands-wrapper" class="brands-wrapper">
+              </div>
+          </div>
           <div id="no-results-state" class="hidden flex flex-col items-center justify-center min-h-[50vh] text-center">
             <i class="fas fa-search-minus text-6xl text-md-primary-container mb-6"></i>
             <p class="text-md-on-surface-variant text-lg">No se encontraron productos que coincidan con tu búsqueda.</p>
@@ -580,9 +629,10 @@
     
     const loadingState = document.getElementById('loading-state');
     const errorState = document.getElementById('error-state');
-    const noResultsState = document.getElementById('no-results-state'); // Nuevo
+    const noResultsState = document.getElementById('no-results-state');
     const retryButton = document.getElementById('retry-button');
     const contentContainer = document.getElementById('content-container');
+    const brandsScroll = document.getElementById('brands-scroll'); // Nuevo
 
     // Elementos del nuevo modal de catálogo
     const catalogModal = document.getElementById('catalog-modal');
@@ -603,6 +653,22 @@
         brand: '*',
         category: '*'
     };
+
+    // Nueva variable para las imágenes del carrusel de marcas
+    const marcasImages = [
+      'https://via.placeholder.com/120x60/808080/FFFFFF?text=Andrea',
+      'https://via.placeholder.com/120x60/808080/FFFFFF?text=Price+Shoes',
+      'https://via.placeholder.com/120x60/808080/FFFFFF?text=Terra',
+      'https://via.placeholder.com/120x60/808080/FFFFFF?text=Flexi',
+      'https://via.placeholder.com/120x60/808080/FFFFFF?text=Cklass',
+      'https://via.placeholder.com/120x60/808080/FFFFFF?text=Avon',
+      'https://via.placeholder.com/120x60/808080/FFFFFF?text=Mary+Kay',
+      'https://via.placeholder.com/120x60/808080/FFFFFF?text=Impuls',
+      'https://via.placeholder.com/120x60/808080/FFFFFF?text=Foly',
+      'https://via.placeholder.com/120x60/808080/FFFFFF?text=Jafra'
+    ];
+
+
     function closeSidebar() {
         sidebar.classList.add('-translate-x-full');
         sidebarOverlay.classList.add('hidden');
@@ -643,19 +709,22 @@
         let combinedFilter;
         if (filters.brand === '*' && filters.category === '*') {
             combinedFilter = '*';
+            brandsScroll.classList.remove('hidden'); // Muestra el carrusel en "Todo"
         } else if (filters.brand === '*') {
             combinedFilter = filters.category;
+            brandsScroll.classList.add('hidden'); // Oculta el carrusel en sub-categorías
         } else if (filters.category === '*') {
             combinedFilter = filters.brand;
+            brandsScroll.classList.add('hidden'); // Oculta el carrusel cuando se filtra por marca
         } else {
             combinedFilter = filters.brand + filters.category;
+            brandsScroll.classList.add('hidden'); // Oculta el carrusel si hay múltiples filtros
         }
 
         if (iso) {
             iso.arrange({ filter: combinedFilter });
             updateUrlParameter(filters.brand, filters.category);
 
-            // Nuevo: Comprobar si hay elementos visibles después de filtrar
             const visibleItems = iso.getFilteredItemElements();
             if (visibleItems.length === 0) {
                 noResultsState.classList.remove('hidden');
@@ -820,8 +889,9 @@
     async function fetchCatalogos() {
         loadingState.classList.remove('hidden');
         errorState.classList.add('hidden');
-        noResultsState.classList.add('hidden'); // Nuevo
+        noResultsState.classList.add('hidden');
         contentContainer.classList.add('hidden');
+        brandsScroll.classList.add('hidden');
 
         try {
             const catalogosRef = db.collection('catalogo');
@@ -838,8 +908,8 @@
 
             loadingState.classList.add('hidden');
             contentContainer.classList.remove('hidden');
+            brandsScroll.classList.remove('hidden');
             
-            // Llama a la nueva función después de cargar los datos
             checkUrlCatalog();
 
         } catch (error) {
@@ -847,6 +917,39 @@
             loadingState.classList.add('hidden');
             errorState.classList.remove('hidden');
         }
+    }
+
+    // Nueva función para crear el carrusel de marcas
+    function createInfiniteScroll() {
+      const brandsWrapper = document.getElementById('brands-wrapper');
+      
+      // Duplicar las imágenes para el efecto de scroll infinito
+      const imagesToDisplay = [
+          'img/brands/Adidas.svg', 
+          'img/brands/Belinda.svg', 
+          'img/brands/charly.svg', 
+          'img/brands/converse.svg',
+          'img/brands/CAT.svg', 
+          'img/brands/DC.svg', 
+          'img/brands/Fila.svg', 
+          'img/brands/FLEXI.svg', 
+          'img/brands/goodyear.svg', 
+          'img/brands/hummer.svg', 
+          'img/brands/Jansport.svg', 
+          'img/brands/Jeep.svg', 
+          'img/brands/Kswiss.svg', 
+          'img/brands/lacoste.svg', 
+          'img/brands/levis.svg', 
+          'img/brands/lotto.svg'
+      ]; 
+
+      imagesToDisplay.forEach(url => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = 'Logo de marca';
+        img.className = 'brand-image';
+        brandsWrapper.appendChild(img);
+      });
     }
 
     function checkUrlCatalog() {
@@ -909,7 +1012,10 @@
     closeNotFoundModal.addEventListener('click', hideNotFoundModal);
     closeNotFoundButton.addEventListener('click', hideNotFoundModal);
 
-    document.addEventListener('DOMContentLoaded', fetchCatalogos);
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchCatalogos();
+        createInfiniteScroll();
+    });
 
     const consentBanner = document.getElementById('consent-banner');
     const acceptAllButton = document.getElementById('accept-all-cookies');
