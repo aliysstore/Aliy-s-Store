@@ -88,7 +88,10 @@
     }
     .catalog-item.isotope-hidden {
       opacity: 0;
-      transform: scale(0.001);
+      transform: scale(0.001) translateY(50px);
+    }
+    #catalog-grid {
+      visibility: hidden;
     }
     @media (min-width: 640px) {
        .catalog-item {
@@ -427,19 +430,22 @@
         </nav>
       </aside>
       <main class="flex-grow bg-md-background p-5">
-        <div id="loading-state" class="flex flex-col items-center justify-center min-h-[50vh]">
-          <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
-          <p class="mt-4 text-md-on-surface-variant text-lg">Cargando catálogo...</p>
-        </div>
+        <section id="status-messages">
+          <div id="loading-state" class="flex flex-col items-center justify-center min-h-[50vh]">
+            <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
+            <p class="mt-4 text-md-on-surface-variant text-lg">Cargando catálogo...</p>
+          </div>
+  
+          <div id="error-state" class="hidden flex flex-col items-center justify-center min-h-[50vh] text-center">
+              <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+              <p class="text-md-on-surface-variant text-lg">No pudimos cargar el catálogo. Por favor, revisa tu conexión a internet.</p>
+              <button id="retry-button" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300">
+                  Intentar de nuevo
+              </button>
+          </div>
+        </section>
 
-        <div id="error-state" class="hidden flex flex-col items-center justify-center min-h-[50vh] text-center">
-            <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
-            <p class="text-md-on-surface-variant text-lg">No pudimos cargar el catálogo. Por favor, revisa tu conexión a internet.</p>
-            <button id="retry-button" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300">
-                Intentar de nuevo
-            </button>
-        </div>
-        <div id="content-container" class="hidden">
+        <section id="catalog-content" class="hidden">
           <div id="filter-container" class="mb-8 flex flex-wrap gap-2 justify-center">
           </div>
           <div id="catalog-grid" class="catalog-grid flex-wrap gap-4">
@@ -450,8 +456,7 @@
             <p class="text-md-on-surface-variant text-lg">No se encontraron productos que coincidan con tu búsqueda.</p>
             <p class="text-md-on-surface-variant text-md mt-2">Intenta cambiando los filtros.</p>
           </div>
-          
-        </div>
+        </section>
       </main>
     </div>
     <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
@@ -568,18 +573,16 @@
     
     const loadingState = document.getElementById('loading-state');
     const errorState = document.getElementById('error-state');
-    const noResultsState = document.getElementById('no-results-state'); // Nuevo
+    const noResultsState = document.getElementById('no-results-state');
     const retryButton = document.getElementById('retry-button');
-    const contentContainer = document.getElementById('content-container');
+    const contentContainer = document.getElementById('catalog-content');
 
-    // Elementos del nuevo modal de catálogo
     const catalogModal = document.getElementById('catalog-modal');
     const closeCatalogModal = document.getElementById('close-catalog-modal');
     const modalImage = document.getElementById('modal-image');
     const modalTitle = document.getElementById('modal-title');
     const modalButton = document.getElementById('modal-button');
 
-    // Elementos del nuevo modal de error
     const notFoundModal = document.getElementById('not-found-modal');
     const closeNotFoundModal = document.getElementById('close-not-found-modal');
     const closeNotFoundButton = document.getElementById('close-not-found-button');
@@ -643,7 +646,6 @@
             iso.arrange({ filter: combinedFilter });
             updateUrlParameter(filters.brand, filters.category);
 
-            // Nuevo: Comprobar si hay elementos visibles después de filtrar
             const visibleItems = iso.getFilteredItemElements();
             if (visibleItems.length === 0) {
                 noResultsState.classList.remove('hidden');
@@ -731,6 +733,8 @@
     
         imagesLoaded(grid).on('progress', function() {
             iso.layout();
+        }).on('done', function() {
+            grid.style.visibility = 'visible';
             checkUrlFilter();
         });
     }
@@ -808,8 +812,9 @@
     async function fetchCatalogos() {
         loadingState.classList.remove('hidden');
         errorState.classList.add('hidden');
-        noResultsState.classList.add('hidden'); // Nuevo
+        noResultsState.classList.add('hidden');
         contentContainer.classList.add('hidden');
+        catalogGrid.style.visibility = 'hidden';
 
         try {
             const catalogosRef = db.collection('catalogo');
@@ -827,7 +832,6 @@
             loadingState.classList.add('hidden');
             contentContainer.classList.remove('hidden');
             
-            // Llama a la nueva función después de cargar los datos
             checkUrlCatalog();
 
         } catch (error) {
@@ -968,7 +972,7 @@
     closeModalButton.addEventListener('click', handleCloseModal);
     saveConsentButton.addEventListener('click', handleSaveConsent);
 
-    document.addEventListener('DOMContentLoaded', checkConsent);
+    document.addEventListener('DOMContentLoaded', fetchCatalogos);
   </script>
 </body>
 </html>
