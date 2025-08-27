@@ -25,7 +25,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Shuffle/6.0.0/shuffle.min.js"></script>
   <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -80,13 +80,15 @@
   <style>
     .catalog-grid {
       position: relative;
+      
     }
     .catalog-item {
-      width: calc(50% - 8px);
-      margin-bottom: 16px;
+      width: calc(50% - 16px);
+      margin: 8px;
       transition: transform 0.4s ease-out, opacity 0.4s ease-out;
     }
-    .catalog-item.isotope-hidden {
+    /* ¡CAMBIO! Clase para elementos ocultos de Shuffle */
+    .catalog-item.hidden {
       opacity: 0;
       transform: scale(0.001) translateY(50px);
     }
@@ -95,22 +97,22 @@
     }
     @media (min-width: 640px) {
        .catalog-item {
-         width: calc(33.333% - 11px);
+         width: calc(33.333% - 16px);
        }
     }
     @media (min-width: 1024px) {
        .catalog-item {
-         width: calc(25% - 12px);
+         width: calc(25% - 16px);
        }
     }
     @media (min-width: 1280px) {
        .catalog-item {
-         width: calc(20% - 13px);
+         width: calc(20% - 16px);
        }
     }
     @media (min-width: 1536px) {
        .catalog-item {
-         width: calc(16.666% - 13px);
+         width: calc(16.666% - 16px);
        }
     }
     .catalog-item .h-full {
@@ -379,49 +381,49 @@
         <nav class="mt-8">
           <ul class="space-y-4">
             <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2 active" data-filter="*">
+              <a href="#" class="sidebar-link block flex items-center space-x-2 active" data-filter="all">
                 <i class="fas fa-th-large"></i>
                 <span>Todo</span>
               </a>
             </li>
             <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".calzado">
+              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="calzado">
                 <i class="fas fa-shoe-prints"></i>
                 <span>Calzado</span>
               </a>
               <ul class="ml-4 mt-2 space-y-2">
-                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".dama"><i class="fas fa-female"></i><span>Dama</span></a></li>
-                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".caballeros"><i class="fas fa-male"></i><span>Caballeros</span></a></li>
-                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".niños"><i class="fas fa-child"></i><span>Niños</span></a></li>
-                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".outlet"><i class="fas fa-tag"></i><span>Outlet</span></a></li>
+                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="dama"><i class="fas fa-female"></i><span>Dama</span></a></li>
+                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="caballeros"><i class="fas fa-male"></i><span>Caballeros</span></a></li>
+                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="niños"><i class="fas fa-child"></i><span>Niños</span></a></li>
+                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="outlet"><i class="fas fa-tag"></i><span>Outlet</span></a></li>
               </ul>
             </li>
             <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".ropa">
+              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="ropa">
                 <i class="fas fa-tshirt"></i>
                 <span>Ropa</span>
               </a>
             </li>
             <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".accesorios">
+              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="accesorios">
                 <i class="fas fa-hat-cowboy"></i>
                 <span>Accesorios</span>
               </a>
             </li>
             <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".hogar">
+              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="hogar">
                 <i class="fas fa-house"></i>
                 <span>Hogar</span>
               </a>
             </li>
             <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".belleza-y-fragancias">
+              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="belleza-y-fragancias">
                 <i class="fas fa-spa"></i>
                 <span>Belleza y fragancias</span>
               </a>
             </li>
             <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter=".catalogos-especiales">
+              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="catalogos-especiales">
                 <i class="fas fa-book-open"></i>
                 <span>Catálogos especiales</span>
               </a>
@@ -429,8 +431,8 @@
           </ul>
         </nav>
       </aside>
-      <main class="flex-grow bg-md-background p-5">
-        <section id="status-messages">
+      <main class="flex-grow bg-md-background">
+        <section id="status-messages" class="p-5">
           <div id="loading-state" class="flex flex-col items-center justify-center min-h-[50vh]">
             <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
             <p class="mt-4 text-md-on-surface-variant text-lg">Cargando catálogo...</p>
@@ -448,7 +450,7 @@
         <section id="catalog-content" class="hidden">
           <div id="filter-container" class="mb-8 flex flex-wrap gap-2 justify-center">
           </div>
-          <div id="catalog-grid" class="catalog-grid flex-wrap gap-4">
+          <div id="catalog-grid" class="catalog-grid flex flex-wrap gap-4">
           </div>
           
           <div id="no-results-state" class="hidden flex flex-col items-center justify-center min-h-[50vh] text-center">
@@ -587,12 +589,12 @@
     const closeNotFoundModal = document.getElementById('close-not-found-modal');
     const closeNotFoundButton = document.getElementById('close-not-found-button');
 
-
     let catalogosData = [];
-    let iso;
+    // ¡CAMBIO! Variable para la instancia de Shuffle
+    let shuffleInstance; 
     let filters = {
-        brand: '*',
-        category: '*'
+        brand: 'all',
+        category: 'all'
     };
     function closeSidebar() {
         sidebar.classList.add('-translate-x-full');
@@ -629,34 +631,64 @@
     whatsappButton.addEventListener('click', (e) => {
       registerWhatsappClickEvent();
     });
-
-    function applyFilters() {
-        let combinedFilter;
-        if (filters.brand === '*' && filters.category === '*') {
-            combinedFilter = '*';
-        } else if (filters.brand === '*') {
-            combinedFilter = filters.category;
-        } else if (filters.category === '*') {
-            combinedFilter = filters.brand;
-        } else {
-            combinedFilter = filters.brand + filters.category;
-        }
-
-        if (iso) {
-            iso.arrange({ filter: combinedFilter });
-            updateUrlParameter(filters.brand, filters.category);
-
-            const visibleItems = iso.getFilteredItemElements();
-            if (visibleItems.length === 0) {
-                noResultsState.classList.remove('hidden');
-                catalogGrid.classList.add('hidden');
-            } else {
-                noResultsState.classList.add('hidden');
-                catalogGrid.classList.remove('hidden');
-            }
-        }
-    }
     
+    // ¡CAMBIO! Lógica de filtros actualizada para Shuffle.js
+    /*function applyFilters() {
+      let combinedFilter;
+      const brandFilter = filters.brand === 'all' ? null : filters.brand;
+      const categoryFilter = filters.category === 'all' ? null : filters.category;
+
+      if (brandFilter && categoryFilter) {
+          combinedFilter = Shuffle.Filtered.and([brandFilter, categoryFilter]);
+      } else if (brandFilter) {
+          combinedFilter = brandFilter;
+      } else if (categoryFilter) {
+          combinedFilter = categoryFilter;
+      } else {
+          combinedFilter = Shuffle.ALL_ITEMS;
+      }
+
+      if (shuffleInstance) {
+        shuffleInstance.filter(combinedFilter);
+        shuffleInstance.layout();
+        updateUrlParameter(filters.brand, filters.category);
+      }
+    }*/
+    
+    function applyFilters() {
+      shuffleInstance.filter((element) => {
+        const brandFilter = filters.brand === 'all' ? null : filters.brand;
+        const categoryFilter = filters.category === 'all' ? null : filters.category;
+        const elementGroups = JSON.parse(element.getAttribute('data-groups'));
+    
+        if (brandFilter && !elementGroups.includes(brandFilter)) {
+          return false;
+        }
+    
+        if (categoryFilter && !elementGroups.includes(categoryFilter)) {
+          return false;
+        }
+    
+        return true;
+      });
+    
+      shuffleInstance.layout();
+      checkEmptyShuffle();
+    } 
+    
+    // ¡CAMBIO! Lógica para manejar resultados vacíos
+    function checkEmptyShuffle() {
+      if (shuffleInstance) {
+        if (shuffleInstance.visibleItems.length === 0) {
+          noResultsState.classList.remove('hidden');
+          catalogGrid.classList.add('hidden');
+        } else {
+          noResultsState.classList.add('hidden');
+          catalogGrid.classList.remove('hidden');
+        }
+      }
+    }
+
     function displayCatalogos() {
         const grid = document.getElementById('catalog-grid');
         grid.innerHTML = '';
@@ -670,12 +702,16 @@
         }
 
         catalogosData.forEach(catalogo => {
-            const categoryClasses = catalogo.categoria.map(cat => cat.replace(/\s+/g, '-').toLowerCase()).join(' ');
-            
+            const categoryClasses = catalogo.categoria.map(cat => cat.replace(/\s+/g, '-').toLowerCase());
+            const brandClass = catalogo.marca.replace(/\s+/g, '-').toLowerCase();
+            const allClasses = [brandClass, ...categoryClasses];
+
             const card = document.createElement('a');
             card.href = catalogo.url;
             card.target = "_blank";
-            card.className = `group rounded-lg shadow-md hover:shadow-lg transition-transform hover:scale-105 duration-300 bg-md-surface flex flex-col overflow-hidden catalog-item ${catalogo.marca.replace(/\s+/g, '-').toLowerCase()} ${categoryClasses}`;
+            // ¡CAMBIO! Las clases de filtro se añaden al atributo data-groups
+            card.className = `group rounded-lg shadow-md hover:shadow-lg transition-transform hover:scale-105 duration-300 bg-md-surface flex flex-col overflow-hidden catalog-item`;
+            card.setAttribute("data-groups", JSON.stringify(allClasses));
             
             if (catalogo.prioridad !== undefined) {
                 card.setAttribute("data-prioridad", catalogo.prioridad);
@@ -709,32 +745,25 @@
             grid.appendChild(card);
         });
     
-        if (iso) {
-            iso.destroy();
+        // ¡CAMBIO! Inicialización de Shuffle
+        if (shuffleInstance) {
+          shuffleInstance.destroy();
         }
 
-        iso = new Isotope(grid, {
-            itemSelector: '.catalog-item',
-            layoutMode: 'masonry',
-            masonry: {
-                columnWidth: '.catalog-item',
-                gutter: 16
-            },
-            getSortData: {
-                prioridad: itemElem => parseInt(itemElem.getAttribute('data-prioridad'), 10) || 9999,
-                name: '.font-oswald'
-            },
-            sortBy: ['prioridad', 'name'],
-            sortAscending: {
-                prioridad: true,
-                name: true
-            }
+        shuffleInstance = new Shuffle(grid, {
+          itemSelector: '.catalog-item',
+          initialSort: {
+            by: 'data-prioridad',
+            reverse: false
+          }
         });
+        
+        // ¡CAMBIO! Evento de Shuffle para manejar el fin de la animación
+        shuffleInstance.on(Shuffle.EventType.LAYOUT, checkEmptyShuffle);
     
-        imagesLoaded(grid).on('progress', function() {
-            iso.layout();
-        }).on('done', function() {
+        imagesLoaded(grid).on('always', function() {
             grid.style.visibility = 'visible';
+            shuffleInstance.layout();
             checkUrlFilter();
         });
     }
@@ -744,13 +773,14 @@
         const allButton = document.createElement('button');
         allButton.textContent = 'Todo';
         allButton.className = 'filter-button active';
-        allButton.dataset.filter = '*';
+        allButton.dataset.filter = 'all';
         filterContainer.appendChild(allButton);
         brands.forEach(brand => {
             const button = document.createElement('button');
             button.textContent = brand;
             button.className = 'filter-button';
-            button.dataset.filter = `.${brand.replace(/\s+/g, '-').toLowerCase()}`;
+            // ¡CAMBIO! El valor del filtro es la clase de CSS, no el selector
+            button.dataset.filter = brand.replace(/\s+/g, '-').toLowerCase(); 
             filterContainer.appendChild(button);
         });
         filterContainer.addEventListener('click', (event) => {
@@ -769,40 +799,40 @@
         const categoryFromUrl = urlParams.get('category');
 
         if (brandFromUrl) {
-            const filterButton = document.querySelector(`.filter-button[data-filter=".${brandFromUrl}"]`);
+            const filterButton = document.querySelector(`.filter-button[data-filter="${brandFromUrl}"]`);
             if (filterButton) {
                 document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
                 filterButton.classList.add('active');
-                filters.brand = `.${brandFromUrl}`;
+                filters.brand = brandFromUrl;
             }
         }
 
         if (categoryFromUrl) {
-            const sidebarLink = document.querySelector(`.sidebar-link[data-filter=".${categoryFromUrl}"]`);
+            const sidebarLink = document.querySelector(`.sidebar-link[data-filter="${categoryFromUrl}"]`);
             if (sidebarLink) {
                 sidebarLinks.forEach(l => l.classList.remove('active'));
                 sidebarLink.classList.add('active');
-                filters.category = `.${categoryFromUrl}`;
+                filters.category = categoryFromUrl;
             }
         }
         
-        if (iso) {
+        if (shuffleInstance) {
             applyFilters();
         }
     }
 
     function updateUrlParameter(brandName, categoryName) {
       const urlParams = new URLSearchParams(window.location.search);
-      if (brandName === '*') {
+      if (brandName === 'all') {
           urlParams.delete('brand');
       } else {
-          urlParams.set('brand', brandName.replace('.', ''));
+          urlParams.set('brand', brandName);
       }
 
-      if (categoryName === '*') {
+      if (categoryName === 'all') {
           urlParams.delete('category');
       } else {
-          urlParams.set('category', categoryName.replace('.', ''));
+          urlParams.set('category', categoryName);
       }
       
       const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
@@ -888,6 +918,7 @@
             sidebarLinks.forEach(l => l.classList.remove('active'));
             event.currentTarget.classList.add('active');
             
+            // ¡CAMBIO! El valor del filtro se toma del data-filter
             const categoryValue = event.currentTarget.dataset.filter;
             filters.category = categoryValue;
             applyFilters();
