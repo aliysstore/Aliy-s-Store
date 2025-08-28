@@ -358,7 +358,7 @@ closeCatalogModal.addEventListener('click', hideCatalogModal);
 closeNotFoundModal.addEventListener('click', hideNotFoundModal);
 closeNotFoundButton.addEventListener('click', hideNotFoundModal);
 
-document.addEventListener('DOMContentLoaded', fetchCatalogos);
+//document.addEventListener('DOMContentLoaded', fetchCatalogos);
 
 const consentBanner = document.getElementById('consent-banner');
 const acceptAllButton = document.getElementById('accept-all-cookies');
@@ -430,7 +430,8 @@ closeModalButton.addEventListener('click', handleCloseModal);
 saveConsentButton.addEventListener('click', handleSaveConsent);
 
 document.addEventListener(
-    'DOMContentLoaded',
-    fetchCatalogos,
-    checkConsent
+    'DOMContentLoaded', () => {
+        fetchCatalogos();
+        checkConsent();
+    }
 );
