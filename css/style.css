@@ -1,0 +1,88 @@
+.catalog-grid {
+  position: relative;
+}
+.catalog-item {
+  width: calc(50% - 16px);
+  margin: 8px;
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+/* ¡CAMBIO! Clase para elementos ocultos de Shuffle */
+.catalog-item.hidden {
+  opacity: 0;
+  transform: scale(0.001) translateY(50px);
+}
+#catalog-grid {
+  visibility: hidden;
+}
+@media (min-width: 640px) {
+   .catalog-item {
+     width: calc(33.333% - 16px);
+   }
+}
+@media (min-width: 1024px) {
+   .catalog-item {
+     width: calc(25% - 16px);
+   }
+}
+@media (min-width: 1280px) {
+   .catalog-item {
+     width: calc(20% - 16px);
+   }
+}
+@media (min-width: 1536px) {
+   .catalog-item {
+     width: calc(16.666% - 16px);
+   }
+}
+.catalog-item .h-full {
+  min-height: 250px;
+}
+.new-ribbon-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    overflow: hidden;
+    width: 100px;
+    height: 100px;
+    z-index: 10;
+}
+.new-ribbon-wrapper span {
+    position: absolute;
+    top: 20px;
+    right: -30px;
+    width: 120px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    padding: 5px 0;
+    background-color: #FF5277;
+    color: #FFFFFF;
+    transform: rotate(45deg);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+.filter-button {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  border: 1px solid #837078;
+  color: #504147;
+}
+.filter-button.active, .filter-button:hover {
+  background-color: #FF5277;
+  border-color: #FF5277;
+  color: #FFFFFF;
+}
+.sidebar-link {
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background-color: transparent;
+  color: #504147;
+  border: 1px solid transparent;
+}
+.sidebar-link.active, .sidebar-link:hover {
+  background-color: #FF5277;
+  color: #FFFFFF;
+}
