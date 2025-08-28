@@ -288,6 +288,7 @@ async function fetchCatalogos() {
         loadingState.classList.add('hidden');
         contentContainer.classList.remove('hidden');
         
+        checkUrlFilter();
         checkUrlCatalog();
 
     } catch (error) {
@@ -358,8 +359,7 @@ closeCatalogModal.addEventListener('click', hideCatalogModal);
 closeNotFoundModal.addEventListener('click', hideNotFoundModal);
 closeNotFoundButton.addEventListener('click', hideNotFoundModal);
 
-//document.addEventListener('DOMContentLoaded', fetchCatalogos);
-
+// Consentimiento de cookies
 const consentBanner = document.getElementById('consent-banner');
 const acceptAllButton = document.getElementById('accept-all-cookies');
 const openModalButton = document.getElementById('open-consent-modal');
