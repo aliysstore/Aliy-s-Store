@@ -215,6 +215,7 @@ function createFilterButtons(brands) {
             event.target.classList.add('active');
             filters.brand = event.target.dataset.filter;
             applyFilters();
+            updateUrlParameter(filters.brand, filters.category);
         }
     });
 }
@@ -349,6 +350,7 @@ sidebarLinks.forEach(link => {
         const categoryValue = event.currentTarget.dataset.filter;
         filters.category = categoryValue;
         applyFilters();
+        updateUrlParameter(filters.brand, filters.category);
         
         closeSidebar();
     });
