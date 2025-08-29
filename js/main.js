@@ -100,36 +100,20 @@ function applyFilters() {
 } 
 
 // ¡CAMBIO! Lógica para manejar resultados vacíos
-/*function checkEmptyShuffle() {
-  if (shuffleInstance) {
-    if (shuffleInstance.visibleItems.length === 0) {
-      noResultsState.classList.remove('hidden');
-      catalogGrid.classList.add('hidden');
-    } else {
-      noResultsState.classList.add('hidden');
-      catalogGrid.classList.remove('hidden');
-    }
-  }
-}*/
 
 function checkEmptyShuffle() {
   if (shuffleInstance) {
-    //const visibleItemsCount = shuffleInstance.visibleItems.length;
     const visibleItemsCount = shuffleInstance.items.filter(item => item.isVisible).length;
-    console.log("Cantidad de elementos visibles:", visibleItemsCount);
-
+    
     if (visibleItemsCount === 0) {
-      console.log("No hay resultados, mostrando 'noResultsState' y ocultando 'catalogGrid'");
       noResultsState.classList.remove('hidden');
       catalogGrid.classList.add('hidden');
     } else {
-      console.log("Hay resultados, mostrando 'catalogGrid' y ocultando 'noResultsState'");
       noResultsState.classList.add('hidden');
       catalogGrid.classList.remove('hidden');
     }
   }
 }
-
 
 function displayCatalogos() {
     const grid = document.getElementById('catalog-grid');
@@ -204,11 +188,9 @@ function displayCatalogos() {
       }
     });
     
-    /*shuffleInstance.on(Shuffle.EventType.LAYOUT, function() {
+    shuffleInstance.on(Shuffle.EventType.LAYOUT, function() {
         checkEmptyShuffle();
-    });*/
-    shuffleInstance.on(Shuffle.EventType.FILTER_END, checkEmptyShuffle);
-shuffleInstance.on(Shuffle.EventType.LAYOUT, checkEmptyShuffle);
+    });
     
     imagesLoaded(grid).on('always', function() {
         grid.style.visibility = 'visible';
