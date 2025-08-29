@@ -34,19 +34,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZW7YPM60FN"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('consent', 'default', {
-      'ad_storage': 'granted',
-      'analytics_storage': 'granted',
-      'wait_for_update': 500
-    });
-    gtag('js', new Date());
-    gtag('config', 'G-ZW7YPM60FN', {
-        'allow_google_signals': true
-    });
-  </script>
+  <script src="js/gtag.js"></script>
 </head>
 <body class="bg-md-background font-nunito text-md-on-background">
   <div class="flex flex-col min-h-screen">
@@ -245,6 +233,18 @@
           </button>
       </div>
   </div>
+  
+  <a href="https://wa.me/5212285722185"
+  id="whatsapp-float"
+   class="whatsapp-float fixed bottom-6 right-6 rounded-full shadow-lg transition-transform duration-300 z-50"
+   target="_blank"
+   aria-label="Contactar por WhatsApp">
+    <img 
+      src="assets/img/whatsapp.svg"
+      class="whatsapp-icon w-12 h-12 text-white"
+      alt="Icono de WhatsApp">
+  </a>
+
 
   <script src="js/main.js"></script>
 </body>

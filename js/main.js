@@ -41,6 +41,7 @@ let filters = {
     brand: 'all',
     category: 'all'
 };
+
 function closeSidebar() {
     sidebar.classList.add('-translate-x-full');
     sidebarOverlay.classList.add('hidden');
@@ -430,6 +431,30 @@ acceptAllButton.addEventListener('click', handleAcceptAll);
 openModalButton.addEventListener('click', handleOpenModal);
 closeModalButton.addEventListener('click', handleCloseModal);
 saveConsentButton.addEventListener('click', handleSaveConsent);
+
+// Código para el botón flotante de WhatsApp
+const whatsappFloatBtn = document.getElementById('whatsapp-float');
+const scrollThreshold = 50;
+
+let lastScrollY = window.scrollY;
+
+if (whatsappFloatBtn) {
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        
+        if (Math.abs(currentScrollY - lastScrollY) < scrollThreshold) {
+            return;
+        }
+
+        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            whatsappFloatBtn.classList.add('hide');
+        } else {
+            whatsappFloatBtn.classList.remove('hide')
+        }
+
+        lastScrollY = currentScrollY;
+    });
+}
 
 document.addEventListener(
     'DOMContentLoaded', () => {

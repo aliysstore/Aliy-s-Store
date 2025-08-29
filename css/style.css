@@ -86,3 +86,28 @@
   background-color: #FF5277;
   color: #FFFFFF;
 }
+
+/* Animación del botón de WhatsApp */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* El contenedor solo maneja el ocultar/mostrar */
+.whatsapp-float {
+  transition: transform 0.3s ease-in-out;
+}
+
+/* El icono tiene la animación de pulso */
+.whatsapp-float .whatsapp-icon {
+  animation: pulse 1.5s infinite;
+}
+
+/* La clase para ocultar el botón */
+.whatsapp-float.hide {
+  transform: translateY(150px);
+}
