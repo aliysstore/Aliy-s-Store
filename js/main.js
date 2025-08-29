@@ -460,6 +460,10 @@ if (whatsappFloatBtn) {
     });
 }
 
+whatsappFloatBtn.addEventListener('click', (e) => {
+  registerWhatsappClickEvent();
+});
+
 document.addEventListener(
     'DOMContentLoaded', () => {
         fetchCatalogos();
