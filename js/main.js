@@ -470,3 +470,15 @@ document.addEventListener(
         checkConsent();
     }
 );
+
+
+// Carrusel de marcas
+const swiper = new Swiper(".mySwiper", {
+    slidesPerView: "auto",
+    spaceBetween: 10,
+    loop: true,
+    autoplay: {
+      delay: 1500,
+      disableOnInteraction: false,
+    }
+});
