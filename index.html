@@ -36,100 +36,42 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZW7YPM60FN"></script>
   <script src="js/gtag.js"></script>
   
-  <!-- Swiper CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
   
-  <!-- Swiper JS -->
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 </head>
 <body class="bg-md-background font-nunito text-md-on-background">
   <div class="flex flex-col min-h-screen">
-    <header class="bg-md-surface-variant p-5 flex justify-between items-center">
-      <div class="md:hidden">
-        <button id="menu-button" class="text-md-on-surface-variant">
-          <i class="fas fa-bars text-xl"></i>
+    <header class="bg-md-surface-variant p-5 flex justify-between items-center z-50">
+    <div id="title-container" class="flex items-center space-x-2">
+        <span class="text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store</span>
+    </div>
+
+    <div id="search-container" class="relative w-full md:max-w-md mx-auto md:flex md:justify-end hidden">
+        <input type="text" id="search-bar" list="filter-suggestions" placeholder="Buscar catálogos..."
+            class="w-full pl-10 pr-4 py-2 rounded-full border border-md-outline bg-md-surface-container-high text-md-on-surface-variant focus:outline-none focus:ring-2 focus:ring-md-primary transition duration-300">
+        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-md-on-surface-variant"></i>
+        <datalist id="filter-suggestions"></datalist>
+        <button id="close-search-button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-md-on-surface-variant md:hidden focus:outline-none">
+            <i class="fas fa-times"></i>
         </button>
-      </div>
-      <div class="flex items-center space-x-2">
-        <span class="md:hidden text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store</span>
-        <span class="hidden md:block text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store | Venta por catálogo</span>
-      </div>
-      <a href="https://wa.me/5212285722185" id="whatsapp-contact-button" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-pink-100 font-bold py-2 px-4 rounded-full transition duration-300 flex items-center space-x-2">
-        <i class="fab fa-whatsapp text-lg"></i>
-        <span>Contacto</span>
-      </a>
-    </header>
-    <div class="flex flex-col md:flex-row flex-grow">
-      <div id="sidebar-overlay" class="fixed inset-0 bg-md-surface/50 hidden z-40 md:hidden"></div>
-      <aside id="sidebar" class="bg-md-surface-variant p-5 flex-shrink-0 z-50 fixed inset-y-0 left-0 w-64 transform -translate-x-full transition-transform duration-300 md:relative md:w-48 md:transform-none md:block">
-        <div class="text-right md:hidden">
-            <button id="close-button" class="text-md-on-surface-variant">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        <nav class="mt-8">
-          <ul class="space-y-4">
-            <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2 active" data-filter="all">
-                <i class="fas fa-th-large"></i>
-                <span>Todo</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="calzado">
-                <i class="fas fa-shoe-prints"></i>
-                <span>Calzado</span>
-              </a>
-              <ul class="ml-4 mt-2 space-y-2">
-                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="dama"><i class="fas fa-female"></i><span>Dama</span></a></li>
-                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="caballeros"><i class="fas fa-male"></i><span>Caballeros</span></a></li>
-                <li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="niños"><i class="fas fa-child"></i><span>Niños</span></a></li>
-                <!--<li><a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="outlet"><i class="fas fa-tag"></i><span>Outlet</span></a></li>-->
-              </ul>
-            </li>
-            <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="ropa">
-                <i class="fas fa-tshirt"></i>
-                <span>Ropa</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="accesorios">
-                <i class="fas fa-hat-cowboy"></i>
-                <span>Accesorios</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="hogar">
-                <i class="fas fa-house"></i>
-                <span>Hogar</span>
-              </a>
-            </li>
-            <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="belleza-y-fragancias">
-                <i class="fas fa-spa"></i>
-                <span>Belleza y fragancias</span>
-              </a>
-            </li>
-            
-            <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="outlet">
-                <i class="fas fa-tag"></i>
-                <span>Outlet</span>
-              </a>
-            </li>
-            
-            <li>
-              <a href="#" class="sidebar-link block flex items-center space-x-2" data-filter="catalogos-especiales">
-                <i class="fas fa-book-open"></i>
-                <span>Catálogos especiales</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-      </aside>
-      <main class="flex-grow bg-md-background">
-        <section id="status-messages" class="p-5">
+    </div>
+
+    <div id="mobile-search-button-container" class="md:hidden">
+        <button id="search-toggle-button"
+            class="inline-flex items-center space-x-2 px-4 py-2 border border-md-outline rounded-full text-md-on-surface-variant focus:outline-none focus:ring-2 focus:ring-md-primary transition-all duration-300">
+            <i class="fas fa-search"></i>
+            <span>Buscar</span>
+        </button>
+    </div>
+</header>
+
+
+
+    
+    
+      <main class="flex-grow bg-md-background p-5">
+        <section id="status-messages">
           <div id="loading-state" class="flex flex-col items-center justify-center min-h-[50vh]">
             <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
             <p class="mt-4 text-md-on-surface-variant text-lg">Cargando catálogo...</p>
@@ -158,91 +100,16 @@
         </section>
         
         <section id="carousel-brands">
-          <h2 class="text-xl font-bold text-md-on-surface mb-0 my-8 pl-5">Encuentra más de 200 marcas</h2>
-          <div class="mb-8 flex flex-wrap gap-2 justify-center">
-            <div class="swiper mySwiper w-[90%] py-4">
-              <div class="swiper-wrapper">
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/Adidas.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/Belinda.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/CAT.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/charly.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/converse.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/DC.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/Fila.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/FLEXI.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/goodyear.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/hummer.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/Jansport.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/Jeep.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/Kswiss.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/lacoste.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/levis.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/lotto.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/Michael_Domit.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/mirage.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/newera.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/Panam.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/perry_ellis.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/pirma.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/Polo.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                <div class="swiper-slide flex items-center justify-center w-24 h-24">
-                  <img src="assets/img/PROKENNEX.svg" alt="Brand 1" class="w-full h-full object-contain" />
-                </div>
-                
-              </div>
+          <h2 class="text-xl font-bold text-md-on-surface mb-2 mt-8">Encuentra más de 200 marcas</h2>
+            <div class="w-full relative">
+            <div class="swiper default-carousel swiper-container">
+              <div class="swiper-wrapper"></div>
             </div>
-          </div>
+            </div>
         </section>
       </main>
-    </div>
-    <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
+    
+    <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant z-50">
       Aliy's Store &copy; 2024. Todos los derechos reservados.
     </footer>
   </div>

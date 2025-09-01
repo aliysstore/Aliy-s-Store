@@ -1,11 +1,12 @@
 const firebaseConfig = {
-  apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
-  authDomain: "formiik-dev.firebaseapp.com",
-  projectId: "formiik-dev",
-  storageBucket: "formiik-dev.firebasestorage.app",
-  messagingSenderId: "91782576906",
-  appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
+    apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
+    authDomain: "formiik-dev.firebaseapp.com",
+    projectId: "formiik-dev",
+    storageBucket: "formiik-dev.firebasestorage.app",
+    messagingSenderId: "91782576906",
+    appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
 };
+
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
@@ -34,9 +35,43 @@ const notFoundModal = document.getElementById('not-found-modal');
 const closeNotFoundModal = document.getElementById('close-not-found-modal');
 const closeNotFoundButton = document.getElementById('close-not-found-button');
 
+const searchBar = document.getElementById('search-bar');
+const filterSuggestions = document.getElementById('filter-suggestions');
+
+// Añade las nuevas variables del DOM
+const titleContainer = document.getElementById('title-container');
+const searchContainer = document.getElementById('search-container');
+const searchToggleButton = document.getElementById('search-toggle-button');
+const closeSearchButton = document.getElementById('close-search-button');
+
+// Lógica para mostrar/ocultar la barra de búsqueda en móvil
+searchToggleButton.addEventListener('click', () => {
+    titleContainer.classList.add('hidden');
+    searchContainer.classList.remove('hidden');
+    searchContainer.classList.add('flex');
+    searchToggleButton.classList.add('hidden');
+});
+
+closeSearchButton.addEventListener('click', () => {
+    searchBar.value = ''; // Borra el texto de la barra de búsqueda
+    handleSearch(); // Llama a la función de búsqueda para limpiar los resultados
+    titleContainer.classList.remove('hidden');
+    searchContainer.classList.add('hidden');
+    searchContainer.classList.remove('flex');
+    searchToggleButton.classList.remove('hidden');
+});
+
+const searchFilters = [
+    "Calzado", "Ropa", "Accesorios", "Hogar", "Belleza y fragancias", "Outlet", "Catálogos especiales", "Dama", "Caballeros", "Niños"
+];
+searchFilters.forEach(filter => {
+    const option = document.createElement('option');
+    option.value = filter;
+    filterSuggestions.appendChild(option);
+});
+
 let catalogosData = [];
-// ¡CAMBIO! Variable para la instancia de Shuffle
-let shuffleInstance; 
+let shuffleInstance;
 let filters = {
     brand: 'all',
     category: 'all'
@@ -47,7 +82,7 @@ function closeSidebar() {
     sidebarOverlay.classList.add('hidden');
 }
 
-menuButton.addEventListener('click', () => {
+/*menuButton.addEventListener('click', () => {
   sidebar.classList.remove('-translate-x-full');
   sidebarOverlay.classList.remove('hidden');
 });
@@ -56,63 +91,81 @@ closeButton.addEventListener('click', () => {
 });
 sidebarOverlay.addEventListener('click', () => {
     closeSidebar();
-});
+});*/
 
 function registerCardClickEvent(eventName, catalogo) {
-  gtag('event', eventName, { 
-    'event_category': 'catalogo',
-    'event_action': 'click_card',
-    'event_label': catalogo.nombre,
-    'brand': catalogo.marca
-  });
+    gtag('event', eventName, {
+        'event_category': 'catalogo',
+        'event_action': 'click_card',
+        'event_label': catalogo.nombre,
+        'brand': catalogo.marca
+    });
 }
 
 function registerWhatsappClickEvent() {
-  gtag('event', 'whatsapp_click', {
-    'event_category': 'contacto',
-    'event_action': 'click_whatsapp'
-  });
+    gtag('event', 'whatsapp_click', {
+        'event_category': 'contacto',
+        'event_action': 'click_whatsapp'
+    });
 }
 
-whatsappButton.addEventListener('click', (e) => {
+/*whatsappButton.addEventListener('click', (e) => {
   registerWhatsappClickEvent();
-});
+});*/
 
 function applyFilters() {
-  shuffleInstance.filter((element) => {
-    const brandFilter = filters.brand === 'all' ? null : filters.brand;
-    const categoryFilter = filters.category === 'all' ? null : filters.category;
-    const elementGroups = JSON.parse(element.getAttribute('data-groups'));
+    shuffleInstance.filter((element) => {
+        const brandFilter = filters.brand === 'all' ? null : filters.brand;
+        const categoryFilter = filters.category === 'all' ? null : filters.category;
+        const elementGroups = JSON.parse(element.getAttribute('data-groups'));
 
-    if (brandFilter && !elementGroups.includes(brandFilter)) {
-      return false;
+        if (brandFilter && !elementGroups.includes(brandFilter)) {
+            return false;
+        }
+
+        if (categoryFilter && !elementGroups.includes(categoryFilter)) {
+            return false;
+        }
+
+        return true;
+    });
+
+    shuffleInstance.layout();
+}
+
+function handleSearch() {
+    const searchTerm = searchBar.value.toLowerCase().trim();
+
+    if (searchTerm === '') {
+        // Si la búsqueda está vacía, aplica los filtros de los botones
+        applyFilters();
+    } else {
+        // Si hay un término de búsqueda, ignora los filtros de los botones y aplica solo la búsqueda
+        shuffleInstance.filter((element) => {
+            const productData = catalogosData.find(d => d.nombre === element.querySelector('h3').textContent);
+            if (!productData) {
+                return false;
+            }
+            const searchString = `${productData.nombre} ${productData.marca} ${productData.categoria.join(' ')}`.toLowerCase();
+            return searchString.includes(searchTerm);
+        });
+        shuffleInstance.layout();
     }
-
-    if (categoryFilter && !elementGroups.includes(categoryFilter)) {
-      return false;
-    }
-
-    return true;
-  });
-
-  shuffleInstance.layout();
-  
-} 
-
-// ¡CAMBIO! Lógica para manejar resultados vacíos
+    
+    checkEmptyShuffle();
+}
 
 function checkEmptyShuffle() {
-  if (shuffleInstance) {
-    const visibleItemsCount = shuffleInstance.items.filter(item => item.isVisible).length;
-    
-    if (visibleItemsCount === 0) {
-      noResultsState.classList.remove('hidden');
-      catalogGrid.classList.add('hidden');
-    } else {
-      noResultsState.classList.add('hidden');
-      catalogGrid.classList.remove('hidden');
+    if (shuffleInstance) {
+        const visibleItemsCount = shuffleInstance.items.filter(item => item.isVisible).length;
+        if (visibleItemsCount === 0) {
+            noResultsState.classList.remove('hidden');
+            catalogGrid.classList.add('hidden');
+        } else {
+            noResultsState.classList.add('hidden');
+            catalogGrid.classList.remove('hidden');
+        }
     }
-  }
 }
 
 function displayCatalogos() {
@@ -135,10 +188,9 @@ function displayCatalogos() {
         const card = document.createElement('a');
         card.href = catalogo.url;
         card.target = "_blank";
-        // ¡CAMBIO! Las clases de filtro se añaden al atributo data-groups
         card.className = 'group rounded-lg shadow-md hover:shadow-lg transition-transform hover:scale-105 duration-300 bg-md-surface flex flex-col overflow-hidden catalog-item';
         card.setAttribute("data-groups", JSON.stringify(allClasses));
-        
+
         if (catalogo.prioridad !== undefined) {
             card.setAttribute("data-prioridad", catalogo.prioridad);
         } else {
@@ -163,7 +215,7 @@ function displayCatalogos() {
         textContainer.className = "p-3 flex-grow text-center flex flex-col items-center";
         const title = document.createElement('h3');
         title.textContent = catalogo.nombre;
-        title.className = "text-md font-bold font-oswald text-md-on-surface"; 
+        title.className = "text-md font-bold font-oswald text-md-on-surface";
         textContainer.appendChild(title);
 
         card.appendChild(imageWrapper);
@@ -171,28 +223,27 @@ function displayCatalogos() {
         grid.appendChild(card);
     });
 
-    // ¡CAMBIO! Inicialización de Shuffle
     if (shuffleInstance) {
-      shuffleInstance.destroy();
+        shuffleInstance.destroy();
     }
 
     shuffleInstance = new Shuffle(grid, {
-      itemSelector: '.catalog-item',
-      initialSort: {
-        by: (element) => {
-          const prioridad = parseInt(element.getAttribute('data-prioridad'));
-          const nombre = element.querySelector('h3').textContent;
-          return `${prioridad.toString().padStart(10, '0')}_${nombre}`;
-        },
-        reverse: false
-      }
+        itemSelector: '.catalog-item',
+        initialSort: {
+            by: (element) => {
+                const prioridad = parseInt(element.getAttribute('data-prioridad'));
+                const nombre = element.querySelector('h3').textContent;
+                return `${prioridad.toString().padStart(10, '0')}_${nombre}`;
+            },
+            reverse: false
+        }
     });
-    
-    shuffleInstance.on(Shuffle.EventType.LAYOUT, function() {
+
+    shuffleInstance.on(Shuffle.EventType.LAYOUT, function () {
         checkEmptyShuffle();
     });
-    
-    imagesLoaded(grid).on('always', function() {
+
+    imagesLoaded(grid).on('always', function () {
         grid.style.visibility = 'visible';
         shuffleInstance.layout();
         checkUrlFilter();
@@ -210,12 +261,14 @@ function createFilterButtons(brands) {
         const button = document.createElement('button');
         button.textContent = brand;
         button.className = 'filter-button';
-        // ¡CAMBIO! El valor del filtro es la clase de CSS, no el selector
-        button.dataset.filter = brand.replace(/\s+/g, '-').toLowerCase(); 
+        button.dataset.filter = brand.replace(/\s+/g, '-').toLowerCase();
         filterContainer.appendChild(button);
     });
+    // Se añade el event listener directamente al contenedor para delegación
     filterContainer.addEventListener('click', (event) => {
         if (event.target.classList.contains('filter-button')) {
+            // Se borra el contenido de la barra de búsqueda al hacer clic en un botón de filtro
+            searchBar.value = '';
             document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
             filters.brand = event.target.dataset.filter;
@@ -247,28 +300,28 @@ function checkUrlFilter() {
             filters.category = categoryFromUrl;
         }
     }
-    
+
     if (shuffleInstance) {
         applyFilters();
     }
 }
 
 function updateUrlParameter(brandName, categoryName) {
-  const urlParams = new URLSearchParams(window.location.search);
-  if (brandName === 'all') {
-      urlParams.delete('brand');
-  } else {
-      urlParams.set('brand', brandName);
-  }
+    const urlParams = new URLSearchParams(window.location.search);
+    if (brandName === 'all') {
+        urlParams.delete('brand');
+    } else {
+        urlParams.set('brand', brandName);
+    }
 
-  if (categoryName === 'all') {
-      urlParams.delete('category');
-  } else {
-      urlParams.set('category', categoryName);
-  }
-  
-  const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
-  window.history.replaceState({path: newUrl}, '', newUrl);
+    if (categoryName === 'all') {
+        urlParams.delete('category');
+    } else {
+        urlParams.set('category', categoryName);
+    }
+
+    const newUrl = `${window.location.origin}${window.location.pathname}?${urlParams.toString()}`;
+    window.history.replaceState({ path: newUrl }, '', newUrl);
 }
 
 async function fetchCatalogos() {
@@ -285,7 +338,7 @@ async function fetchCatalogos() {
         snapshot.forEach(doc => {
             catalogosData.push(doc.data());
         });
-        
+
         const brands = [...new Set(catalogosData.map(item => item.marca).filter(Boolean))].sort();
 
         createFilterButtons(brands);
@@ -293,7 +346,7 @@ async function fetchCatalogos() {
 
         loadingState.classList.add('hidden');
         contentContainer.classList.remove('hidden');
-        
+
         checkUrlFilter();
         checkUrlCatalog();
 
@@ -305,18 +358,18 @@ async function fetchCatalogos() {
 }
 
 function checkUrlCatalog() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const catalogoUrlParam = urlParams.get('catalogo');
+    const urlParams = new URLSearchParams(window.location.search);
+    const catalogoUrlParam = urlParams.get('catalogo');
 
-  if (catalogoUrlParam) {
-    const foundCatalogo = catalogosData.find(c => c.evento_ga === catalogoUrlParam);
+    if (catalogoUrlParam) {
+        const foundCatalogo = catalogosData.find(c => c.evento_ga === catalogoUrlParam);
 
-    if (foundCatalogo) {
-      showCatalogModal(foundCatalogo);
-    } else {
-      showNotFoundModal();
+        if (foundCatalogo) {
+            showCatalogModal(foundCatalogo);
+        } else {
+            showNotFoundModal();
+        }
     }
-  }
 }
 
 function showCatalogModal(catalogo) {
@@ -324,7 +377,7 @@ function showCatalogModal(catalogo) {
     modalImage.alt = `Portada de ${catalogo.nombre}`;
     modalTitle.textContent = catalogo.nombre;
     modalButton.href = catalogo.url;
-    
+
     modalButton.onclick = () => {
         registerCardClickEvent(catalogo.evento_ga, catalogo);
         hideCatalogModal();
@@ -347,16 +400,18 @@ function hideNotFoundModal() {
 
 sidebarLinks.forEach(link => {
     link.addEventListener('click', (event) => {
-        event.preventDefault(); 
+        event.preventDefault();
         sidebarLinks.forEach(l => l.classList.remove('active'));
         event.currentTarget.classList.add('active');
         
-        // ¡CAMBIO! El valor del filtro se toma del data-filter
+        // Se borra el contenido de la barra de búsqueda al hacer clic en un enlace de la barra lateral
+        searchBar.value = '';
+
         const categoryValue = event.currentTarget.dataset.filter;
         filters.category = categoryValue;
         applyFilters();
         updateUrlParameter(filters.brand, filters.category);
-        
+
         closeSidebar();
     });
 });
@@ -366,7 +421,6 @@ closeCatalogModal.addEventListener('click', hideCatalogModal);
 closeNotFoundModal.addEventListener('click', hideNotFoundModal);
 closeNotFoundButton.addEventListener('click', hideNotFoundModal);
 
-// Consentimiento de cookies
 const consentBanner = document.getElementById('consent-banner');
 const acceptAllButton = document.getElementById('accept-all-cookies');
 const openModalButton = document.getElementById('open-consent-modal');
@@ -377,32 +431,32 @@ const analyticsToggle = document.getElementById('analytics-toggle');
 const adToggle = document.getElementById('ad-toggle');
 
 function checkConsent() {
-  const storedConsent = localStorage.getItem('cookie_consent');
-  if (storedConsent) {
-    const consent = JSON.parse(storedConsent);
-    gtag('consent', 'update', {
-      'ad_storage': consent.ad_storage,
-      'analytics_storage': consent.analytics_storage
-    });
-    analyticsToggle.checked = consent.analytics_storage === 'granted';
-    adToggle.checked = consent.ad_storage === 'granted';
-    consentBanner.classList.remove('show');
-  } else {
-    setTimeout(() => {
-      consentBanner.classList.add('show');
-    }, 3000);
-  }
+    const storedConsent = localStorage.getItem('cookie_consent');
+    if (storedConsent) {
+        const consent = JSON.parse(storedConsent);
+        gtag('consent', 'update', {
+            'ad_storage': consent.ad_storage,
+            'analytics_storage': consent.analytics_storage
+        });
+        analyticsToggle.checked = consent.analytics_storage === 'granted';
+        adToggle.checked = consent.ad_storage === 'granted';
+        consentBanner.classList.remove('show');
+    } else {
+        setTimeout(() => {
+            consentBanner.classList.add('show');
+        }, 3000);
+    }
 }
 
 function handleAcceptAll() {
-  const consent = {
-    analytics_storage: 'granted',
-    ad_storage: 'granted'
-  };
-  gtag('consent', 'update', consent);
-  localStorage.setItem('cookie_consent', JSON.stringify(consent));
-  consentBanner.classList.remove('show');
-  console.log('Consentimiento total aceptado. Google Analytics y publicidad habilitados.');
+    const consent = {
+        analytics_storage: 'granted',
+        ad_storage: 'granted'
+    };
+    gtag('consent', 'update', consent);
+    localStorage.setItem('cookie_consent', JSON.stringify(consent));
+    consentBanner.classList.remove('show');
+    console.log('Consentimiento total aceptado. Google Analytics y publicidad habilitados.');
 }
 
 function handleSaveConsent() {
@@ -436,7 +490,6 @@ openModalButton.addEventListener('click', handleOpenModal);
 closeModalButton.addEventListener('click', handleCloseModal);
 saveConsentButton.addEventListener('click', handleSaveConsent);
 
-// Código para el botón flotante de WhatsApp
 const whatsappFloatBtn = document.getElementById('whatsapp-float');
 const scrollThreshold = 50;
 
@@ -445,7 +498,7 @@ let lastScrollY = window.scrollY;
 if (whatsappFloatBtn) {
     window.addEventListener('scroll', () => {
         const currentScrollY = window.scrollY;
-        
+
         if (Math.abs(currentScrollY - lastScrollY) < scrollThreshold) {
             return;
         }
@@ -461,8 +514,10 @@ if (whatsappFloatBtn) {
 }
 
 whatsappFloatBtn.addEventListener('click', (e) => {
-  registerWhatsappClickEvent();
+    registerWhatsappClickEvent();
 });
+
+searchBar.addEventListener('input', handleSearch);
 
 document.addEventListener(
     'DOMContentLoaded', () => {
@@ -471,14 +526,71 @@ document.addEventListener(
     }
 );
 
+async function generarCarruselMarcas() {
+    const swiperWrapper = document.querySelector('.swiper-wrapper');
+    swiperWrapper.innerHTML = '';
+    try {
+        const marcas = [
+            { name: "Adidas", image: "assets/img/Adidas.svg" },
+            { name: "Nike", image: "assets/img/Belinda.svg" },
+            { name: "Puma", image: "assets/img/puma.svg" },
+            { name: "Reebok", image: "assets/img/reebok.svg" },
+            { name: "Converse", image: "assets/img/converse.svg" },
+            { name: "Vans", image: "assets/img/vans.svg" },
 
-// Carrusel de marcas
-const swiper = new Swiper(".mySwiper", {
-    slidesPerView: "auto",
-    spaceBetween: 10,
-    loop: true,
-    autoplay: {
-        delay: 2500,
-        disableOnInteraction: false,
+            { name: "Adidas", image: "assets/img/Adidas.svg" },
+            { name: "Nike", image: "assets/img/Belinda.svg" },
+            { name: "Puma", image: "assets/img/puma.svg" },
+            { name: "Reebok", image: "assets/img/reebok.svg" },
+            { name: "Converse", image: "assets/img/converse.svg" },
+            { name: "Vans", image: "assets/img/vans.svg" },
+
+            { name: "Adidas", image: "assets/img/Adidas.svg" },
+            { name: "Nike", image: "assets/img/Belinda.svg" },
+            { name: "Puma", image: "assets/img/puma.svg" },
+            { name: "Reebok", image: "assets/img/reebok.svg" },
+            { name: "Converse", image: "assets/img/converse.svg" },
+            { name: "Vans", image: "assets/img/vans.svg" },
+        ];
+
+        marcas.forEach(marca => {
+            const slideDiv = document.createElement('div');
+            slideDiv.classList.add('swiper-slide');
+            slideDiv.innerHTML = `
+        <div class="flex justify-center items-center">
+          <img src="${marca.image}" alt="${marca.name}" />
+        </div>
+      `;
+            swiperWrapper.appendChild(slideDiv);
+        });
+
+        new Swiper('.default-carousel', {
+            slidesPerView: 3,
+            spaceBetween: 20,
+            loop: true,
+            centeredSlides: true,
+            breakpoints: {
+                640: {
+                    slidesPerView: 6,
+                    spaceBetween: 20
+                },
+                768: {
+                    slidesPerView: 8,
+                    spaceBetween: 30
+                },
+                1024: {
+                    slidesPerView: 10,
+                    spaceBetween: 40
+                },
+            },
+            autoplay: {
+                delay: 2500,
+                disableOnInteraction: false
+            }
+        });
+    } catch (error) {
+        console.error("Error al generar el carrusel de marcas:", error);
     }
-});
+}
+
+document.addEventListener('DOMContentLoaded', generarCarruselMarcas);

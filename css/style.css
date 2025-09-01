@@ -111,3 +111,16 @@
 .whatsapp-float.hide {
   transform: translateY(150px);
 }
+
+.swiper-wrapper {
+width: 100%;
+height: max-content !important;
+padding-bottom: 64px !important;
+-webkit-transition-timing-function: linear !important;
+transition-timing-function: linear !important;
+position: relative;
+}
+
+.swiper-slide {
+  width: 10px; /* O un ancho fijo, por ejemplo, width: 250px; */
+}
