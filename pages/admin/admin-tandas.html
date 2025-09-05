@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Tandas | Panel de control</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'md-primary': '#FF5277',
+            'md-on-primary': '#FFFFFF',
+            'md-primary-container': '#FFD9E2',
+            'md-on-primary-container': '#660021',
+            'md-secondary': '#5B4F7B',
+            'md-on-secondary': '#FFFFFF',
+            'md-secondary-container': '#E2D9FF',
+            'md-on-secondary-container': '#1C0D37',
+            'md-background': '#FFFBFE',
+            'md-on-background': '#1D1B1F',
+            'md-surface': '#FFFBFE',
+            'md-on-surface': '#1D1B1F',
+            'md-surface-variant': '#F3DDE3',
+            'md-on-surface-variant': '#504147',
+            'md-outline': '#837078',
+            'md-surface-container-high': '#ECE6F0',
+          },
+          fontFamily: {
+            'nunito': ['Nunito', 'sans-serif'],
+            'oswald': ['Oswald', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+        padding-top: 60px;
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+    }
+    .close-btn {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .close-btn:hover,
+    .close-btn:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+  </style>
+</head>
+<body class="bg-md-background font-nunito text-md-on-background min-h-screen flex flex-col">
+
+  <div id="loading-screen" class="fixed inset-0 bg-md-background z-50 flex flex-col items-center justify-center">
+    <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
+    <p class="mt-4 text-md-on-surface-variant">Verificando tu acceso...</p>
+  </div>
+  
+  <div id="main-content" class="hidden min-h-screen flex flex-col">
+    <header class="bg-md-surface-variant p-5 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <a href="panel.html" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+          <i class="fas fa-arrow-left"></i>
+          <span class="ml-2 hidden md:inline">Volver al panel</span>
+        </a>
+        <h1 class="text-2xl font-oswald font-bold text-md-on-surface-variant ml-4">Panel de Tandas</h1>
+      </div>
+      <div class="flex items-center space-x-4">
+          <button id="logout-button" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+            <i class="fas fa-sign-out-alt"></i> 
+            <span class="hidden md:inline ml-2">Cerrar sesión</span>
+          </button>
+      </div>
+    </header>
+    
+    <main class="flex-grow p-5 md:p-10">
+      <div class="max-w-6xl mx-auto">
+        <div class="mb-6 flex flex-col sm:flex-row items-center justify-between">
+          <h2 class="text-xl font-bold font-oswald text-md-on-surface-variant mb-4 sm:mb-0">Mis Tandas</h2>
+          <div class="flex items-center space-x-2 w-full sm:w-auto">
+            <input type="text" id="tanda-search" placeholder="Buscar tanda" class="w-full sm:w-64 p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+          </div>
+        </div>
+        
+        <div class="w-full flex justify-end mb-4">
+          <button id="add-tanda-button" class="bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+            <i class="fas fa-plus mr-2"></i>Crear nueva tanda
+          </button>
+        </div>
+
+        <div id="loading-spinner" class="text-center p-8">
+          <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
+          <p class="mt-2 text-md-on-surface-variant">Cargando tandas...</p>
+        </div>
+
+        <div id="tandas-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          </div>
+        
+        <div id="no-tandas-message" class="hidden text-center p-8 text-md-on-surface-variant">
+          <p>No se encontraron tandas.</p>
+        </div>
+      </div>
+
+      <div id="tanda-modal" class="modal">
+        <div class="modal-content">
+          <span class="close-btn">&times;</span>
+          <h2 id="tanda-modal-title" class="text-2xl font-oswald font-bold mb-4">Crear nueva tanda</h2>
+          <form id="tanda-form" class="space-y-4">
+            <div>
+              <label for="tanda-name" class="block font-semibold text-md-on-surface-variant mb-2">Nombre de la Tanda:</label>
+              <input type="text" id="tanda-name" required class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+            </div>
+            <div>
+              <label for="tanda-amount" class="block font-semibold text-md-on-surface-variant mb-2">Monto de aportación ($):</label>
+              <input type="number" id="tanda-amount" required min="1" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+            </div>
+            <div>
+              <label for="tanda-period" class="block font-semibold text-md-on-surface-variant mb-2">Período de pago:</label>
+              <select id="tanda-period" required class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+                <option value="semanal">Semanal</option>
+                <option value="quincenal">Quincenal</option>
+                <option value="mensual">Mensual</option>
+              </select>
+            </div>
+            <div>
+              <label for="tanda-start-date" class="block font-semibold text-md-on-surface-variant mb-2">Fecha de inicio:</label>
+              <input type="date" id="tanda-start-date" required class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+            </div>
+            <div>
+              <label for="tanda-payment-day" class="block font-semibold text-md-on-surface-variant mb-2">Día de pago:</label>
+              <select id="tanda-payment-day" required class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+                <option value="lunes">Lunes</option>
+                <option value="martes">Martes</option>
+                <option value="miercoles">Miércoles</option>
+                <option value="jueves">Jueves</option>
+                <option value="viernes">Viernes</option>
+                <option value="sabado">Sábado</option>
+                <option value="domingo">Domingo</option>
+              </select>
+            </div>
+            <div>
+                <label for="tanda-participants-count" class="block font-semibold text-md-on-surface-variant mb-2">Número de participantes:</label>
+                <input type="number" id="tanda-participants-count" required min="2" max="20" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+            </div>
+            <div class="flex items-center mt-2">
+                <input type="checkbox" id="tanda-is-public" class="h-4 w-4 text-md-primary focus:ring-md-primary border-md-outline rounded">
+                <label for="tanda-is-public" class="ml-2 block text-sm text-md-on-surface-variant">Hacer tanda pública (otros usuarios podrán unirse)</label>
+            </div>
+            <div id="tanda-message" class="text-center mt-2"></div>
+            <button type="submit" class="w-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300">
+              Guardar Tanda
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div id="participants-modal" class="modal">
+        <div class="modal-content">
+          <span class="close-btn">&times;</span>
+          <h2 class="text-2xl font-oswald font-bold mb-4">Participantes de la tanda</h2>
+          <div id="add-participant-section" class="mb-4">
+            <h3 class="text-xl font-bold font-oswald text-md-on-surface-variant mb-2">Añadir participante</h3>
+            <form id="add-participant-form" class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+              <input type="text" id="participant-name" placeholder="Nombre" required class="flex-grow p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+              <button type="submit" class="bg-md-secondary text-md-on-secondary hover:bg-md-secondary-container hover:text-md-on-secondary-container font-bold py-2 px-4 rounded-full transition duration-300">
+                Añadir
+              </button>
+            </form>
+            <p id="participant-count-message" class="mt-2 text-md-on-surface-variant text-sm"></p>
+          </div>
+          <div id="participants-list-container" class="mt-6">
+            <h3 class="text-xl font-bold font-oswald text-md-on-surface-variant mb-2">Lista de participantes</h3>
+            <ul id="participants-list" class="space-y-2">
+              </ul>
+          </div>
+        </div>
+      </div>
+
+      <div id="tanda-detail-modal" class="modal">
+        <div class="modal-content !max-w-3xl">
+          <span class="close-btn">&times;</span>
+          <h2 id="detail-tanda-name" class="text-2xl font-oswald font-bold mb-4"></h2>
+          <div id="detail-info" class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <p><strong class="font-bold">Monto:</strong> <span id="detail-amount"></span></p>
+            <p><strong class="font-bold">Periodo:</strong> <span id="detail-period"></span></p>
+            <p><strong class="font-bold">Fecha de Inicio:</strong> <span id="detail-start-date"></span></p>
+            <p><strong class="font-bold">Día de pago:</strong> <span id="detail-payment-day"></span></p>
+            <p><strong class="font-bold">Participantes:</strong> <span id="detail-participants-count"></span> / <span id="detail-max-participants"></span></p>
+            <p><strong class="font-bold">Total a recaudar:</strong> <span id="detail-total-amount"></span></p>
+            <p><strong class="font-bold">Total pagado:</strong> <span id="detail-paid-amount"></span></p>
+            <p><strong class="font-bold">Estado:</strong> <span id="detail-status"></span></p>
+          </div>
+
+          <h3 class="text-xl font-bold font-oswald text-md-on-surface-variant mb-2">Turnos y Pagos</h3>
+          <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-md-surface-variant">
+                  <thead class="bg-md-surface-container-high">
+                      <tr id="payment-table-headers">
+                          <th class="px-3 py-2 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">Turno</th>
+                          <th class="px-3 py-2 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">Fecha</th>
+                          <th class="px-3 py-2 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">Recibe</th>
+                          </tr>
+                  </thead>
+                  <tbody id="payment-table-body" class="bg-md-surface divide-y divide-md-surface-variant">
+                      </tbody>
+              </table>
+          </div>
+
+          <div class="flex justify-end mt-6">
+            <button id="complete-tanda-button" class="bg-green-500 text-white hover:bg-green-600 font-bold py-2 px-4 rounded-full transition duration-300 mr-2">
+              Marcar como terminada
+            </button>
+            <button id="edit-tanda-button" class="bg-md-secondary text-md-on-secondary hover:bg-md-secondary-container hover:text-md-on-secondary-container font-bold py-2 px-4 rounded-full transition duration-300">
+              <i class="fas fa-edit mr-2"></i>Editar Tanda
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
+      Aliy's Store &copy; 2024. Todos los derechos reservados.
+    </footer>
+  </div>
+
+  <script>
+    // Configuración de Firebase - Reemplaza con tus datos
+    const firebaseConfig = {
+      apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
+      authDomain: "formiik-dev.firebaseapp.com",
+      projectId: "formiik-dev",
+      storageBucket: "formiik-dev.firebasestorage.app",
+      messagingSenderId: "91782576906",
+      appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const loadingScreen = document.getElementById('loading-screen');
+    const mainContent = document.getElementById('main-content');
+    const tandasListContainer = document.getElementById('tandas-list');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    const noTandasMessage = document.getElementById('no-tandas-message');
+    const logoutButton = document.getElementById('logout-button');
+    const tandaSearchInput = document.getElementById('tanda-search');
+    const addTandaButton = document.getElementById('add-tanda-button');
+
+    // Modals
+    const tandaModal = document.getElementById('tanda-modal');
+    const tandaForm = document.getElementById('tanda-form');
+    const tandaModalTitle = document.getElementById('tanda-modal-title');
+    const tandaNameInput = document.getElementById('tanda-name');
+    const tandaAmountInput = document.getElementById('tanda-amount');
+    const tandaPeriodSelect = document.getElementById('tanda-period');
+    const tandaStartDateInput = document.getElementById('tanda-start-date');
+    const tandaPaymentDaySelect = document.getElementById('tanda-payment-day');
+    const tandaParticipantsCountInput = document.getElementById('tanda-participants-count');
+    const tandaIsPublicInput = document.getElementById('tanda-is-public');
+    const tandaMessage = document.getElementById('tanda-message');
+
+    const participantsModal = document.getElementById('participants-modal');
+    const addParticipantForm = document.getElementById('add-participant-form');
+    const participantNameInput = document.getElementById('participant-name');
+    const participantsList = document.getElementById('participants-list');
+    const participantCountMessage = document.getElementById('participant-count-message');
+    const addParticipantSection = document.getElementById('add-participant-section');
+
+    const tandaDetailModal = document.getElementById('tanda-detail-modal');
+    const detailTandaName = document.getElementById('detail-tanda-name');
+    const detailAmount = document.getElementById('detail-amount');
+    const detailPeriod = document.getElementById('detail-period');
+    const detailStartDate = document.getElementById('detail-start-date');
+    const detailPaymentDay = document.getElementById('detail-payment-day');
+    const detailParticipantsCount = document.getElementById('detail-participants-count');
+    const detailMaxParticipants = document.getElementById('detail-max-participants');
+    const detailTotalAmount = document.getElementById('detail-total-amount');
+    const detailPaidAmount = document.getElementById('detail-paid-amount');
+    const detailStatus = document.getElementById('detail-status');
+    const paymentTableHeaders = document.getElementById('payment-table-headers');
+    const paymentTableBody = document.getElementById('payment-table-body');
+    const completeTandaButton = document.getElementById('complete-tanda-button');
+    const editTandaButton = document.getElementById('edit-tanda-button');
+
+    let currentTandaId = null;
+    let allTandas = [];
+    let currentUserUid = null;
+
+    // Lógica para cerrar sesión
+    logoutButton.addEventListener('click', () => {
+      auth.signOut().then(() => {
+        window.location.replace('login.html');
+      }).catch((error) => {
+        console.error('Error al cerrar sesión:', error);
+      });
+    });
+
+    // Función para renderizar las tandas
+    function renderTandas(tandas) {
+      tandasListContainer.innerHTML = '';
+      if (tandas.length === 0) {
+        noTandasMessage.classList.remove('hidden');
+        return;
+      }
+      noTandasMessage.classList.add('hidden');
+
+      tandas.forEach(tanda => {
+        const card = document.createElement('div');
+        card.className = 'bg-md-surface p-6 rounded-lg shadow-lg flex flex-col justify-between';
+        
+        const participants = tanda.participants || [];
+        const participantsCount = participants.length;
+        
+        const totalRecaudado = participants.filter(p => p.hasReceived).length * tanda.amount;
+        const totalPagado = participants.reduce((sum, p) => sum + (p.payments ? p.payments.filter(payment => payment.isPaid).length : 0), 0) * tanda.amount;
+        const totalCuotas = participantsCount * tanda.maxParticipants;
+        const cuotasPagadas = participants.reduce((sum, p) => sum + (p.payments ? p.payments.filter(payment => payment.isPaid).length : 0), 0);
+        
+        card.innerHTML = `
+            <div>
+                <h3 class="text-xl font-oswald font-bold text-md-on-surface-variant">${tanda.name}</h3>
+                <p class="mt-2 text-md-on-surface-variant">
+                  <i class="fas fa-coins text-md-primary"></i> Monto: $${tanda.amount}
+                </p>
+                <p class="text-md-on-surface-variant">
+                  <i class="fas fa-clock text-md-secondary"></i> Periodo: ${tanda.period}
+                </p>
+                <p class="text-md-on-surface-variant">
+                  <i class="fas fa-calendar-alt text-md-secondary"></i> Inicia: ${tanda.startDate ? new Date(tanda.startDate).toLocaleDateString() : 'N/A'}
+                </p>
+                <p class="text-md-on-surface-variant">
+                  <i class="fas fa-users text-md-on-surface-variant"></i> Participantes: ${participantsCount} / ${tanda.maxParticipants}
+                </p>
+                <p class="text-md-on-surface-variant">
+                  <i class="fas fa-globe text-md-secondary"></i> Visibilidad: ${tanda.isPublic ? 'Pública' : 'Privada'}
+                </p>
+            </div>
+            <div class="mt-4 pt-4 border-t border-md-surface-variant">
+                <p class="text-sm text-md-on-surface-variant">
+                  <i class="fas fa-dollar-sign text-md-primary"></i> Total pagado: $${totalPagado} / $${tanda.amount * tanda.maxParticipants}
+                </p>
+                <p class="text-sm text-md-on-surface-variant">
+                  <i class="fas fa-check-double text-md-on-secondary-container"></i> Cuotas pagadas: ${cuotasPagadas} / ${totalCuotas}
+                </p>
+            </div>
+            <div class="mt-4 flex justify-between space-x-2">
+                <button class="bg-md-secondary text-md-on-secondary hover:bg-md-secondary-container hover:text-md-on-secondary-container font-bold py-2 px-4 rounded-full transition duration-300 view-button w-full" data-id="${tanda.id}">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-4 rounded-full transition duration-300 manage-participants-button w-full" data-id="${tanda.id}">
+                  <i class="fas fa-user-plus"></i>
+                </button>
+                <button class="bg-red-500 text-white hover:bg-red-600 font-bold py-2 px-4 rounded-full transition duration-300 delete-button w-full" data-id="${tanda.id}">
+                  <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        tandasListContainer.appendChild(card);
+      });
+    }
+
+    // Cargar tandas al cargar la página
+    async function fetchTandas() {
+      loadingSpinner.classList.remove('hidden');
+      try {
+        const tandasRef = db.collection('tandas')/*.where('ownerId', '==', currentUserUid).orderBy('createdAt', 'desc')*/;
+        const snapshot = await tandasRef.get();
+        allTandas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderTandas(allTandas);
+      } catch (error) {
+        console.error("Error al cargar las tandas:", error);
+        noTandasMessage.textContent = 'Hubo un error al cargar la lista de tandas.';
+        noTandasMessage.classList.remove('hidden');
+      } finally {
+        loadingSpinner.classList.add('hidden');
+      }
+    }
+
+    // Búsqueda
+    tandaSearchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const filteredTandas = allTandas.filter(tanda => tanda.name.toLowerCase().includes(searchTerm));
+      renderTandas(filteredTandas);
+    });
+
+    // Lógica para mostrar los modals
+    document.body.addEventListener('click', (e) => {
+      const closeBtn = e.target.closest('.close-btn');
+      if (closeBtn) {
+        closeBtn.closest('.modal').style.display = 'none';
+        tandaForm.reset();
+        addParticipantForm.reset();
+        return;
+      }
+      if (e.target.classList.contains('modal')) {
+        e.target.style.display = 'none';
+        tandaForm.reset();
+        addParticipantForm.reset();
+        return;
+      }
+
+      const button = e.target.closest('button');
+      if (!button) return;
+
+      if (button.id === 'add-tanda-button') {
+        tandaModalTitle.textContent = 'Crear nueva tanda';
+        tandaModal.style.display = 'block';
+        currentTandaId = null;
+      } else if (button.classList.contains('manage-participants-button')) {
+        currentTandaId = button.dataset.id;
+        showParticipantsModal(currentTandaId);
+      } else if (button.classList.contains('view-button')) {
+        currentTandaId = button.dataset.id;
+        showTandaDetailModal(currentTandaId);
+      } else if (button.classList.contains('delete-button')) {
+        const tandaId = button.dataset.id;
+        if (confirm('¿Estás seguro de que quieres eliminar esta tanda? Esta acción es irreversible.')) {
+            deleteTanda(tandaId);
+        }
+      }
+    });
+
+    // Lógica para el formulario de crear/editar tanda
+    tandaForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = tandaNameInput.value;
+      const amount = parseFloat(tandaAmountInput.value);
+      const period = tandaPeriodSelect.value;
+      const startDate = tandaStartDateInput.value;
+      const paymentDay = tandaPaymentDaySelect.value;
+      const maxParticipants = parseInt(tandaParticipantsCountInput.value);
+      const isPublic = tandaIsPublicInput.checked;
+
+      tandaMessage.textContent = 'Guardando...';
+      tandaMessage.className = 'text-center mt-2 text-md-on-surface-variant';
+
+      try {
+        if (currentTandaId) {
+          await db.collection('tandas').doc(currentTandaId).update({ name, amount, period, startDate, paymentDay, maxParticipants, isPublic });
+          tandaMessage.textContent = 'Tanda actualizada con éxito.';
+        } else {
+          const newTanda = {
+            name,
+            amount,
+            period,
+            startDate,
+            paymentDay,
+            maxParticipants,
+            isPublic,
+            participants: [],
+            isCompleted: false,
+            ownerId: currentUserUid,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          await db.collection('tandas').add(newTanda);
+          tandaMessage.textContent = 'Tanda creada con éxito.';
+        }
+
+        tandaMessage.className = 'text-center mt-2 text-green-600';
+        tandaForm.reset();
+        tandaModal.style.display = 'none';
+        fetchTandas();
+      } catch (error) {
+        console.error('Error al guardar la tanda:', error);
+        tandaMessage.textContent = 'Error al guardar la tanda. Inténtalo de nuevo.';
+        tandaMessage.className = 'text-center mt-2 text-red-600';
+      }
+    });
+
+    // Lógica para eliminar una tanda
+    async function deleteTanda(tandaId) {
+      try {
+        await db.collection('tandas').doc(tandaId).delete();
+        fetchTandas();
+      } catch (error) {
+        console.error("Error al eliminar la tanda:", error);
+        alert('Hubo un error al eliminar la tanda.');
+      }
+    }
+
+    // Lógica para gestionar participantes
+    async function showParticipantsModal(tandaId) {
+      const tandaDoc = await db.collection('tandas').doc(tandaId).get();
+      const tandaData = tandaDoc.data();
+      const participants = tandaData.participants || [];
+      const maxParticipants = tandaData.maxParticipants || 0;
+
+      participantsList.innerHTML = '';
+      participants.forEach((p, index) => {
+        const li = document.createElement('li');
+        li.className = 'flex items-center justify-between p-3 bg-md-surface-container-high rounded-lg';
+        li.innerHTML = `
+          <span>Turno ${index + 1}: ${p.name}</span>
+          <button class="bg-red-500 text-white hover:bg-red-600 font-bold py-1 px-3 rounded-full transition duration-300 delete-participant-button" data-index="${index}">
+            <i class="fas fa-trash"></i>
+          </button>
+        `;
+        participantsList.appendChild(li);
+      });
+      
+      participantCountMessage.textContent = `Participantes actuales: ${participants.length} de ${maxParticipants}`;
+      
+      if (participants.length >= maxParticipants) {
+        addParticipantSection.classList.add('hidden');
+      } else {
+        addParticipantSection.classList.remove('hidden');
+      }
+      
+      participantsModal.style.display = 'block';
+    }
+
+    addParticipantForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = participantNameInput.value;
+      
+      const tandaRef = db.collection('tandas').doc(currentTandaId);
+      const tandaDoc = await tandaRef.get();
+      const tandaData = tandaDoc.data();
+      
+      const participants = tandaData.participants || [];
+      const maxParticipants = tandaData.maxParticipants || 0;
+      
+      if (participants.length >= maxParticipants) {
+          alert('Ya se ha alcanzado el número máximo de participantes.');
+          return;
+      }
+      
+      const payments = Array.from({ length: maxParticipants }, (_, i) => ({ isPaid: false, isReceived: false }));
+      const newParticipant = { name, payments };
+      
+      const updatedParticipants = [...participants, newParticipant];
+      
+      await tandaRef.update({ participants: updatedParticipants });
+      
+      addParticipantForm.reset();
+      showParticipantsModal(currentTandaId);
+      fetchTandas();
+    });
+
+    participantsList.addEventListener('click', async (e) => {
+      if (e.target.classList.contains('delete-participant-button')) {
+        if (!confirm('¿Estás seguro de que quieres eliminar a este participante?')) return;
+        
+        const index = parseInt(e.target.dataset.index);
+        const tandaRef = db.collection('tandas').doc(currentTandaId);
+        const tandaDoc = await tandaRef.get();
+        const tandaData = tandaDoc.data();
+        
+        const updatedParticipants = tandaData.participants.filter((_, i) => i !== index);
+        
+        await tandaRef.update({ participants: updatedParticipants });
+        
+        showParticipantsModal(currentTandaId);
+        fetchTandas();
+      }
+    });
+
+    // Lógica para ver el detalle de la tanda
+    async function showTandaDetailModal(tandaId) {
+      const tandaDoc = await db.collection('tandas').doc(tandaId).get();
+      const tandaData = tandaDoc.data();
+      const participants = tandaData.participants || [];
+
+      detailTandaName.textContent = tandaData.name;
+      detailAmount.textContent = `$${tandaData.amount}`;
+      detailPeriod.textContent = tandaData.period;
+      detailStartDate.textContent = tandaData.startDate ? new Date(tandaData.startDate).toLocaleDateString() : 'N/A';
+      detailPaymentDay.textContent = tandaData.paymentDay || 'N/A';
+      detailParticipantsCount.textContent = participants.length;
+      detailMaxParticipants.textContent = tandaData.maxParticipants;
+      detailTotalAmount.textContent = `$${tandaData.amount * tandaData.maxParticipants}`;
+      
+      const totalPagado = participants.reduce((sum, p) => sum + (p.payments ? p.payments.filter(payment => payment.isPaid).length : 0), 0) * tandaData.amount;
+      detailPaidAmount.textContent = `$${totalPagado}`;
+      detailStatus.textContent = tandaData.isCompleted ? 'Finalizada' : 'En curso';
+      
+      // Limpiar y renderizar los nombres de los participantes en la cabecera
+      let headerHTML = `
+        <th class="px-3 py-2 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">Turno</th>
+        <th class="px-3 py-2 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">Fecha</th>
+        <th class="px-3 py-2 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">Recibe</th>
+      `;
+      participants.forEach(p => {
+          headerHTML += `<th class="px-3 py-2 text-center text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">${p.name}</th>`;
+      });
+      headerHTML += `<th class="px-3 py-2 text-center text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">Estado</th>`;
+
+      paymentTableHeaders.innerHTML = headerHTML;
+      
+      // Renderizar la tabla de pagos
+      paymentTableBody.innerHTML = '';
+      const start = new Date(tandaData.startDate);
+      
+      for (let i = 0; i < tandaData.maxParticipants; i++) {
+        const row = document.createElement('tr');
+        
+        const paymentDate = new Date(start);
+        paymentDate.setDate(start.getDate() + i * (tandaData.period === 'semanal' ? 7 : tandaData.period === 'quincenal' ? 14 : 30));
+
+        // Celda de "Turno", "Fecha" y "Recibe"
+        const receiver = participants[i] ? participants[i].name : 'N/A';
+        let rowHTML = `
+          <td class="px-3 py-2 whitespace-nowrap text-sm font-medium text-md-on-surface">Turno ${i + 1}</td>
+          <td class="px-3 py-2 whitespace-nowrap text-sm text-md-on-surface">${paymentDate.toLocaleDateString()}</td>
+          <td class="px-3 py-2 whitespace-nowrap text-sm text-md-on-surface">${receiver}</td>
+        `;
+        
+        let allPaid = true;
+
+        // Celdas de pagos por participante
+        participants.forEach((p, pIndex) => {
+          const payment = p.payments ? p.payments[i] : null;
+          const isPaid = payment && payment.isPaid;
+          if (!isPaid) { allPaid = false; }
+
+          let cellContent = '';
+
+          //if (i === pIndex) { // El participante es el que recibe
+          //   cellContent = `<span class="text-md-primary font-bold">RECIBE</span>`;
+          //} else { // El participante es el que paga
+            cellContent = `
+              <button class="mark-paid-button font-bold py-1 px-3 rounded-full transition duration-300" 
+                data-tanda-id="${tandaId}" data-participant-index="${pIndex}" data-payment-index="${i}" ${isPaid ? 'disabled' : ''}>
+                <i class="${isPaid ? 'fas fa-check-circle text-green-600' : 'fas fa-circle-notch text-md-on-surface-variant'}"></i>
+              </button>
+            `;
+          //}
+          rowHTML += `<td class="px-3 py-2 whitespace-nowrap text-sm text-md-on-surface text-center">${cellContent}</td>`;
+        });
+
+        // Celda de estado del turno
+        const isReceived = participants[i] && participants[i].payments && participants[i].payments[i] && participants[i].payments[i].isReceived;
+        let statusContent = '';
+        if (allPaid && !isReceived) {
+          statusContent = `<button class="mark-received-button bg-green-500 text-white font-bold py-1 px-3 rounded-full text-sm" data-tanda-id="${tandaId}" data-payment-index="${i}">Marcar Recibido</button>`;
+        } else if (isReceived) {
+          statusContent = `<span class="text-green-600 font-bold">Recibido</span>`;
+        } else {
+          statusContent = `<span class="text-red-500 font-bold">Pendiente</span>`;
+        }
+        rowHTML += `<td class="px-3 py-2 whitespace-nowrap text-sm text-md-on-surface text-center">${statusContent}</td>`;
+        
+        row.innerHTML = rowHTML;
+        paymentTableBody.appendChild(row);
+      }
+
+      if (tandaData.isCompleted) {
+        completeTandaButton.textContent = 'Tanda Terminada';
+        completeTandaButton.disabled = true;
+        completeTandaButton.className += ' opacity-50 cursor-not-allowed';
+        editTandaButton.disabled = true;
+        editTandaButton.className += ' opacity-50 cursor-not-allowed';
+      } else {
+        completeTandaButton.textContent = 'Marcar como terminada';
+        completeTandaButton.disabled = false;
+        completeTandaButton.className = 'bg-green-500 text-white hover:bg-green-600 font-bold py-2 px-4 rounded-full transition duration-300 mr-2';
+        editTandaButton.disabled = false;
+        editTandaButton.className = 'bg-md-secondary text-md-on-secondary hover:bg-md-secondary-container hover:text-md-on-secondary-container font-bold py-2 px-4 rounded-full transition duration-300';
+      }
+      
+      tandaDetailModal.style.display = 'block';
+    }
+
+    // Lógica para marcar un pago como "pagado"
+    paymentTableBody.addEventListener('click', async (e) => {
+      const button = e.target.closest('.mark-paid-button');
+      if (!button) return;
+
+      const tandaId = button.dataset.tandaId;
+      const participantIndex = parseInt(button.dataset.participantIndex);
+      const paymentIndex = parseInt(button.dataset.paymentIndex);
+
+      const tandaRef = db.collection('tandas').doc(tandaId);
+      const tandaDoc = await tandaRef.get();
+      const tandaData = tandaDoc.data();
+      
+      const updatedParticipants = [...tandaData.participants];
+      if (updatedParticipants[participantIndex].payments) {
+          updatedParticipants[participantIndex].payments[paymentIndex].isPaid = true;
+      } else {
+          console.error("El array de pagos no existe para este participante.");
+          return;
+      }
+      
+      await tandaRef.update({ participants: updatedParticipants });
+      
+      // Actualizar la vista del modal
+      showTandaDetailModal(tandaId);
+      fetchTandas();
+    });
+
+    // Lógica para marcar un turno como "recibido"
+    paymentTableBody.addEventListener('click', async (e) => {
+      const button = e.target.closest('.mark-received-button');
+      if (!button) return;
+
+      const tandaId = button.dataset.tandaId;
+      const paymentIndex = parseInt(button.dataset.paymentIndex);
+
+      if (!confirm(`¿Estás seguro de que quieres marcar el turno ${paymentIndex + 1} como Recibido?`)) {
+        return;
+      }
+
+      const tandaRef = db.collection('tandas').doc(tandaId);
+      const tandaDoc = await tandaRef.get();
+      const tandaData = tandaDoc.data();
+      
+      const updatedParticipants = [...tandaData.participants];
+      if (updatedParticipants[paymentIndex].payments && updatedParticipants[paymentIndex].payments[paymentIndex]) {
+          updatedParticipants[paymentIndex].payments[paymentIndex].isReceived = true;
+      } else {
+          console.error("El array de pagos para el receptor del turno no existe.");
+          return;
+      }
+      
+      await tandaRef.update({ participants: updatedParticipants });
+      
+      // Actualizar la vista del modal
+      showTandaDetailModal(tandaId);
+      fetchTandas();
+    });
+
+    // Lógica para editar tanda desde el modal de detalles
+    editTandaButton.addEventListener('click', () => {
+      const tanda = allTandas.find(t => t.id === currentTandaId);
+      if (tanda) {
+        tandaModalTitle.textContent = 'Editar Tanda';
+        tandaNameInput.value = tanda.name;
+        tandaAmountInput.value = tanda.amount;
+        tandaPeriodSelect.value = tanda.period;
+        tandaStartDateInput.value = tanda.startDate || '';
+        tandaPaymentDaySelect.value = tanda.paymentDay || 'lunes';
+        tandaParticipantsCountInput.value = tanda.maxParticipants;
+        tandaIsPublicInput.checked = tanda.isPublic;
+        tandaParticipantsCountInput.disabled = true;
+        tandaDetailModal.style.display = 'none';
+        tandaModal.style.display = 'block';
+      }
+    });
+
+    // Lógica para marcar tanda como terminada
+    completeTandaButton.addEventListener('click', async () => {
+      if (confirm('¿Estás seguro de que deseas marcar esta tanda como terminada?')) {
+        const tandaRef = db.collection('tandas').doc(currentTandaId);
+        await tandaRef.update({ isCompleted: true });
+        tandaDetailModal.style.display = 'none';
+        fetchTandas();
+      }
+    });
+
+    // Autenticación y autorización
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        currentUserUid = user.uid;
+        const docRef = db.collection('users').doc(user.uid);
+        const doc = await docRef.get();
+        if (doc.exists && doc.data().rol === 'admin') {
+          loadingScreen.classList.add('hidden');
+          mainContent.classList.remove('hidden');
+          fetchTandas();
+        } else {
+          alert('No tienes permisos para acceder a esta página.');
+          window.location.href = 'panel.html';
+        }
+      } else {
+        window.location.href = 'login.html';
+      }
+    });
+  </script>
+</body>
+</html>
