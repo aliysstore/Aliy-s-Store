@@ -116,17 +116,19 @@
             
             <div class="mb-4">
                 <label for="neighborhood" class="block font-semibold text-md-on-surface-variant mb-2">Colonia</label>
-                <input type="text" id="neighborhood" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" readonly required>
+                <select id="neighborhood" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+                  <option value="" disabled selected>Selecciona una colonia</option>
+                </select>
             </div>
             
             <div class="mb-4">
                 <label for="city" class="block font-semibold text-md-on-surface-variant mb-2">Ciudad</label>
-                <input type="text" id="city" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" readonly required>
+                <input type="text" id="city" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
             </div>
             
             <div class="mb-4">
                 <label for="state" class="block font-semibold text-md-on-surface-variant mb-2">Estado</label>
-                <input type="text" id="state" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" readonly required>
+                <input type="text" id="state" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
             </div>
           </div>
         </div>
@@ -168,37 +170,59 @@
     const togglePasswordButton = document.getElementById('toggle-password');
     const registerErrorMessage = document.getElementById('register-error-message');
     const zipcodeInput = document.getElementById('zipcode');
-    const neighborhoodInput = document.getElementById('neighborhood');
+    const neighborhoodSelect = document.getElementById('neighborhood');
     const cityInput = document.getElementById('city');
     const stateInput = document.getElementById('state');
     const streetInput = document.getElementById('street');
 
-    // Validar y autocompletar dirección con la API de Sepomex
+    // Validar y autocompletar dirección con la API de Copomex
     zipcodeInput.addEventListener('input', () => {
         const zipcode = zipcodeInput.value;
-        // Solo busca si el código postal tiene 5 dígitos
         if (zipcode.length === 5) {
-            fetch(`https://sepomex-api-e60868f0808b.herokuapp.com/api/zipcodes/${zipcode}`)
+            fetch(`https://api.copomex.com/query/info_cp/${zipcode}?token=b7631c7b-e623-4f9c-8bbb-6a704cc6be1b`)
             .then(response => response.json())
             .then(data => {
-                if (data.status === 200) {
-                    // Autocompleta los campos con los datos de la API
-                    neighborhoodInput.value = data.data.colonia;
-                    cityInput.value = data.data.ciudad;
-                    stateInput.value = data.data.estado;
+                console.log(data)
+                // Limpiar la lista de colonias antes de llenarla
+                neighborhoodSelect.innerHTML = '<option value="" disabled selected>Selecciona una colonia</option>';
+                
+                if (data && data.length > 0) {
+                    // Llenar la lista de colonias
+                    data.forEach(item => {
+                        if (item.response && item.response.asentamiento) {
+                            const option = document.createElement('option');
+                            option.value = item.response.asentamiento;
+                            option.textContent = item.response.asentamiento;
+                            neighborhoodSelect.appendChild(option);
+                        }
+                    });
+
+                    // Autocompletar Ciudad y Estado con el primer resultado
+                    const firstResult = data[0].response;
+                    cityInput.value = firstResult.municipio;
+                    stateInput.value = firstResult.estado;
+
+                    neighborhoodSelect.style.display = 'block';
+                    cityInput.style.display = 'block';
+                    stateInput.style.display = 'block';
                 } else {
-                    // Limpia los campos si el CP no es válido
-                    neighborhoodInput.value = '';
+                    // Limpiar y ocultar campos si el CP no es válido o no tiene datos
                     cityInput.value = '';
                     stateInput.value = '';
+                    neighborhoodSelect.style.display = 'none';
+                    cityInput.style.display = 'none';
+                    stateInput.style.display = 'none';
                 }
             })
             .catch(error => {
-                console.error('Error al obtener datos de Sepomex:', error);
-                // Limpia los campos en caso de error
-                neighborhoodInput.value = '';
+                console.error('Error al obtener datos de Copomex:', error);
+                // En caso de error, limpiar los campos
+                neighborhoodSelect.innerHTML = '<option value="" disabled selected>Selecciona una colonia</option>';
                 cityInput.value = '';
                 stateInput.value = '';
+                neighborhoodSelect.style.display = 'none';
+                cityInput.style.display = 'none';
+                stateInput.style.display = 'none';
             });
         }
     });
@@ -214,7 +238,7 @@
       const phone = document.getElementById('phone').value;
       const dob = document.getElementById('dob').value;
       const street = document.getElementById('street').value;
-      const neighborhood = neighborhoodInput.value;
+      const neighborhood = neighborhoodSelect.value;
       const zipcode = zipcodeInput.value;
       const city = cityInput.value;
       const state = stateInput.value;
