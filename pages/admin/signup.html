@@ -59,71 +59,79 @@
   </header>
   
   <main class="flex-grow flex items-center justify-center p-4 md:p-10">
-    <div class="max-w-2xl w-full mx-auto bg-md-surface rounded-lg shadow-lg p-6 md:p-8">
-      <h2 class="text-3xl font-oswald font-bold text-md-on-background mb-6 text-center">Crear una Cuenta</h2>
+    <div class="max-w-3xl w-full mx-auto bg-md-surface rounded-lg shadow-lg p-6 md:p-8">
+      <h2 class="text-3xl font-oswald font-bold text-md-on-background mb-2 text-center">Únete a Aliy's Store</h2>
+      <p class="text-center text-md-on-surface-variant mb-6">Completa tus datos para crear tu cuenta y empezar a comprar.</p>
       
       <form id="register-form">
-        <div class="grid md:grid-cols-2 md:gap-6">
-          <div class="mb-4">
-            <label for="fullName" class="block font-semibold text-md-on-surface-variant mb-2">Nombre completo</label>
-            <input type="text" id="fullName" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+        <div class="grid md:grid-cols-2 md:gap-8">
+          <div>
+            <h3 class="text-xl font-oswald font-bold text-md-on-background mb-4 flex items-center gap-2">
+              <i class="fas fa-user-circle text-md-primary"></i>Datos Personales
+            </h3>
+            
+            <div class="mb-4">
+              <label for="fullName" class="block font-semibold text-md-on-surface-variant mb-2">Nombre completo</label>
+              <input type="text" id="fullName" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+            </div>
+            
+            <div class="mb-4">
+              <label for="email" class="block font-semibold text-md-on-surface-variant mb-2">Correo electrónico</label>
+              <input type="email" id="email" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+            </div>
+            
+            <div class="mb-4 relative">
+              <label for="password" class="block font-semibold text-md-on-surface-variant mb-2">Contraseña</label>
+              <input type="password" id="password" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface pr-10 focus:outline-none focus:border-md-primary transition duration-300" required>
+              <button type="button" id="toggle-password" class="absolute right-3 text-md-on-surface-variant" style="top: 2.5rem;">
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            
+            <div class="mb-4">
+              <label for="phone" class="block font-semibold text-md-on-surface-variant mb-2">Número de teléfono</label>
+              <input type="tel" id="phone" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+            </div>
+            
+            <div class="mb-4">
+              <label for="dob" class="block font-semibold text-md-on-surface-variant mb-2">Fecha de nacimiento</label>
+              <input type="date" id="dob" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+            </div>
           </div>
-          <div class="mb-4">
-            <label for="email" class="block font-semibold text-md-on-surface-variant mb-2">Correo electrónico</label>
-            <input type="email" id="email" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
-          </div>
-        </div>
-        
-        <div class="grid md:grid-cols-2 md:gap-6">
-          <div class="mb-4 relative">
-            <label for="password" class="block font-semibold text-md-on-surface-variant mb-2">Contraseña</label>
-            <input type="password" id="password" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface pr-10 focus:outline-none focus:border-md-primary transition duration-300" required>
-            <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-md-on-surface-variant" style="top: 1.875rem;">
-              <i class="fas fa-eye"></i>
-            </button>
-          </div>
-          <div class="mb-4">
-            <label for="phone" class="block font-semibold text-md-on-surface-variant mb-2">Número de teléfono</label>
-            <input type="tel" id="phone" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
-          </div>
-        </div>
-
-        <div class="mb-4">
-          <label for="dob" class="block font-semibold text-md-on-surface-variant mb-2">Fecha de nacimiento</label>
-          <input type="date" id="dob" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
-        </div>
-
-        <hr class="my-4 border-md-outline">
-        <h3 class="text-xl font-oswald font-bold text-md-on-background mb-4">Dirección de Envío</h3>
-        
-        <div class="mb-4">
-            <label for="address" class="block font-semibold text-md-on-surface-variant mb-2">Calle y número</label>
-            <input type="text" id="address" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
-        </div>
-        
-        <div class="grid md:grid-cols-2 md:gap-6">
+          
+          <div>
+            <h3 class="text-xl font-oswald font-bold text-md-on-background mb-4 flex items-center gap-2">
+              <i class="fas fa-shipping-fast text-md-primary"></i>Dirección de Envío
+            </h3>
+            
+            <div class="mb-4">
+              <label for="zipcode" class="block font-semibold text-md-on-surface-variant mb-2">Código Postal</label>
+              <input type="text" id="zipcode" inputmode="numeric" pattern="[0-9]{5}" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" maxlength="5" required>
+            </div>
+            
+            <div class="mb-4">
+                <label for="street" class="block font-semibold text-md-on-surface-variant mb-2">Calle y número</label>
+                <input type="text" id="street" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+            </div>
+            
             <div class="mb-4">
                 <label for="neighborhood" class="block font-semibold text-md-on-surface-variant mb-2">Colonia</label>
-                <input type="text" id="neighborhood" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+                <input type="text" id="neighborhood" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" readonly required>
             </div>
-            <div class="mb-4">
-                <label for="zipcode" class="block font-semibold text-md-on-surface-variant mb-2">Código Postal</label>
-                <input type="text" id="zipcode" inputmode="numeric" pattern="[0-9]{5}" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
-            </div>
-        </div>
-        
-        <div class="grid md:grid-cols-2 md:gap-6">
+            
             <div class="mb-4">
                 <label for="city" class="block font-semibold text-md-on-surface-variant mb-2">Ciudad</label>
-                <input type="text" id="city" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+                <input type="text" id="city" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" readonly required>
             </div>
+            
             <div class="mb-4">
                 <label for="state" class="block font-semibold text-md-on-surface-variant mb-2">Estado</label>
-                <input type="text" id="state" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+                <input type="text" id="state" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" readonly required>
             </div>
+          </div>
         </div>
         
-        <button type="submit" id="register-button" class="mt-4 w-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-md-primary-container font-bold py-3 px-6 rounded-full transition duration-300">
+        <button type="submit" id="register-button" class="mt-8 w-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-md-primary-container font-bold py-3 px-6 rounded-full transition duration-300">
           Crear cuenta
         </button>
       </form>
@@ -159,6 +167,41 @@
     const passwordInput = document.getElementById('password');
     const togglePasswordButton = document.getElementById('toggle-password');
     const registerErrorMessage = document.getElementById('register-error-message');
+    const zipcodeInput = document.getElementById('zipcode');
+    const neighborhoodInput = document.getElementById('neighborhood');
+    const cityInput = document.getElementById('city');
+    const stateInput = document.getElementById('state');
+    const streetInput = document.getElementById('street');
+
+    // Validar y autocompletar dirección con la API de Sepomex
+    zipcodeInput.addEventListener('input', () => {
+        const zipcode = zipcodeInput.value;
+        // Solo busca si el código postal tiene 5 dígitos
+        if (zipcode.length === 5) {
+            fetch(`https://sepomex-api-e60868f0808b.herokuapp.com/api/zipcodes/${zipcode}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 200) {
+                    // Autocompleta los campos con los datos de la API
+                    neighborhoodInput.value = data.data.colonia;
+                    cityInput.value = data.data.ciudad;
+                    stateInput.value = data.data.estado;
+                } else {
+                    // Limpia los campos si el CP no es válido
+                    neighborhoodInput.value = '';
+                    cityInput.value = '';
+                    stateInput.value = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error al obtener datos de Sepomex:', error);
+                // Limpia los campos en caso de error
+                neighborhoodInput.value = '';
+                cityInput.value = '';
+                stateInput.value = '';
+            });
+        }
+    });
 
     registerForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -170,18 +213,18 @@
       const password = passwordInput.value;
       const phone = document.getElementById('phone').value;
       const dob = document.getElementById('dob').value;
-      const street = document.getElementById('address').value;
-      const neighborhood = document.getElementById('neighborhood').value;
-      const zipcode = document.getElementById('zipcode').value;
-      const city = document.getElementById('city').value;
-      const state = document.getElementById('state').value;
+      const street = document.getElementById('street').value;
+      const neighborhood = neighborhoodInput.value;
+      const zipcode = zipcodeInput.value;
+      const city = cityInput.value;
+      const state = stateInput.value;
       
       auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
           const user = userCredential.user;
           console.log('Usuario creado con éxito:', user.uid);
           
-          return db.collection('users').doc(user.uid).set({
+          return db.collection('clientes').doc(user.uid).set({
             fullName: fullName,
             email: email,
             phone: phone,
@@ -197,7 +240,7 @@
           });
         })
         .then(() => {
-          console.log('Datos adicionales del usuario guardados en Firestore.');
+          console.log('Datos adicionales del cliente guardados en Firestore.');
           window.location.href = 'panel.html';
         })
         .catch((error) => {
@@ -221,11 +264,11 @@
       icon.classList.toggle('fa-eye-slash');
     });
 
-    /*auth.onAuthStateChanged(user => {
+    auth.onAuthStateChanged(user => {
       if (user) {
         window.location.replace('panel.html');
       }
-    });*/
+    });
   </script>
 </body>
 </html>
