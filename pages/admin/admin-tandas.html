@@ -194,7 +194,9 @@
           <div id="add-participant-section" class="mb-4">
             <h3 class="text-xl font-bold font-oswald text-md-on-surface-variant mb-2">Asignar participante a un turno</h3>
             <form id="add-participant-form" class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-              <input type="text" id="participant-name" placeholder="Nombre" required class="flex-grow p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+              <select id="participant-select" required class="flex-grow p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
+                <option value="" disabled selected>Cargando clientes...</option>
+              </select>
               <button type="submit" class="bg-md-secondary text-md-on-secondary hover:bg-md-secondary-container hover:text-md-on-secondary-container font-bold py-2 px-4 rounded-full transition duration-300">
                 Asignar
               </button>
@@ -296,7 +298,7 @@
 
     const participantsModal = document.getElementById('participants-modal');
     const addParticipantForm = document.getElementById('add-participant-form');
-    const participantNameInput = document.getElementById('participant-name');
+    const participantSelect = document.getElementById('participant-select');
     const participantsList = document.getElementById('participants-list');
     const participantCountMessage = document.getElementById('participant-count-message');
     const addParticipantSection = document.getElementById('add-participant-section');
@@ -477,9 +479,9 @@
           await db.collection('tandas').doc(currentTandaId).update({ name, amount, period, startDate, paymentDay, maxParticipants, isPublic });
           tandaMessage.textContent = 'Tanda actualizada con éxito.';
         } else {
-          // Inicializar el array de participantes con el número máximo
           const initialParticipants = Array.from({ length: maxParticipants }, () => ({
             name: null,
+            uid: null,
             payments: Array.from({ length: maxParticipants }, () => ({ isPaid: false }))
           }));
 
@@ -513,8 +515,24 @@
 
     // Lógica para eliminar una tanda
     async function deleteTanda(tandaId) {
+      if (!confirm('¿Estás seguro de que quieres eliminar esta tanda? Se eliminarán todos los participantes y pagos. Esta acción es irreversible.')) {
+        return;
+      }
       try {
-        await db.collection('tandas').doc(tandaId).delete();
+        const tandaRef = db.collection('tandas').doc(tandaId);
+        const tandaDoc = await tandaRef.get();
+        const participants = tandaDoc.data().participants || [];
+
+        const batch = db.batch();
+        participants.forEach(p => {
+          if (p.uid) {
+            const clientRef = db.collection('clientes').doc(p.uid);
+            batch.update(clientRef, { inTanda: false });
+          }
+        });
+        await batch.commit();
+
+        await tandaRef.delete();
         fetchTandas();
       } catch (error) {
         console.error("Error al eliminar la tanda:", error);
@@ -532,6 +550,22 @@
         participantsList.innerHTML = '';
         const assignedParticipantsCount = participants.filter(p => p.name).length;
 
+        // Llenar el selector con clientes disponibles
+        participantSelect.innerHTML = '<option value="" disabled selected>Cargando clientes...</option>';
+        const clientesRef = db.collection('clientes').where('inTanda', '==', false);
+        const clientesSnapshot = await clientesRef.get();
+        if (clientesSnapshot.empty) {
+            participantSelect.innerHTML = '<option value="" disabled selected>No hay clientes disponibles</option>';
+        } else {
+            participantSelect.innerHTML = '<option value="" disabled selected>Selecciona un cliente</option>';
+            clientesSnapshot.forEach(doc => {
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = doc.data().fullName;
+                participantSelect.appendChild(option);
+            });
+        }
+
         participants.forEach((p, index) => {
             const li = document.createElement('li');
             li.className = 'flex items-center justify-between p-3 bg-md-surface-container-high rounded-lg';
@@ -539,7 +573,7 @@
             if (p.name) {
                 li.innerHTML = `
                     <span class="font-bold">Turno ${index + 1}: ${p.name}</span>
-                    <button class="bg-red-500 text-white hover:bg-red-600 font-bold py-1 px-3 rounded-full transition duration-300 delete-participant-button" data-index="${index}">
+                    <button class="bg-red-500 text-white hover:bg-red-600 font-bold py-1 px-3 rounded-full transition duration-300 delete-participant-button" data-index="${index}" data-uid="${p.uid}">
                         <i class="fas fa-trash"></i>
                     </button>
                 `;
@@ -564,8 +598,13 @@
 
     addParticipantForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = participantNameInput.value.trim();
-      if (!name) return;
+      const uid = participantSelect.value;
+      const name = participantSelect.options[participantSelect.selectedIndex].text;
+      
+      if (!uid) {
+        alert('Por favor, selecciona un cliente.');
+        return;
+      }
 
       const tandaRef = db.collection('tandas').doc(currentTandaId);
       const tandaDoc = await tandaRef.get();
@@ -573,11 +612,19 @@
       
       const updatedParticipants = [...tandaData.participants];
       
-      const firstAvailableIndex = updatedParticipants.findIndex(p => !p.name);
+      const firstAvailableIndex = updatedParticipants.findIndex(p => !p.uid);
       
       if (firstAvailableIndex !== -1) {
           updatedParticipants[firstAvailableIndex].name = name;
-          await tandaRef.update({ participants: updatedParticipants });
+          updatedParticipants[firstAvailableIndex].uid = uid;
+          
+          const batch = db.batch();
+          batch.update(tandaRef, { participants: updatedParticipants });
+          
+          const clientRef = db.collection('clientes').doc(uid);
+          batch.update(clientRef, { inTanda: true });
+
+          await batch.commit();
           
           addParticipantForm.reset();
           showParticipantsModal(currentTandaId);
@@ -588,24 +635,41 @@
     });
 
     participantsList.addEventListener('click', async (e) => {
-      if (e.target.closest('.delete-participant-button')) {
-        if (!confirm('¿Estás seguro de que quieres eliminar a este participante?')) return;
-        
-        const index = parseInt(e.target.closest('.delete-participant-button').dataset.index);
-        const tandaRef = db.collection('tandas').doc(currentTandaId);
-        const tandaDoc = await tandaRef.get();
-        const tandaData = tandaDoc.data();
-        
-        const updatedParticipants = [...tandaData.participants];
-        
-        updatedParticipants[index].name = null;
-        updatedParticipants[index].payments = Array.from({ length: tandaData.maxParticipants }, () => ({ isPaid: false }));
-        
-        await tandaRef.update({ participants: updatedParticipants });
-        
-        showParticipantsModal(currentTandaId);
-        fetchTandas();
+      const button = e.target.closest('.delete-participant-button');
+      if (!button) return;
+
+      if (!confirm('¿Estás seguro de que quieres eliminar a este participante?')) return;
+      
+      const index = parseInt(button.dataset.index);
+      const uid = button.dataset.uid;
+
+      const tandaRef = db.collection('tandas').doc(currentTandaId);
+      const tandaDoc = await tandaRef.get();
+      const tandaData = tandaDoc.data();
+      
+      const updatedParticipants = [...tandaData.participants];
+      
+      if (updatedParticipants[index].uid !== uid) {
+          console.error("UID no coincide, abortando eliminación.");
+          return;
       }
+      
+      updatedParticipants[index].name = null;
+      updatedParticipants[index].uid = null;
+      updatedParticipants[index].payments = Array.from({ length: tandaData.maxParticipants }, () => ({ isPaid: false }));
+      
+      const batch = db.batch();
+      batch.update(tandaRef, { participants: updatedParticipants });
+
+      if (uid) {
+        const clientRef = db.collection('clientes').doc(uid);
+        batch.update(clientRef, { inTanda: false });
+      }
+      
+      await batch.commit();
+      
+      showParticipantsModal(currentTandaId);
+      fetchTandas();
     });
 
     // Lógica para ver el detalle de la tanda
@@ -757,8 +821,8 @@
       const button = e.target.closest('.mark-received-button');
       if (!button) return;
 
-      const tandaId = button.dataset.tandaId;
-      const paymentIndex = parseInt(button.dataset.paymentIndex);
+      const tandaId = button.dataset.tanda-id;
+      const paymentIndex = parseInt(button.dataset.payment-index);
 
       if (!confirm(`¿Estás seguro de que quieres marcar el turno ${paymentIndex + 1} como Recibido?`)) {
         return;
@@ -834,3 +898,4 @@
   </script>
 </body>
 </html>
+
