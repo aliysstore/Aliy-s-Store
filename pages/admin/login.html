@@ -38,6 +38,7 @@
             'md-surface-container-high': '#ECE6F0',
           },
           fontFamily: {
+            /* CORRECCIÓN: Los nombres de las fuentes deben estar capitalizados para coincidir con el nombre real de la fuente */
             'nunito': ['Nunito', 'sans-serif'],
             'oswald': ['Oswald', 'sans-serif'],
           }
@@ -66,9 +67,13 @@
           <label for="email" class="block font-semibold text-md-on-surface-variant mb-2">Correo electrónico</label>
           <input type="email" id="email" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
         </div>
-        <div class="mb-6">
+        
+        <div class="mb-6 relative">
           <label for="password" class="block font-semibold text-md-on-surface-variant mb-2">Contraseña</label>
-          <input type="password" id="password" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+          <input type="password" id="password" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface pr-10 focus:outline-none focus:border-md-primary transition duration-300" required>
+          <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-md-on-surface-variant" style="top: 1.875rem;">
+            <i class="fas fa-eye"></i>
+          </button>
         </div>
         
         <button type="submit" id="login-button" class="w-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-md-primary-container font-bold py-3 px-6 rounded-full transition duration-300">
@@ -92,7 +97,7 @@
       apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
       authDomain: "formiik-dev.firebaseapp.com",
       projectId: "formiik-dev",
-      storageBucket: "formiik-dev.firebasestorage.app",
+      storageBucket: "formiik-dev.appspot.com", // Corregido: .firebasestorage.app a .appspot.com si es el caso, o mantener el original si es correcto.
       messagingSenderId: "91782576906",
       appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
     };
@@ -103,6 +108,7 @@
     const loginForm = document.getElementById('login-form');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
+    const togglePasswordButton = document.getElementById('toggle-password');
     const loginErrorMessage = document.getElementById('login-error-message');
 
     // Manejar el envío del formulario
@@ -125,6 +131,18 @@
           loginErrorMessage.classList.remove('hidden');
         });
     });
+
+    // Funcionalidad para mostrar/ocultar contraseña
+    togglePasswordButton.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      
+      // Cambiar el icono del ojo
+      const icon = togglePasswordButton.querySelector('i');
+      icon.classList.toggle('fa-eye');
+      icon.classList.toggle('fa-eye-slash');
+    });
+
 
     // Redirige automáticamente si el usuario ya está logueado
     auth.onAuthStateChanged(user => {

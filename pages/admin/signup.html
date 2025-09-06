@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Cuenta | Aliy's Store</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'md-primary': '#FF5277',
+            'md-on-primary': '#FFFFFF',
+            'md-primary-container': '#FFD9E2',
+            'md-on-primary-container': '#660021',
+            'md-secondary': '#5B4F7B',
+            'md-on-secondary': '#FFFFFF',
+            'md-secondary-container': '#E2D9FF',
+            'md-on-secondary-container': '#1C0D37',
+            'md-background': '#FFFBFE',
+            'md-on-background': '#1D1B1F',
+            'md-surface': '#FFFBFE',
+            'md-on-surface': '#1D1B1F',
+            'md-surface-variant': '#F3DDE3',
+            'md-on-surface-variant': '#504147',
+            'md-outline': '#837078',
+            'md-surface-container-high': '#ECE6F0',
+          },
+          fontFamily: {
+            'nunito': ['Nunito', 'sans-serif'],
+            'oswald': ['Oswald', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-md-background font-nunito text-md-on-background flex flex-col min-h-screen">
+  <header class="bg-md-surface-variant p-5 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+      <h1 class="text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store</h1>
+    </div>
+    <a href="index.html" class="bg-transparent border border-md-outline text-md-on-surface-variant hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-pink-100 font-bold py-2 px-4 rounded-full transition duration-300 flex items-center space-x-2">
+      <i class="fas fa-home text-lg"></i>
+      <span>Inicio</span>
+    </a>
+  </header>
+  
+  <main class="flex-grow flex items-center justify-center p-4 md:p-10">
+    <div class="max-w-2xl w-full mx-auto bg-md-surface rounded-lg shadow-lg p-6 md:p-8">
+      <h2 class="text-3xl font-oswald font-bold text-md-on-background mb-6 text-center">Crear una Cuenta</h2>
+      
+      <form id="register-form">
+        <div class="grid md:grid-cols-2 md:gap-6">
+          <div class="mb-4">
+            <label for="fullName" class="block font-semibold text-md-on-surface-variant mb-2">Nombre completo</label>
+            <input type="text" id="fullName" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+          </div>
+          <div class="mb-4">
+            <label for="email" class="block font-semibold text-md-on-surface-variant mb-2">Correo electrónico</label>
+            <input type="email" id="email" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+          </div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 md:gap-6">
+          <div class="mb-4 relative">
+            <label for="password" class="block font-semibold text-md-on-surface-variant mb-2">Contraseña</label>
+            <input type="password" id="password" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface pr-10 focus:outline-none focus:border-md-primary transition duration-300" required>
+            <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-md-on-surface-variant" style="top: 1.875rem;">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="mb-4">
+            <label for="phone" class="block font-semibold text-md-on-surface-variant mb-2">Número de teléfono</label>
+            <input type="tel" id="phone" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="dob" class="block font-semibold text-md-on-surface-variant mb-2">Fecha de nacimiento</label>
+          <input type="date" id="dob" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+        </div>
+
+        <hr class="my-4 border-md-outline">
+        <h3 class="text-xl font-oswald font-bold text-md-on-background mb-4">Dirección de Envío</h3>
+        
+        <div class="mb-4">
+            <label for="address" class="block font-semibold text-md-on-surface-variant mb-2">Calle y número</label>
+            <input type="text" id="address" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+        </div>
+        
+        <div class="grid md:grid-cols-2 md:gap-6">
+            <div class="mb-4">
+                <label for="neighborhood" class="block font-semibold text-md-on-surface-variant mb-2">Colonia</label>
+                <input type="text" id="neighborhood" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+            </div>
+            <div class="mb-4">
+                <label for="zipcode" class="block font-semibold text-md-on-surface-variant mb-2">Código Postal</label>
+                <input type="text" id="zipcode" inputmode="numeric" pattern="[0-9]{5}" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+            </div>
+        </div>
+        
+        <div class="grid md:grid-cols-2 md:gap-6">
+            <div class="mb-4">
+                <label for="city" class="block font-semibold text-md-on-surface-variant mb-2">Ciudad</label>
+                <input type="text" id="city" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+            </div>
+            <div class="mb-4">
+                <label for="state" class="block font-semibold text-md-on-surface-variant mb-2">Estado</label>
+                <input type="text" id="state" class="w-full p-3 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary transition duration-300" required>
+            </div>
+        </div>
+        
+        <button type="submit" id="register-button" class="mt-4 w-full bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container active:bg-md-primary-container font-bold py-3 px-6 rounded-full transition duration-300">
+          Crear cuenta
+        </button>
+      </form>
+
+      <div id="register-error-message" class="mt-4 text-center text-red-500 text-sm hidden"></div>
+      
+      <p class="mt-6 text-center text-md-on-surface-variant">
+        ¿Ya tienes una cuenta? <a href="login.html" class="font-bold text-md-primary hover:underline">Inicia sesión</a>
+      </p>
+    </div>
+  </main>
+  
+  <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant">
+      Aliy's Store &copy; 2024. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    // Configuración de Firebase - Reemplaza con tus datos
+    const firebaseConfig = {
+      apiKey: "AIzaSyDHxFawAx3IStuZefZtOj_yYRMCDj5V-Rk",
+      authDomain: "formiik-dev.firebaseapp.com",
+      projectId: "formiik-dev",
+      storageBucket: "formiik-dev.appspot.com",
+      messagingSenderId: "91782576906",
+      appId: "1:91782576906:web:f95afdbe0f80bfa58758f3",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const registerForm = document.getElementById('register-form');
+    const passwordInput = document.getElementById('password');
+    const togglePasswordButton = document.getElementById('toggle-password');
+    const registerErrorMessage = document.getElementById('register-error-message');
+
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      registerErrorMessage.classList.add('hidden');
+      registerErrorMessage.textContent = '';
+
+      const fullName = document.getElementById('fullName').value;
+      const email = document.getElementById('email').value;
+      const password = passwordInput.value;
+      const phone = document.getElementById('phone').value;
+      const dob = document.getElementById('dob').value;
+      const street = document.getElementById('address').value;
+      const neighborhood = document.getElementById('neighborhood').value;
+      const zipcode = document.getElementById('zipcode').value;
+      const city = document.getElementById('city').value;
+      const state = document.getElementById('state').value;
+      
+      auth.createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log('Usuario creado con éxito:', user.uid);
+          
+          return db.collection('users').doc(user.uid).set({
+            fullName: fullName,
+            email: email,
+            phone: phone,
+            dateOfBirth: dob,
+            address: {
+                street: street,
+                neighborhood: neighborhood,
+                zipcode: zipcode,
+                city: city,
+                state: state
+            },
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        })
+        .then(() => {
+          console.log('Datos adicionales del usuario guardados en Firestore.');
+          window.location.href = 'panel.html';
+        })
+        .catch((error) => {
+          console.error('Error durante el registro:', error);
+          let message = 'Ocurrió un error inesperado. Inténtalo de nuevo.';
+          if (error.code === 'auth/email-already-in-use') {
+            message = 'Este correo electrónico ya está registrado. Por favor, inicia sesión.';
+          } else if (error.code === 'auth/weak-password') {
+            message = 'La contraseña debe tener al menos 6 caracteres.';
+          }
+          registerErrorMessage.textContent = message;
+          registerErrorMessage.classList.remove('hidden');
+        });
+    });
+
+    togglePasswordButton.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      const icon = togglePasswordButton.querySelector('i');
+      icon.classList.toggle('fa-eye');
+      icon.classList.toggle('fa-eye-slash');
+    });
+
+    /*auth.onAuthStateChanged(user => {
+      if (user) {
+        window.location.replace('panel.html');
+      }
+    });*/
+  </script>
+</body>
+</html>
