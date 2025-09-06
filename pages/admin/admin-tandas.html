@@ -190,18 +190,20 @@
         <div class="modal-content">
           <span class="close-btn">&times;</span>
           <h2 class="text-2xl font-oswald font-bold mb-4">Participantes de la tanda</h2>
+          
           <div id="add-participant-section" class="mb-4">
-            <h3 class="text-xl font-bold font-oswald text-md-on-surface-variant mb-2">Añadir participante</h3>
+            <h3 class="text-xl font-bold font-oswald text-md-on-surface-variant mb-2">Asignar participante a un turno</h3>
             <form id="add-participant-form" class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
               <input type="text" id="participant-name" placeholder="Nombre" required class="flex-grow p-2 border border-md-outline rounded-lg bg-md-surface-container-high text-md-on-surface focus:outline-none focus:border-md-primary">
               <button type="submit" class="bg-md-secondary text-md-on-secondary hover:bg-md-secondary-container hover:text-md-on-secondary-container font-bold py-2 px-4 rounded-full transition duration-300">
-                Añadir
+                Asignar
               </button>
             </form>
             <p id="participant-count-message" class="mt-2 text-md-on-surface-variant text-sm"></p>
           </div>
+          
           <div id="participants-list-container" class="mt-6">
-            <h3 class="text-xl font-bold font-oswald text-md-on-surface-variant mb-2">Lista de participantes</h3>
+            <h3 class="text-xl font-bold font-oswald text-md-on-surface-variant mb-2">Lista de turnos</h3>
             <ul id="participants-list" class="space-y-2">
               </ul>
           </div>
@@ -342,11 +344,11 @@
         card.className = 'bg-md-surface p-6 rounded-lg shadow-lg flex flex-col justify-between';
         
         const participants = tanda.participants || [];
-        const participantsCount = participants.length;
+        const assignedParticipantsCount = participants.filter(p => p.name).length;
         
-        const totalRecaudado = participants.filter(p => p.hasReceived).length * tanda.amount;
+        const totalRecaudado = participants.filter(p => p.isReceived).length * tanda.amount;
         const totalPagado = participants.reduce((sum, p) => sum + (p.payments ? p.payments.filter(payment => payment.isPaid).length : 0), 0) * tanda.amount;
-        const totalCuotas = participantsCount * tanda.maxParticipants;
+        const totalCuotas = (assignedParticipantsCount || 0) * (tanda.maxParticipants || 0);
         const cuotasPagadas = participants.reduce((sum, p) => sum + (p.payments ? p.payments.filter(payment => payment.isPaid).length : 0), 0);
         
         card.innerHTML = `
@@ -362,7 +364,7 @@
                   <i class="fas fa-calendar-alt text-md-secondary"></i> Inicia: ${tanda.startDate ? new Date(tanda.startDate).toLocaleDateString() : 'N/A'}
                 </p>
                 <p class="text-md-on-surface-variant">
-                  <i class="fas fa-users text-md-on-surface-variant"></i> Participantes: ${participantsCount} / ${tanda.maxParticipants}
+                  <i class="fas fa-users text-md-on-surface-variant"></i> Participantes: ${assignedParticipantsCount} / ${tanda.maxParticipants}
                 </p>
                 <p class="text-md-on-surface-variant">
                   <i class="fas fa-globe text-md-secondary"></i> Visibilidad: ${tanda.isPublic ? 'Pública' : 'Privada'}
@@ -370,7 +372,7 @@
             </div>
             <div class="mt-4 pt-4 border-t border-md-surface-variant">
                 <p class="text-sm text-md-on-surface-variant">
-                  <i class="fas fa-dollar-sign text-md-primary"></i> Total pagado: $${totalPagado} / $${tanda.amount * tanda.maxParticipants}
+                  <i class="fas fa-dollar-sign text-md-primary"></i> Total pagado: $${totalPagado} / $${(assignedParticipantsCount || 0) * (tanda.amount || 0)}
                 </p>
                 <p class="text-sm text-md-on-surface-variant">
                   <i class="fas fa-check-double text-md-on-secondary-container"></i> Cuotas pagadas: ${cuotasPagadas} / ${totalCuotas}
@@ -396,18 +398,21 @@
     async function fetchTandas() {
       loadingSpinner.classList.remove('hidden');
       try {
-        const tandasRef = db.collection('tandas')/*.where('ownerId', '==', currentUserUid).orderBy('createdAt', 'desc')*/;
+        const tandasRef = db.collection('tandas').where('ownerId', '==', currentUserUid).orderBy('createdAt', 'desc');
         const snapshot = await tandasRef.get();
         allTandas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderTandas(allTandas);
       } catch (error) {
         console.error("Error al cargar las tandas:", error);
-        noTandasMessage.textContent = 'Hubo un error al cargar la lista de tandas.';
+    
+        // Muestra directamente el mensaje de error de Firestore.
+        noTandasMessage.textContent = `Hubo un error: ${error.message}`;
         noTandasMessage.classList.remove('hidden');
       } finally {
         loadingSpinner.classList.add('hidden');
       }
     }
+
 
     // Búsqueda
     tandaSearchInput.addEventListener('input', (e) => {
@@ -472,6 +477,12 @@
           await db.collection('tandas').doc(currentTandaId).update({ name, amount, period, startDate, paymentDay, maxParticipants, isPublic });
           tandaMessage.textContent = 'Tanda actualizada con éxito.';
         } else {
+          // Inicializar el array de participantes con el número máximo
+          const initialParticipants = Array.from({ length: maxParticipants }, () => ({
+            name: null,
+            payments: Array.from({ length: maxParticipants }, () => ({ isPaid: false }))
+          }));
+
           const newTanda = {
             name,
             amount,
@@ -480,7 +491,7 @@
             paymentDay,
             maxParticipants,
             isPublic,
-            participants: [],
+            participants: initialParticipants,
             isCompleted: false,
             ownerId: currentUserUid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
@@ -513,73 +524,82 @@
 
     // Lógica para gestionar participantes
     async function showParticipantsModal(tandaId) {
-      const tandaDoc = await db.collection('tandas').doc(tandaId).get();
-      const tandaData = tandaDoc.data();
-      const participants = tandaData.participants || [];
-      const maxParticipants = tandaData.maxParticipants || 0;
+        const tandaDoc = await db.collection('tandas').doc(tandaId).get();
+        const tandaData = tandaDoc.data();
+        const participants = tandaData.participants || [];
+        const maxParticipants = tandaData.maxParticipants || 0;
 
-      participantsList.innerHTML = '';
-      participants.forEach((p, index) => {
-        const li = document.createElement('li');
-        li.className = 'flex items-center justify-between p-3 bg-md-surface-container-high rounded-lg';
-        li.innerHTML = `
-          <span>Turno ${index + 1}: ${p.name}</span>
-          <button class="bg-red-500 text-white hover:bg-red-600 font-bold py-1 px-3 rounded-full transition duration-300 delete-participant-button" data-index="${index}">
-            <i class="fas fa-trash"></i>
-          </button>
-        `;
-        participantsList.appendChild(li);
-      });
-      
-      participantCountMessage.textContent = `Participantes actuales: ${participants.length} de ${maxParticipants}`;
-      
-      if (participants.length >= maxParticipants) {
-        addParticipantSection.classList.add('hidden');
-      } else {
-        addParticipantSection.classList.remove('hidden');
-      }
-      
-      participantsModal.style.display = 'block';
+        participantsList.innerHTML = '';
+        const assignedParticipantsCount = participants.filter(p => p.name).length;
+
+        participants.forEach((p, index) => {
+            const li = document.createElement('li');
+            li.className = 'flex items-center justify-between p-3 bg-md-surface-container-high rounded-lg';
+            
+            if (p.name) {
+                li.innerHTML = `
+                    <span class="font-bold">Turno ${index + 1}: ${p.name}</span>
+                    <button class="bg-red-500 text-white hover:bg-red-600 font-bold py-1 px-3 rounded-full transition duration-300 delete-participant-button" data-index="${index}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+            } else {
+                li.innerHTML = `
+                    <span class="text-gray-500 italic">Turno ${index + 1}: Espacio disponible</span>
+                `;
+            }
+            participantsList.appendChild(li);
+        });
+
+        participantCountMessage.textContent = `Participantes asignados: ${assignedParticipantsCount} de ${maxParticipants}`;
+
+        if (assignedParticipantsCount >= maxParticipants) {
+            addParticipantSection.classList.add('hidden');
+        } else {
+            addParticipantSection.classList.remove('hidden');
+        }
+        
+        participantsModal.style.display = 'block';
     }
 
     addParticipantForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const name = participantNameInput.value;
-      
+      const name = participantNameInput.value.trim();
+      if (!name) return;
+
       const tandaRef = db.collection('tandas').doc(currentTandaId);
       const tandaDoc = await tandaRef.get();
       const tandaData = tandaDoc.data();
       
-      const participants = tandaData.participants || [];
-      const maxParticipants = tandaData.maxParticipants || 0;
+      const updatedParticipants = [...tandaData.participants];
       
-      if (participants.length >= maxParticipants) {
-          alert('Ya se ha alcanzado el número máximo de participantes.');
-          return;
+      const firstAvailableIndex = updatedParticipants.findIndex(p => !p.name);
+      
+      if (firstAvailableIndex !== -1) {
+          updatedParticipants[firstAvailableIndex].name = name;
+          await tandaRef.update({ participants: updatedParticipants });
+          
+          addParticipantForm.reset();
+          showParticipantsModal(currentTandaId);
+          fetchTandas();
+      } else {
+          alert('Ya no hay espacios disponibles para asignar.');
       }
-      
-      const payments = Array.from({ length: maxParticipants }, (_, i) => ({ isPaid: false, isReceived: false }));
-      const newParticipant = { name, payments };
-      
-      const updatedParticipants = [...participants, newParticipant];
-      
-      await tandaRef.update({ participants: updatedParticipants });
-      
-      addParticipantForm.reset();
-      showParticipantsModal(currentTandaId);
-      fetchTandas();
     });
 
     participantsList.addEventListener('click', async (e) => {
-      if (e.target.classList.contains('delete-participant-button')) {
+      if (e.target.closest('.delete-participant-button')) {
         if (!confirm('¿Estás seguro de que quieres eliminar a este participante?')) return;
         
-        const index = parseInt(e.target.dataset.index);
+        const index = parseInt(e.target.closest('.delete-participant-button').dataset.index);
         const tandaRef = db.collection('tandas').doc(currentTandaId);
         const tandaDoc = await tandaRef.get();
         const tandaData = tandaDoc.data();
         
-        const updatedParticipants = tandaData.participants.filter((_, i) => i !== index);
+        const updatedParticipants = [...tandaData.participants];
+        
+        updatedParticipants[index].name = null;
+        updatedParticipants[index].payments = Array.from({ length: tandaData.maxParticipants }, () => ({ isPaid: false }));
         
         await tandaRef.update({ participants: updatedParticipants });
         
@@ -599,7 +619,7 @@
       detailPeriod.textContent = tandaData.period;
       detailStartDate.textContent = tandaData.startDate ? new Date(tandaData.startDate).toLocaleDateString() : 'N/A';
       detailPaymentDay.textContent = tandaData.paymentDay || 'N/A';
-      detailParticipantsCount.textContent = participants.length;
+      detailParticipantsCount.textContent = participants.filter(p => p.name).length;
       detailMaxParticipants.textContent = tandaData.maxParticipants;
       detailTotalAmount.textContent = `$${tandaData.amount * tandaData.maxParticipants}`;
       
@@ -614,7 +634,7 @@
         <th class="px-3 py-2 text-left text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">Recibe</th>
       `;
       participants.forEach(p => {
-          headerHTML += `<th class="px-3 py-2 text-center text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">${p.name}</th>`;
+          headerHTML += `<th class="px-3 py-2 text-center text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">${p.name || 'Sin asignar'}</th>`;
       });
       headerHTML += `<th class="px-3 py-2 text-center text-xs font-medium text-md-on-surface-variant uppercase tracking-wider">Estado</th>`;
 
@@ -645,32 +665,42 @@
           const payment = p.payments ? p.payments[i] : null;
           const isPaid = payment && payment.isPaid;
           if (!isPaid) { allPaid = false; }
-
+          
           let cellContent = '';
 
-          //if (i === pIndex) { // El participante es el que recibe
-          //   cellContent = `<span class="text-md-primary font-bold">RECIBE</span>`;
-          //} else { // El participante es el que paga
+          // Si el participante tiene nombre y no es el turno que le toca recibir
+          //if (p.name && i !== pIndex) {
             cellContent = `
               <button class="mark-paid-button font-bold py-1 px-3 rounded-full transition duration-300" 
                 data-tanda-id="${tandaId}" data-participant-index="${pIndex}" data-payment-index="${i}" ${isPaid ? 'disabled' : ''}>
                 <i class="${isPaid ? 'fas fa-check-circle text-green-600' : 'fas fa-circle-notch text-md-on-surface-variant'}"></i>
               </button>
             `;
+          //} else if (p.name && i === pIndex) {
+          //  cellContent = `<span class="text-md-primary font-bold">RECIBE</span>`;
           //}
+
           rowHTML += `<td class="px-3 py-2 whitespace-nowrap text-sm text-md-on-surface text-center">${cellContent}</td>`;
         });
+        
 
         // Celda de estado del turno
-        const isReceived = participants[i] && participants[i].payments && participants[i].payments[i] && participants[i].payments[i].isReceived;
+        const receiverParticipant = participants[i];
+        const isReceived = receiverParticipant && receiverParticipant.payments && receiverParticipant.payments[i] && receiverParticipant.payments[i].isReceived;
         let statusContent = '';
-        if (allPaid && !isReceived) {
-          statusContent = `<button class="mark-received-button bg-green-500 text-white font-bold py-1 px-3 rounded-full text-sm" data-tanda-id="${tandaId}" data-payment-index="${i}">Marcar Recibido</button>`;
-        } else if (isReceived) {
-          statusContent = `<span class="text-green-600 font-bold">Recibido</span>`;
+        
+        if (receiverParticipant.name) {
+            if (allPaid && !isReceived) {
+              statusContent = `<button class="mark-received-button bg-green-500 text-white font-bold py-1 px-3 rounded-full text-sm" data-tanda-id="${tandaId}" data-payment-index="${i}">Marcar Recibido</button>`;
+            } else if (isReceived) {
+              statusContent = `<span class="text-green-600 font-bold">Recibido</span>`;
+            } else {
+              statusContent = `<span class="text-red-500 font-bold">Pendiente</span>`;
+            }
         } else {
-          statusContent = `<span class="text-red-500 font-bold">Pendiente</span>`;
+            statusContent = `<span class="text-gray-500 italic">Turno sin asignar</span>`;
         }
+        
         rowHTML += `<td class="px-3 py-2 whitespace-nowrap text-sm text-md-on-surface text-center">${statusContent}</td>`;
         
         row.innerHTML = rowHTML;
@@ -739,8 +769,10 @@
       const tandaData = tandaDoc.data();
       
       const updatedParticipants = [...tandaData.participants];
-      if (updatedParticipants[paymentIndex].payments && updatedParticipants[paymentIndex].payments[paymentIndex]) {
-          updatedParticipants[paymentIndex].payments[paymentIndex].isReceived = true;
+      const receiverParticipant = updatedParticipants[paymentIndex];
+
+      if (receiverParticipant && receiverParticipant.payments && receiverParticipant.payments[paymentIndex]) {
+          receiverParticipant.payments[paymentIndex].isReceived = true;
       } else {
           console.error("El array de pagos para el receptor del turno no existe.");
           return;
