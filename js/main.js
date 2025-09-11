@@ -431,6 +431,69 @@ async function fetchCatalogos() {
             catalogosData.push(doc.data());
         });
 
+        // Contar catálogos por marca
+        const catalogosPorMarca = {};
+        catalogosData.forEach(catalogo => {
+            if (catalogo.marca) {
+                const marca = catalogo.marca.toLowerCase();
+                if (catalogosPorMarca[marca]) {
+                    catalogosPorMarca[marca]++;
+                } else {
+                    catalogosPorMarca[marca] = 1;
+                }
+            }
+        });
+
+        const brands = [...new Set(catalogosData.map(item => item.marca).filter(Boolean))].sort();
+
+        createFilterButtons(brands);
+        displayCatalogos();
+        
+        // Actualizar el conteo en el HTML
+        updateBrandCatalogsCount(catalogosPorMarca);
+
+        loadingState.classList.add('hidden');
+        contentContainer.classList.remove('hidden');
+
+        checkUrlFilter();
+        checkUrlCatalog();
+
+    } catch (error) {
+        console.error("Error fetching documents: ", error);
+        loadingState.classList.add('hidden');
+        errorState.classList.remove('hidden');
+    }
+}
+
+function updateBrandCatalogsCount(counts) {
+    const brands = ['andrea', 'cklass', 'price shoes']; // Lista de marcas en el mismo orden que tu HTML
+    
+    brands.forEach(brand => {
+        const brandSlug = brand.replace(/\s+/g, '-').toLowerCase();
+        const element = document.getElementById(`count-${brandSlug}`);
+        const count = counts[brand.toLowerCase()] || 0; // Si no hay conteo, se muestra 0
+        if (element) {
+            element.textContent = `Catálogos disponibles: ${count}`;
+        }
+    });
+}
+
+
+/*async function fetchCatalogos() {
+    loadingState.classList.remove('hidden');
+    errorState.classList.add('hidden');
+    noResultsState.classList.add('hidden');
+    contentContainer.classList.add('hidden');
+    catalogGrid.style.visibility = 'hidden';
+
+    try {
+        const catalogosRef = db.collection('catalogo');
+        const snapshot = await catalogosRef.get();
+        catalogosData = [];
+        snapshot.forEach(doc => {
+            catalogosData.push(doc.data());
+        });
+
         const brands = [...new Set(catalogosData.map(item => item.marca).filter(Boolean))].sort();
 
         createFilterButtons(brands);
@@ -447,7 +510,7 @@ async function fetchCatalogos() {
         loadingState.classList.add('hidden');
         errorState.classList.remove('hidden');
     }
-}
+}*/
 
 function checkUrlCatalog() {
     const urlParams = new URLSearchParams(window.location.search);
