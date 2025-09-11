@@ -200,7 +200,7 @@ function displayCatalogos() {
         const card = document.createElement('a');
         card.href = catalogo.url;
         card.target = "_blank";
-        card.className = 'group rounded-lg shadow-md hover:shadow-lg transition-transform hover:scale-105 duration-300 bg-md-surface flex flex-col overflow-hidden catalog-item';
+        card.className = 'group rounded-lg border border-md-secondary-container shadow-sm hover:shadow-md transition-transform hover:scale-105 duration-300 bg-white flex flex-col overflow-hidden catalog-item';
         card.setAttribute("data-groups", JSON.stringify(allClasses));
 
         if (catalogo.prioridad !== undefined) {
