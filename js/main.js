@@ -19,6 +19,18 @@ const filterContainer = document.getElementById('filter-container');
 const whatsappButton = document.getElementById('whatsapp-contact-button');
 const sidebarLinks = document.querySelectorAll('.sidebar-link');
 
+// Estilos base para los botones de filtro (deben coincidir con los de createFilterButtons)
+const baseClasses = 'px-4 py-2 rounded-full font-bold transition-colors duration-300 text-sm md:text-base ' +
+    'bg-transparent border-2 border-md-primary text-md-on-surface-variant ' +
+    'hover:bg-md-primary-container hover:text-md-on-primary-container ' +
+    'focus:outline-none focus:ring-2 focus:ring-md-primary';
+    
+// Estilos para el botón activo (deben coincidir con los de createFilterButtons)
+const activeClasses = 'px-4 py-2 rounded-full font-bold transition-colors duration-300 text-sm md:text-base ' +
+    'bg-md-primary border-2 border-md-primary text-md-on-primary ' +
+    'hover:bg-md-primary-container hover:text-md-on-primary-container ' +
+    'focus:outline-none focus:ring-2 focus:ring-md-primary';
+
 const loadingState = document.getElementById('loading-state');
 const errorState = document.getElementById('error-state');
 const noResultsState = document.getElementById('no-results-state');
@@ -251,18 +263,6 @@ function displayCatalogos() {
 }
 
 function createFilterButtons(brands) {
-    // Estilos base para todos los botones (fondo transparente)
-    const baseClasses = 'px-4 py-2 rounded-full font-bold transition-colors duration-300 text-sm md:text-base ' +
-                        'bg-transparent border-2 border-md-primary text-md-on-surface-variant ' +
-                        'hover:bg-md-primary-container hover:text-md-on-primary-container ' +
-                        'focus:outline-none focus:ring-2 focus:ring-md-primary';
-    
-    // Estilos para el botón activo (fondo sólido)
-    const activeClasses = 'px-4 py-2 rounded-full font-bold transition-colors duration-300 text-sm md:text-base ' +
-                          'bg-md-primary border-2 border-md-primary text-md-on-primary ' +
-                          'hover:bg-md-primary-container hover:text-md-on-primary-container ' +
-                          'focus:outline-none focus:ring-2 focus:ring-md-primary';
-
     filterContainer.innerHTML = '';
 
     // Botón "Todo"
@@ -305,6 +305,42 @@ function createFilterButtons(brands) {
     });
 }
 
+function checkUrlFilter() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const brandFromUrl = urlParams.get('brand');
+    const categoryFromUrl = urlParams.get('category');
+
+    if (brandFromUrl) {
+        // Seleccionamos el botón usando el `data-filter`
+        const filterButton = document.querySelector(`button[data-filter="${brandFromUrl}"]`);
+        if (filterButton) {
+            // Remueve las clases activas de todos los botones y añade las clases base
+            document.querySelectorAll('#filter-container button').forEach(btn => {
+                btn.className = baseClasses;
+            });
+
+            // Añade las clases activas al botón del filtro de la URL
+            filterButton.className = activeClasses;
+            filters.brand = brandFromUrl;
+        }
+    }
+
+    if (categoryFromUrl) {
+        // La lógica para la categoría asume que `sidebar-link` se mantiene con su CSS original
+        const sidebarLink = document.querySelector(`.sidebar-link[data-filter="${categoryFromUrl}"]`);
+        if (sidebarLink) {
+            sidebarLinks.forEach(l => l.classList.remove('active'));
+            sidebarLink.classList.add('active');
+            filters.category = categoryFromUrl;
+        }
+    }
+
+    if (shuffleInstance) {
+        applyFilters();
+    }
+}
+
+
 
 /*function createFilterButtons(brands) {
     filterContainer.innerHTML = '';
@@ -334,7 +370,7 @@ function createFilterButtons(brands) {
     });
 }*/
 
-function checkUrlFilter() {
+/*function checkUrlFilter() {
     const urlParams = new URLSearchParams(window.location.search);
     const brandFromUrl = urlParams.get('brand');
     const categoryFromUrl = urlParams.get('category');
@@ -360,7 +396,7 @@ function checkUrlFilter() {
     if (shuffleInstance) {
         applyFilters();
     }
-}
+}*/
 
 function updateUrlParameter(brandName, categoryName) {
     const urlParams = new URLSearchParams(window.location.search);
