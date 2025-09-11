@@ -251,6 +251,62 @@ function displayCatalogos() {
 }
 
 function createFilterButtons(brands) {
+    // Estilos base para todos los botones (fondo transparente)
+    const baseClasses = 'px-4 py-2 rounded-full font-bold transition-colors duration-300 text-sm md:text-base ' +
+                        'bg-transparent border-2 border-md-primary text-md-on-surface-variant ' +
+                        'hover:bg-md-primary-container hover:text-md-on-primary-container ' +
+                        'focus:outline-none focus:ring-2 focus:ring-md-primary';
+    
+    // Estilos para el botón activo (fondo sólido)
+    const activeClasses = 'px-4 py-2 rounded-full font-bold transition-colors duration-300 text-sm md:text-base ' +
+                          'bg-md-primary border-2 border-md-primary text-md-on-primary ' +
+                          'hover:bg-md-primary-container hover:text-md-on-primary-container ' +
+                          'focus:outline-none focus:ring-2 focus:ring-md-primary';
+
+    filterContainer.innerHTML = '';
+
+    // Botón "Todo"
+    const allButton = document.createElement('button');
+    allButton.textContent = 'Todo';
+    allButton.className = activeClasses; // Empieza como activo
+    allButton.dataset.filter = 'all';
+    filterContainer.appendChild(allButton);
+
+    // Botones de marcas
+    brands.forEach(brand => {
+        const button = document.createElement('button');
+        button.textContent = brand;
+        button.className = `${baseClasses} ${activeClasses}`; // No está activo al inicio
+        button.dataset.filter = brand.replace(/\s+/g, '-').toLowerCase();
+        filterContainer.appendChild(button);
+    });
+
+    // Delegación de eventos
+    filterContainer.addEventListener('click', (event) => {
+        const clickedButton = event.target;
+        if (clickedButton.tagName === 'BUTTON') {
+            searchBar.value = '';
+            
+            // Remueve los estilos activos de todos los botones
+            document.querySelectorAll('#filter-container button').forEach(btn => {
+                btn.classList.remove(...activeClasses.split(' '));
+                btn.classList.add(...baseClasses.split(' '));
+            });
+
+            // Agrega los estilos activos al botón clickeado
+            clickedButton.classList.remove(...baseClasses.split(' '));
+            clickedButton.classList.add(...activeClasses.split(' '));
+            // clickedButton.className = `${baseClasses} ${activeClasses}`
+            
+            filters.brand = clickedButton.dataset.filter;
+            applyFilters();
+            updateUrlParameter(filters.brand, filters.category);
+        }
+    });
+}
+
+
+/*function createFilterButtons(brands) {
     filterContainer.innerHTML = '';
     const allButton = document.createElement('button');
     allButton.textContent = 'Todo';
@@ -276,7 +332,7 @@ function createFilterButtons(brands) {
             updateUrlParameter(filters.brand, filters.category);
         }
     });
-}
+}*/
 
 function checkUrlFilter() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -559,6 +615,7 @@ async function generarCarruselMarcas() {
             { name: "Reebok", image: "assets/img/reebok.svg" },
             { name: "Skechers", image: "assets/img/skechers.svg" },
             { name: "Thalia", image: "assets/img/Thalia_S.svg" },
+            
             { name: "Timberland", image: "assets/img/Timberland.svg" },
             { name: "Tommy", image: "assets/img/Tommy.svg" },
             { name: "Under Armour", image: "assets/img/Under_Armour.svg" },
