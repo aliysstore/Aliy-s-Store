@@ -549,6 +549,20 @@ async function generarCarruselMarcas() {
             { name: "Lotto", image: "assets/img/lotto.svg" },
             { name: "Michael Domit", image: "assets/img/Michael_Domit.svg" },
             { name: "Mirage", image: "assets/img/mirage.svg" },
+            { name: "Newera", image: "assets/img/newera.svg" },
+            { name: "Panam", image: "assets/img/Panam.svg" },
+            { name: "Perry Ellis", image: "assets/img/perry_ellis.svg" },
+            { name: "Pirma", image: "assets/img/pirma.svg" },
+            { name: "Polo", image: "assets/img/Polo.svg" },
+            { name: "Prokennex", image: "assets/img/PROKENNEX.svg" },
+            { name: "Puma", image: "assets/img/PUMA.svg" },
+            { name: "Reebok", image: "assets/img/reebok.svg" },
+            { name: "Skechers", image: "assets/img/skechers.svg" },
+            { name: "Thalia", image: "assets/img/Thalia_S.svg" },
+            { name: "Timberland", image: "assets/img/Timberland.svg" },
+            { name: "Tommy", image: "assets/img/Tommy.svg" },
+            { name: "Under Armour", image: "assets/img/Under_Armour.svg" },
+            { name: "Vans", image: "assets/img/Vans.svg" }
         ];
 
         marcas.forEach(marca => {
