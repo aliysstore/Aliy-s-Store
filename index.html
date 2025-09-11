@@ -43,7 +43,7 @@
 </head>
 <body class="bg-md-background font-nunito text-md-on-background">
   <div class="flex flex-col min-h-screen">
-    <header class="bg-md-surface-variant p-5 flex justify-between items-center z-50">
+    <header class="bg-surface-variant p-5 flex justify-between items-center z-50 shadow-md">
     <div id="title-container" class="flex items-center space-x-2">
         <span class="text-2xl font-oswald font-bold text-md-on-surface-variant">Aliy's Store</span>
     </div>
@@ -71,23 +71,73 @@
 
     
     
-      <main class="flex-grow bg-md-background p-5">
-        <section id="status-messages">
-          <div id="loading-state" class="flex flex-col items-center justify-center min-h-[50vh]">
-            <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
-            <p class="mt-4 text-md-on-surface-variant text-lg">Cargando catálogo...</p>
-          </div>
+      <main class="flex-grow bg-md-background">
+          <section class="mb-8 p-8 md:p-12 text-center text-white bg-gradient-to-b from-md-primary to-md-tertiary">
+    <h1 class="text-3xl md:text-5xl font-bold font-oswald leading-tight">Bienvenido a Aliy's Store</h1>
+    <p class="mt-2 text-md md:text-xl font-nunito font-light">
+        Explora nuestros catálogos exclusivos de Andrea, Cklass y Price Shoes. Encuentra el estilo perfecto para cada ocasión.
+    </p>
+    
+    <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+        <a href="#catalog-content" class="inline-block
+            bg-white text-md-primary hover:bg-md-primary-container hover:text-md-on-primary-container
+            font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+            <i class="fas fa-book mr-2"></i> Ver catálogos
+        </a>
+        <a href="https://wa.me/5212285722185" target="_blank" class="inline-block
+            bg-white text-md-primary hover:bg-md-primary-container hover:text-md-on-primary-container
+            font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
+            <i class="fab fa-whatsapp mr-2"></i> Contáctame ahora
+        </a>
+    </div>
+
+</section>
+
+          
+          
+          <section class="mb-8 p-5">
+    <h2 class="text-2xl font-bold font-oswald text-md-on-surface text-center mb-2">Nuestras marcas</h2>
+    <p class="text-lg text-md-on-surface-variant text-center mb-6">Encuentra los catálogos de calzado y ropa más populares de México. Haz clic en el catálogo de tu preferencia para conocer las últimas tendencias.</p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-md-surface-container-low p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+            <img src="assets/img/andrea_logo.jpeg" alt="Logo de Andrea" class="h-20 w-auto mb-4 object-contain shadow-sm rounded-lg">
+            <h3 class="text-xl font-bold font-oswald text-md-on-surface">Andrea</h3>
+            <p class="text-md-on-surface-variant mt-2 mb-2 italic">Moda que se adapta a tu estilo de vida</p>
+            <p class="text-md-on-surface-variant text-sm mt-auto">Catálogos disponibles: 4</p>
+        </div>
+        <div class="bg-md-surface-container-low p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+            <img src="assets/img/cklass_logo.jpeg" alt="Logo de Cklass" class="h-20 w-auto mb-4 object-contain shadow-sm rounded-lg">
+            <h3 class="text-xl font-bold font-oswald text-md-on-surface">Cklass</h3>
+            <p class="text-md-on-surface-variant mt-2 mb-2 italic">Las mejores tendencias de calzado</p>
+            <p class="text-md-on-surface-variant text-sm mt-auto">Catálogos disponibles: 5</p>
+        </div>
+        <div class="bg-md-surface-container-low p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+            <img src="assets/img/price_shoes_logo.jpeg" alt="Logo de Price Shoes" class="h-20 w-auto mb-4 object-contain shadow-sm rounded-lg">
+            <h3 class="text-xl font-bold font-oswald text-md-on-surface">Price Shoes</h3>
+            <p class="text-md-on-surface-variant mt-2 mb-2 italic">Moda para toda la familia</p>
+            <p class="text-md-on-surface-variant text-sm mt-auto">Catálogos disponibles: 3</p>
+        </div>
+    </div>
+</section>
+
+
+          
+          <section id="status-messages">
+            <div id="loading-state" class="flex flex-col items-center justify-center min-h-[50vh]">
+              <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
+              <p class="mt-4 text-md-on-surface-variant text-lg">Cargando catálogo...</p>
+            </div>
   
-          <div id="error-state" class="hidden flex flex-col items-center justify-center min-h-[50vh] text-center">
-              <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
-              <p class="text-md-on-surface-variant text-lg">No pudimos cargar el catálogo. Por favor, revisa tu conexión a internet.</p>
-              <button id="retry-button" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300">
-                  Intentar de nuevo
-              </button>
-          </div>
+            <div id="error-state" class="hidden flex flex-col items-center justify-center min-h-[50vh] text-center">
+                <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+                <p class="text-md-on-surface-variant text-lg">No pudimos cargar el catálogo. Por favor, revisa tu conexión a internet.</p>
+                <button id="retry-button" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300">
+                    Intentar de nuevo
+                </button>
+            </div>
         </section>
 
-        <section id="catalog-content" class="hidden pb-5">
+        <section id="catalog-content" class="bg-white hidden p-5">
           <div id="filter-container" class="mb-8 flex flex-wrap gap-2 justify-center">
           </div>
           <div id="catalog-grid" class="catalog-grid flex flex-wrap gap-4">
@@ -100,7 +150,7 @@
           </div>
         </section>
         
-        <section id="carousel-brands">
+        <section id="carousel-brands" class="p-5">
           <h2 class="text-xl font-bold text-md-on-surface mb-2 mt-8">Encuentra más de 200 marcas</h2>
             <div class="w-full relative">
             <div class="swiper default-carousel swiper-container">
@@ -109,7 +159,7 @@
             </div>
         </section>
         
-        <section class="container mx-auto">
+        <section class="container mx-auto p-5">
     <h2 class="text-3xl font-bold text-center mb-8 font-oswald text-md-on-surface">¿Por qué comprar en Aliy's Store?</h2>
     <div class="flex flex-col md:flex-row md:space-x-8 space-y-8 md:space-y-0">
         <div class="flex flex-col items-center text-center p-6 bg-md-surface-container rounded-lg shadow-md">
@@ -140,7 +190,7 @@
 
       </main>
     
-    <footer class="bg-md-surface-container-high p-5 text-center text-md-on-surface-variant z-50">
+    <footer class="bg-md-primary p-5 text-center text-md-on-primary z-50">
       Aliy's Store &copy; 2024. Todos los derechos reservados.
     </footer>
   </div>
