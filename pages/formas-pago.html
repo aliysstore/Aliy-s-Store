@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Aliy's Store | Formas de pago" />
+    <meta property="og:description" content="Hola, soy Alicia y te ayudo a encontrar el producto perfecto para ti" />
+    <meta property="og:image" content="https://aliysstore.github.io/Aliy-s-Store/assets/img/perfil.jpg" />
+    <meta property="og:url" content="https://aliysstore.github.io/Aliy-s-Store" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Aliy's Store | Venta por catálogo" />
+    <meta name="twitter:description" content="Hola, soy Alicia y te ayudo a encontrar el producto perfecto para ti" />
+    <meta name="twitter:image" content="https://aliysstore.github.io/Aliy-s-Store/assets/img/perfil.jpg" />
+    <meta name="google-site-verification" content="OJZCwNFA7qoGBq9oi98SAslM7bHUFF-6A_8wYiELeVU" />
+    <title>Aliy's Store | Formas de pago</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../js/tailwind.config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Shuffle/6.0.0/shuffle.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZW7YPM60FN"></script>
+    <script src=" ../js/gtag.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  </head>
+  <body class="bg-md-background font-nunito text-md-on-background">
+    <div class="flex flex-col min-h-screen">
+      <header class="bg-surface-variant p-5 flex justify-between items-center z-50 shadow-md">
+        <div id="title-container" class="flex items-center space-x-2">
+          <span class="text-2xl font-oswald font-bold text-md-primary">Aliy's Store</span>
+        </div>
+      </header>
+      <main class="flex-grow bg-md-background">
+        <section class="mb-8 p-8 md:p-12 text-center text-white bg-gradient-to-r from-md-primary to-md-primary/50">
+          <h1 class="text-3xl md:text-5xl font-bold font-oswald leading-tight">Formas de pago</h1>
+          <p class="mt-2 text-md md:text-xl font-nunito font-light">En Aliy's Store te ofrecemos múltiples opciones de pago flexibles para que elijas la que mejor se adapte a tus necesidades</p>
+        </section>
+        
+        <section class="p-5">
+          <div class="flex flex-col space-y-4">
+            
+            <div class="bg-md-surface-container-low p-6 rounded-lg border border-md-surface-variant shadow-sm w-full flex flex-col items-start space-y-3 text-start hover:border-green-500 hover:shadow-md animate-fade-in-up">
+              <div class="bg-gradient-to-br from-green-500 to-green-300 text-white p-5 rounded-md flex-shrink-0 shadow-md">
+                <i class="fa-solid fa-money-bill text-4xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold font-oswald">Pago de contado</h3>
+                <p class="mt-1 text-lg text-md-on-surface/75">Liquidación contra entrega</p>
+                <div class="w-full h-px my-2 bg-gradient-to-r from-transparent via-md-surface-variant to-transparent"></div>
+                <div class="w-full">
+                  <p class="text-md-on-surface flex items-start justify-start space-x-2">
+                    <span class="w-6 h-6 bg-green-100 text-green-500 rounded-full flex-shrink-0 flex items-center justify-center">
+                      <i class="w-4 h-4 fa-regular fa-check-circle"></i>
+                    </span>
+                    <span class="text-base"><strong>Pago al recibir tu pedido: </strong>liquidarás el 100% del monto únicamente cuando tengas tu producto en mano.</span>
+                  </p>
+                </div>
+                <div class="w-full mt-4">
+                  <p class="text-md-on-surface flex items-start justify-start space-x-2">
+                    <span class="w-6 h-6 bg-green-100 text-green-500 rounded-full flex-shrink-0 flex items-center justify-center">
+                      <i class="w-4 h-4 fa-regular fa-check-circle"></i>
+                    </span>
+                    <span class="text-base"><strong>Verificación previa: </strong>antes de pagar, podrás revisar que tu producto esté en perfecto estado.</span>
+                  </p>
+                </div>
+                <div class="w-full mt-4">
+                  <p class="text-md-on-surface flex items-start justify-start space-x-2">
+                    <span class="w-6 h-6 bg-green-100 text-green-500 rounded-full flex-shrink-0 flex items-center justify-center">
+                      <i class="w-4 h-4 fa-regular fa-check-circle"></i>
+                    </span>
+                    <span class="text-base"><strong>Formas de pago aceptadas:</strong></span>
+                  </p>
+                  <ul class="w-full pl-8 my-2 space-y-2">
+                    <li class="text-md-on-surface flex items-center justify-start space-x-2">
+                      <span class="text-green-400 flex-shrink-0">
+                        <i class="fa-solid fa-check text-[12px]"></i>
+                      </span>
+                      <span class="text-base">Efectivo</span>
+                    </li>
+                    <li class="text-md-on-surface flex items-center justify-start space-x-2">
+                      <span class="text-green-400 flex-shrink-0">
+                        <i class="fa-solid fa-check text-[12px]"></i>
+                      </span>
+                      <span class="text-base">Transferencia</span>
+                    </li>
+                    <li class="text-md-on-surface flex items-center justify-start space-x-2">
+                      <span class="text-green-400 flex-shrink-0">
+                        <i class="fa-solid fa-check text-[12px]"></i>
+                      </span>
+                      <span class="text-base">Tarjetas de débito o crédito</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="w-full p-4 bg-green-100 rounded-lg border border-gray-300 flex items-center justify-center">
+                <span class="text-base text-center text-green-800"><strong>Recibe, revisa y paga con confianza.</strong></span>
+              </div>
+            </div>
+            
+            <div class="bg-md-surface-container-low p-6 rounded-lg border border-md-surface-variant shadow-sm w-full flex flex-col items-start space-y-2 text-start hover:border-blue-500 hover:shadow-md animate-fade-in-up">
+              <div class="bg-gradient-to-br from-blue-500 to-blue-300 text-white p-5 rounded-md flex-shrink-0 shadow-md">
+                <i class="fa-solid fa-credit-card text-4xl"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold font-oswald">Pago a meses sin sin intereses</h3>
+                <p class="mt-1 text-lg text-md-on-surface/75">Con tarjetas de crédito</p>
+                <div class="w-full h-px my-2 bg-gradient-to-r from-transparent via-md-surface-variant to-transparent"></div>
+                <div class="w-full">
+                  <p class="text-md-on-surface flex items-start justify-start space-x-2">
+                    <span class="w-6 h-6 bg-blue-100 text-blue-500 rounded-full flex-shrink-0 flex items-center justify-center">
+                      <i class="w-4 h-4 fa-regular fa-check-circle"></i>
+                    </span>
+                    <span class="text-base"><strong>Compra ahora, paga después sin intereses: </strong>difiere tu compra en mensualidades cómodas con tu tarjeta de crédito.</span>
+                  </p>
+                </div>
+                <div class="w-full mt-4">
+                  <p class="text-md-on-surface flex items-start justify-start space-x-2">
+                    <span class="w-6 h-6 bg-blue-100 text-blue-500 rounded-full flex-shrink-0 flex items-center justify-center">
+                      <i class="w-4 h-4 fa-regular fa-check-circle"></i>
+                    </span>
+                    <span class="text-base"><strong>Opciones disponibles:</strong></span>
+                  </p>
+                  
+                  <ul class="w-full pl-8 my-2 space-y-2">
+                    <li class="text-md-on-surface flex items-start justify-start space-x-2">
+                      <span class="text-blue-400 flex-shrink-0">
+                        <i class="fa-solid fa-check text-[12px]"></i>
+                      </span>
+                      <span class="text-base">3 Meses sin intereses</span>
+                    </li>
+                    
+                    <li class="text-md-on-surface flex items-start justify-start space-x-2">
+                      <span class="text-blue-400 flex-shrink-0">
+                        <i class="fa-solid fa-check text-[12px]"></i>
+                      </span>
+                      <span class="text-base">6 Meses sin intereses</span>
+                    </li>
+                  </ul>
+                  
+                  <div class="w-full mt-4">
+                    <p class="text-md-on-surface flex items-start justify-start space-x-2">
+                      <span class="w-6 h-6 bg-blue-100 text-blue-500 rounded-full flex-shrink-0 flex items-center justify-center">
+                        <i class="w-4 h-4 fa-regular fa-check-circle"></i>
+                      </span>
+                      <span class="text-base"><strong>Fácil y rápido: </strong>puedes pagar directamente en nuestra terminal bancaria o mediante un link de pago que te enviaremos.</span>
+                    </p>
+                  </div>
+                  
+                  <div class="w-full mt-4">
+                    <p class="text-md-on-surface flex items-start justify-start space-x-2">
+                      <span class="w-6 h-6 bg-blue-100 text-blue-500 rounded-full flex-shrink-0 flex items-center justify-center">
+                        <i class="w-4 h-4 fa-regular fa-check-circle"></i>
+                      </span>
+                      <span class="text-base"><strong>Tú eliges: </strong>al pagar podrás seleccionar el plazo de meses que prefieras, siempre sin intereses.</span>
+                    </p>
+                  </div>
+                  
+                </div>
+              </div>
+              
+              <div class="w-full p-4 bg-blue-100 rounded-lg border border-gray-300 flex items-center justify-center">
+                <span class="text-base text-center text-blue-800"><strong>Más facilidades, mismo precio garantizado.</strong></span>
+              </div>
+              
+            </div>
+            
+          </div>
+        </section>
+      </main>
+  </body>
+</html>

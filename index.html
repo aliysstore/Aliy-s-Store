@@ -1,300 +1,233 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta property="og:title" content="Aliy's Store | Venta por catálogo" />
-  <meta property="og:description" content="Hola, soy Alicia y te ayudo a encontrar el producto perfecto para ti" />
-  <meta property="og:image" content="https://aliysstore.github.io/Aliy-s-Store/assets/img/perfil.jpg" />
-  <meta property="og:url" content="https://aliysstore.github.io/Aliy-s-Store" />
-  <meta property="og:type" content="website" />
-  
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Aliy's Store | Venta por catálogo" />
-  <meta name="twitter:description" content="Hola, soy Alicia y te ayudo a encontrar el producto perfecto para ti" />
-  <meta name="twitter:image" content="https://aliysstore.github.io/Aliy-s-Store/assets/img/perfil.jpg" />
-    
-  <meta name="google-site-verification" content="OJZCwNFA7qoGBq9oi98SAslM7bHUFF-6A_8wYiELeVU" />
-  
-  <title>Aliy's Store | Calzado, ropa y accesorios por catálogo</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-  
-  <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
-  
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/components.css">
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="js/tailwind.config.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Shuffle/6.0.0/shuffle.min.js"></script>
-  <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZW7YPM60FN"></script>
-  <script src="js/gtag.js"></script>
-  
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-</head>
-<body class="bg-md-background font-nunito text-md-on-background">
-  <div class="flex flex-col min-h-screen">
-    <header class="bg-surface-variant p-5 flex justify-between items-center z-50 shadow-md">
-    <div id="title-container" class="flex items-center space-x-2">
-        <span class="text-2xl font-oswald font-bold text-md-primary">Aliy's Store</span>
-    </div>
-
-    <div id="search-container" class="relative w-full md:max-w-md mx-auto md:flex md:justify-end hidden">
-        <input type="text" id="search-bar" list="filter-suggestions" placeholder="Buscar catálogos..."
-            class="w-full pl-10 pr-4 py-2 rounded-full border border-md-outline bg-md-surface-container-high text-md-on-surface-variant focus:outline-none focus:ring-2 focus:ring-md-primary transition duration-300">
-        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-md-on-surface-variant"></i>
-        <datalist id="filter-suggestions"></datalist>
-        <button id="close-search-button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-md-on-surface-variant md:hidden focus:outline-none">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Aliy's Store | Venta por catálogo" />
+    <meta property="og:description" content="Hola, soy Alicia y te ayudo a encontrar el producto perfecto para ti" />
+    <meta property="og:image" content="https://aliysstore.github.io/Aliy-s-Store/assets/img/perfil.jpg" />
+    <meta property="og:url" content="https://aliysstore.github.io/Aliy-s-Store" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Aliy's Store | Venta por catálogo" />
+    <meta name="twitter:description" content="Hola, soy Alicia y te ayudo a encontrar el producto perfecto para ti" />
+    <meta name="twitter:image" content="https://aliysstore.github.io/Aliy-s-Store/assets/img/perfil.jpg" />
+    <meta name="google-site-verification" content="OJZCwNFA7qoGBq9oi98SAslM7bHUFF-6A_8wYiELeVU" />
+    <title>Aliy's Store | Calzado, ropa y accesorios por catálogo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="img/favicon.ico" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="preconnect" href="https://firebasestorage.googleapis.com" crossorigin>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/tailwind.config.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Shuffle/6.0.0/shuffle.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZW7YPM60FN"></script>
+    <script src="js/gtag.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  </head>
+  <body class="bg-md-background font-nunito text-md-on-background">
+    <div class="flex flex-col min-h-screen">
+      <header class="bg-surface-variant p-5 flex justify-between items-center z-50 shadow-md">
+        <div id="title-container" class="flex items-center space-x-2">
+          <span class="text-2xl font-oswald font-bold text-md-primary">Aliy's Store</span>
+        </div>
+        <div id="search-container" class="relative w-full md:max-w-md mx-auto md:flex md:justify-end hidden">
+          <input type="text" id="search-bar" list="filter-suggestions" placeholder="Buscar catálogos..." class="w-full pl-10 pr-4 py-2 rounded-full border border-md-outline bg-md-surface-container-high text-md-on-surface-variant focus:outline-none focus:ring-2 focus:ring-md-primary transition duration-300">
+          <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-md-on-surface-variant"></i>
+          <datalist id="filter-suggestions"></datalist>
+          <button id="close-search-button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-md-on-surface-variant md:hidden focus:outline-none">
             <i class="fas fa-times"></i>
-        </button>
-    </div>
-
-    <div id="mobile-search-button-container" class="md:hidden">
-        <button id="search-toggle-button"
-            class="inline-flex items-center space-x-2 px-4 py-2 border border-md-outline rounded-full text-md-on-surface-variant focus:outline-none focus:ring-2 focus:ring-md-primary transition-all duration-300">
+          </button>
+        </div>
+        <div id="mobile-search-button-container" class="md:hidden">
+          <button id="search-toggle-button" class="inline-flex items-center space-x-2 px-4 py-2 border border-md-outline rounded-full text-md-on-surface-variant focus:outline-none focus:ring-2 focus:ring-md-primary transition-all duration-300">
             <i class="fas fa-search"></i>
             <span>Buscar</span>
-        </button>
-    </div>
-</header>
-
-
-
-    
-    
+          </button>
+        </div>
+      </header>
       <main class="flex-grow bg-md-background">
-          <section class="mb-8 p-8 md:p-12 text-center text-white bg-gradient-to-b from-md-primary to-md-tertiary">
-    <h1 class="text-3xl md:text-5xl font-bold font-oswald leading-tight">Bienvenida a Aliy's Store</h1>
-    <p class="mt-2 text-md md:text-xl font-nunito font-light">
-        Explora nuestros catálogos exclusivos de Andrea, Cklass y Price Shoes. Encuentra el estilo perfecto para cada ocasión.
-    </p>
-    
-    <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
-        <a href="#catalog-content" class="inline-block
+        <section class="mb-8 p-8 md:p-12 text-center text-white bg-gradient-to-r from-md-primary to-md-primary/50">
+          <h1 class="text-3xl md:text-5xl font-bold font-oswald leading-tight">Bienvenida a Aliy's Store</h1>
+          <p class="mt-2 text-md md:text-xl font-nunito font-light"> Explora nuestros catálogos exclusivos de Andrea, Cklass y Price Shoes. Encuentra el estilo perfecto para cada ocasión. </p>
+          <div class="mt-6 flex flex-col sm:flex-row justify-center items-center gap-4">
+            <a href="#catalog-content" class="inline-block
             bg-white text-md-primary hover:bg-md-primary-container hover:text-md-on-primary-container
             font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
-            <i class="fas fa-book mr-2"></i> Ver catálogos
-        </a>
-        <a href="https://wa.me/5212285722185" target="_blank" class="inline-block
+              <i class="fas fa-book mr-2"></i> Ver catálogos </a>
+            <a href="https://wa.me/5212285722185" target="_blank" class="inline-block
             bg-white text-md-primary hover:bg-md-primary-container hover:text-md-on-primary-container
             font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 transform hover:scale-105">
-            <i class="fab fa-whatsapp mr-2"></i> Contáctame ahora
-        </a>
-    </div>
-
-</section>
-
-          
-          
-          <section class="mb-6 p-5">
-    <h2 class="text-2xl font-bold font-oswald text-md-on-surface text-center mb-2">Nuestras marcas</h2>
-    <p class="text-lg text-md-on-surface-variant text-center mb-6">Encuentra los catálogos de calzado y ropa más populares de México. Haz clic en el catálogo de tu preferencia para conocer las últimas tendencias.</p>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-md-surface-container-low p-6 rounded-lg border border-md-surface-variant shadow-sm flex flex-col items-center text-center">
-            <img src="assets/img/andrea_logo.jpeg" alt="Logo de Andrea" class="h-20 w-auto mb-4 object-contain shadow-sm rounded-lg">
-            <h3 class="text-xl font-bold font-oswald text-md-on-surface">Andrea</h3>
-            <p class="text-md-on-surface-variant mt-2 mb-2 italic">Moda que se adapta a tu estilo de vida</p>
-            <p id="count-andrea" class="text-md-on-surface-variant text-sm mt-auto">Catálogos disponibles: 0</p>
-        </div>
-        <div class="bg-md-surface-container-low p-6 rounded-lg border border-md-surface-variant shadow-sm flex flex-col items-center text-center">
-            <img src="assets/img/cklass_logo.jpeg" alt="Logo de Cklass" class="h-20 w-auto mb-4 object-contain shadow-sm rounded-lg">
-            <h3 class="text-xl font-bold font-oswald text-md-on-surface">Cklass</h3>
-            <p class="text-md-on-surface-variant mt-2 mb-2 italic">Las mejores tendencias de calzado</p>
-            <p id="count-cklass" class="text-md-on-surface-variant text-sm mt-auto">Catálogos disponibles: 0</p>
-        </div>
-        <div class="bg-md-surface-container-low p-6 rounded-lg border border-md-surface-variant shadow-sm flex flex-col items-center text-center">
-            <img src="assets/img/price_shoes_logo.jpeg" alt="Logo de Price Shoes" class="h-20 w-auto mb-4 object-contain shadow-sm rounded-lg">
-            <h3 class="text-xl font-bold font-oswald text-md-on-surface">Price Shoes</h3>
-            <p class="text-md-on-surface-variant mt-2 mb-2 italic">Moda para toda la familia</p>
-            <p id="count-price-shoes" class="text-md-on-surface-variant text-sm mt-auto">Catálogos disponibles: 0</p>
-        </div>
-    </div>
-</section>
-
-
-          
-          <section id="status-messages">
-            <div id="loading-state" class="flex flex-col items-center justify-center min-h-[50vh]">
-              <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
-              <p class="mt-4 text-md-on-surface-variant text-lg">Cargando catálogo...</p>
-            </div>
-  
-            <div id="error-state" class="hidden flex flex-col items-center justify-center min-h-[50vh] text-center">
-                <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
-                <p class="text-md-on-surface-variant text-lg">No pudimos cargar el catálogo. Por favor, revisa tu conexión a internet.</p>
-                <button id="retry-button" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300">
-                    Intentar de nuevo
-                </button>
-            </div>
+              <i class="fab fa-whatsapp mr-2"></i> Contáctame ahora </a>
+          </div>
         </section>
-
+        <section class="mb-6 p-5">
+          <h2 class="text-2xl font-bold font-oswald text-md-on-surface text-center mb-2">Nuestras marcas</h2>
+          <p class="text-lg text-md-on-surface-variant text-center mb-6">Encuentra los catálogos de calzado y ropa más populares de México. Haz clic en el catálogo de tu preferencia para conocer las últimas tendencias.</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-md-surface-container-low p-6 rounded-lg border border-md-surface-variant shadow-sm flex flex-col items-center text-center">
+              <img src="assets/img/andrea_logo.jpeg" alt="Logo de Andrea" class="h-20 w-auto mb-4 object-contain shadow-sm rounded-lg">
+              <h3 class="text-xl font-bold font-oswald text-md-on-surface">Andrea</h3>
+              <p class="text-md-on-surface-variant mt-2 mb-2 italic">Moda que se adapta a tu estilo de vida</p>
+              <p id="count-andrea" class="text-md-on-surface-variant text-sm mt-auto">Catálogos disponibles: 0</p>
+            </div>
+            <div class="bg-md-surface-container-low p-6 rounded-lg border border-md-surface-variant shadow-sm flex flex-col items-center text-center">
+              <img src="assets/img/cklass_logo.jpeg" alt="Logo de Cklass" class="h-20 w-auto mb-4 object-contain shadow-sm rounded-lg">
+              <h3 class="text-xl font-bold font-oswald text-md-on-surface">Cklass</h3>
+              <p class="text-md-on-surface-variant mt-2 mb-2 italic">Las mejores tendencias de calzado</p>
+              <p id="count-cklass" class="text-md-on-surface-variant text-sm mt-auto">Catálogos disponibles: 0</p>
+            </div>
+            <div class="bg-md-surface-container-low p-6 rounded-lg border border-md-surface-variant shadow-sm flex flex-col items-center text-center">
+              <img src="assets/img/price_shoes_logo.jpeg" alt="Logo de Price Shoes" class="h-20 w-auto mb-4 object-contain shadow-sm rounded-lg">
+              <h3 class="text-xl font-bold font-oswald text-md-on-surface">Price Shoes</h3>
+              <p class="text-md-on-surface-variant mt-2 mb-2 italic">Moda para toda la familia</p>
+              <p id="count-price-shoes" class="text-md-on-surface-variant text-sm mt-auto">Catálogos disponibles: 0</p>
+            </div>
+          </div>
+        </section>
+        <section id="status-messages">
+          <div id="loading-state" class="flex flex-col items-center justify-center min-h-[50vh]">
+            <i class="fas fa-spinner fa-spin text-4xl text-md-primary"></i>
+            <p class="mt-4 text-md-on-surface-variant text-lg">Cargando catálogo...</p>
+          </div>
+          <div id="error-state" class="hidden flex flex-col items-center justify-center min-h-[50vh] text-center">
+            <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+            <p class="text-md-on-surface-variant text-lg">No pudimos cargar el catálogo. Por favor, revisa tu conexión a internet.</p>
+            <button id="retry-button" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300"> Intentar de nuevo </button>
+          </div>
+        </section>
         <section id="catalog-content" class="bg-white hidden p-5">
-            <h2 class="text-2xl font-bold font-oswald text-md-on-surface mb-2">Catálogos disponibles</h2>
-            <p class="text-md text-md-on-surface-variant mb-4">Explora nuestras colecciones más recientes.</p>
-        
-            <div id="filter-container" class="mb-8 flex flex-wrap gap-2">
-            </div>
-            <div id="catalog-grid" class="catalog-grid flex flex-wrap gap-4">
-            </div>
-            
-            <div id="no-results-state" class="hidden flex flex-col items-center justify-center min-h-[50vh] text-center p-5">
-                <i class="fas fa-search-minus text-6xl text-md-primary-container mb-6"></i>
-                <p class="text-md-on-surface-variant text-lg">No se encontraron productos que coincidan con tu búsqueda.</p>
-                <p class="text-md-on-surface-variant text-md mt-2">Intenta cambiando los filtros.</p>
-            </div>
+          <h2 class="text-2xl font-bold font-oswald text-md-on-surface mb-2">Catálogos disponibles</h2>
+          <p class="text-md text-md-on-surface-variant mb-4">Explora nuestras colecciones más recientes.</p>
+          <div id="filter-container" class="mb-8 flex flex-wrap gap-2"></div>
+          <div id="catalog-grid" class="catalog-grid flex flex-wrap gap-4"></div>
+          <div id="no-results-state" class="hidden flex flex-col items-center justify-center min-h-[50vh] text-center p-5">
+            <i class="fas fa-search-minus text-6xl text-md-primary-container mb-6"></i>
+            <p class="text-md-on-surface-variant text-lg">No se encontraron productos que coincidan con tu búsqueda.</p>
+            <p class="text-md-on-surface-variant text-md mt-2">Intenta cambiando los filtros.</p>
+          </div>
         </section>
-
-        
         <section id="carousel-brands" class="p-5">
           <h2 class="text-xl font-bold text-md-on-surface mb-2 mt-8">Encuentra más de 200 marcas</h2>
-            <div class="w-full relative">
+          <div class="w-full relative">
             <div class="swiper default-carousel swiper-container">
               <div class="swiper-wrapper"></div>
             </div>
-            </div>
+          </div>
         </section>
-        
         <section class="container mx-auto p-5">
-    <h2 class="text-3xl font-bold text-center mb-8 font-oswald text-md-on-surface">¿Por qué comprar en Aliy's Store?</h2>
-    <div class="flex flex-col md:flex-row md:space-x-8 space-y-8 md:space-y-0">
-        <div class="flex flex-col items-center text-center p-6 bg-md-surface-container rounded-lg border border-md-surface-variant shadow-sm">
-            <i class="fas fa-book text-4xl mb-4 text-md-primary"></i>
-            <h3 class="text-xl font-semibold mb-2 font-oswald text-md-on-surface">Catálogos siempre actualizados</h3>
-            <p class="text-md-on-surface-variant">Accede en un solo lugar a las últimas campañas y promociones de Andrea, Cklass y Price Shoes.</p>
-        </div>
-        
-        <div class="flex flex-col items-center text-center p-6 bg-md-surface-container rounded-lg border border-md-surface-variant shadow-sm">
-            <i class="fas fa-handshake text-4xl mb-4 text-md-primary"></i>
-            <h3 class="text-xl font-semibold mb-2 font-oswald text-md-on-surface">Atención personalizada</h3>
-            <p class="text-md-on-surface-variant">Te ayudo a elegir tallas, estilos y a resolver cualquier duda antes de comprar.</p>
-        </div>
-
-        <div class="flex flex-col items-center text-center p-6 bg-md-surface-container rounded-lg border border-md-surface-variant shadow-sm">
-            <i class="fas fa-money-bill-wave text-4xl mb-4 text-md-primary"></i>
-            <h3 class="text-xl font-semibold mb-2 font-oswald text-md-on-surface">Ahorros reales</h3>
-            <p class="text-md-on-surface-variant">Encuentra descuentos exclusivos, precios especiales y ofertas de temporada para toda la familia.</p>
-        </div>
-
-        <div class="flex flex-col items-center text-center p-6 bg-md-surface-container rounded-lg border border-md-surface-variant shadow-sm">
-            <i class="fas fa-shopping-bag text-4xl mb-4 text-md-primary"></i>
-            <h3 class="text-xl font-semibold mb-2 font-oswald text-md-on-surface">Compra fácil y segura</h3>
-            <p class="text-md-on-surface-variant">Haz tu pedido directamente conmigo y recibe tus productos con la confianza de un trato directo.</p>
-        </div>
-    </div>
-</section>
-
+          <h2 class="text-3xl font-bold text-center mb-8 font-oswald text-md-on-surface">¿Por qué comprar en Aliy's Store?</h2>
+          <div class="flex flex-col md:flex-row md:space-x-8 space-y-8 md:space-y-0">
+            <div class="flex flex-col items-center text-center p-6 bg-md-surface-container rounded-lg border border-md-surface-variant shadow-sm">
+              <i class="fas fa-book text-4xl mb-4 text-md-primary"></i>
+              <h3 class="text-xl font-semibold mb-2 font-oswald text-md-on-surface">Catálogos siempre actualizados</h3>
+              <p class="text-md-on-surface-variant">Accede en un solo lugar a las últimas campañas y promociones de Andrea, Cklass y Price Shoes.</p>
+            </div>
+            <div class="flex flex-col items-center text-center p-6 bg-md-surface-container rounded-lg border border-md-surface-variant shadow-sm">
+              <i class="fas fa-handshake text-4xl mb-4 text-md-primary"></i>
+              <h3 class="text-xl font-semibold mb-2 font-oswald text-md-on-surface">Atención personalizada</h3>
+              <p class="text-md-on-surface-variant">Te ayudo a elegir tallas, estilos y a resolver cualquier duda antes de comprar.</p>
+            </div>
+            <div class="flex flex-col items-center text-center p-6 bg-md-surface-container rounded-lg border border-md-surface-variant shadow-sm">
+              <i class="fas fa-money-bill-wave text-4xl mb-4 text-md-primary"></i>
+              <h3 class="text-xl font-semibold mb-2 font-oswald text-md-on-surface">Ahorros reales</h3>
+              <p class="text-md-on-surface-variant">Encuentra descuentos exclusivos, precios especiales y ofertas de temporada para toda la familia.</p>
+            </div>
+            <div class="flex flex-col items-center text-center p-6 bg-md-surface-container rounded-lg border border-md-surface-variant shadow-sm">
+              <i class="fas fa-shopping-bag text-4xl mb-4 text-md-primary"></i>
+              <h3 class="text-xl font-semibold mb-2 font-oswald text-md-on-surface">Compra fácil y segura</h3>
+              <p class="text-md-on-surface-variant">Haz tu pedido directamente conmigo y recibe tus productos con la confianza de un trato directo.</p>
+            </div>
+          </div>
+        </section>
       </main>
-    
-    <footer class="bg-md-primary p-5 text-center text-md-on-primary z-50">
-      Aliy's Store &copy; 2024. Todos los derechos reservados.
-    </footer>
-  </div>
-
-  <div id="consent-banner" class="consent-banner">
-    <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-      <p class="text-sm text-center md:text-left">
-        Este sitio utiliza cookies para mejorar la experiencia del usuario y analizar el tráfico.
-        <a href="aviso-de-privacidad.html" class="underline font-bold" id="link-politica-cookies">Política de cookies</a>.
-      </p>
-      <div class="flex gap-4">
-        <button id="accept-all-cookies" class="btn btn-accept">Aceptar todas</button>
-        <button id="open-consent-modal" class="btn btn-deny">Configurar</button>
+      <footer class="bg-md-primary p-5 text-center text-md-on-primary z-50"> Aliy's Store &copy; 2024. Todos los derechos reservados. </footer>
+    </div>
+    <div id="consent-banner" class="consent-banner">
+      <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-sm text-center md:text-left"> Este sitio utiliza cookies para mejorar la experiencia del usuario y analizar el tráfico. <a href="aviso-de-privacidad.html" class="underline font-bold" id="link-politica-cookies">Política de cookies</a>. </p>
+        <div class="flex gap-4">
+          <button id="accept-all-cookies" class="btn btn-accept">Aceptar todas</button>
+          <button id="open-consent-modal" class="btn btn-deny">Configurar</button>
+        </div>
       </div>
     </div>
-  </div>
-
-  <div id="consent-modal" class="consent-modal">
-    <div class="consent-modal-content">
+    <div id="consent-modal" class="consent-modal">
+      <div class="consent-modal-content">
         <span class="close-btn" id="close-modal">&times;</span>
         <h3>Configuración de privacidad</h3>
         <p>Selecciona qué tipos de cookies deseas aceptar. Los cambios se aplicarán a tu próxima visita.</p>
         <div class="consent-options">
-            <div class="consent-option">
-                <div class="option-info">
-                    <h4>Cookies necesarias</h4>
-                    <p>Necesarias para el funcionamiento básico del sitio. No se pueden desactivar.</p>
-                </div>
-                <div class="toggle-container">
-                    <div class="toggle">
-                        <input type="checkbox" checked disabled />
-                        <span class="slider"></span>
-                    </div>
-                </div>
+          <div class="consent-option">
+            <div class="option-info">
+              <h4>Cookies necesarias</h4>
+              <p>Necesarias para el funcionamiento básico del sitio. No se pueden desactivar.</p>
             </div>
-            <div class="consent-option">
-                <div class="option-info">
-                    <h4>Cookies de analíticas</h4>
-                    <p>Nos ayudan a entender cómo los visitantes interactúan con la página, como el número de visitantes y la fuente del tráfico.</p>
-                </div>
-                <div class="toggle-container">
-                    <label class="toggle">
-                        <input type="checkbox" id="analytics-toggle" checked disabled />
-                        <span class="slider"></span>
-                    </label>
-                </div>
+            <div class="toggle-container">
+              <div class="toggle">
+                <input type="checkbox" checked disabled />
+                <span class="slider"></span>
+              </div>
             </div>
-            <div class="consent-option">
-                <div class="option-info">
-                    <h4>Cookies de publicidad</h4>
-                    <p>Utilizadas para rastrear a los visitantes a través de los sitios web con el fin de mostrar anuncios relevantes y atractivos.</p>
-                </div>
-                <div class="toggle-container">
-                    <label class="toggle">
-                        <input type="checkbox" id="ad-toggle" checked />
-                        <span class="slider"></span>
-                    </label>
-                </div>
+          </div>
+          <div class="consent-option">
+            <div class="option-info">
+              <h4>Cookies de analíticas</h4>
+              <p>Nos ayudan a entender cómo los visitantes interactúan con la página, como el número de visitantes y la fuente del tráfico.</p>
             </div>
+            <div class="toggle-container">
+              <label class="toggle">
+                <input type="checkbox" id="analytics-toggle" checked disabled />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="consent-option">
+            <div class="option-info">
+              <h4>Cookies de publicidad</h4>
+              <p>Utilizadas para rastrear a los visitantes a través de los sitios web con el fin de mostrar anuncios relevantes y atractivos.</p>
+            </div>
+            <div class="toggle-container">
+              <label class="toggle">
+                <input type="checkbox" id="ad-toggle" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
         </div>
         <div class="flex justify-end mt-6">
-            <button id="save-consent" class="btn btn-accept">Guardar mis elecciones</button>
+          <button id="save-consent" class="btn btn-accept">Guardar mis elecciones</button>
         </div>
-    </div>
-  </div>
-
-  <div id="catalog-modal" class="catalog-modal">
-    <div class="catalog-modal-content">
-      <span class="close-btn" id="close-catalog-modal">&times;</span>
-      <img id="modal-image" class="catalog-modal-image" src="" alt="Portada del catálogo">
-      <h3 id="modal-title" class="text-xl font-bold font-oswald text-md-on-surface"></h3>
-      <a id="modal-button" href="#" target="_blank" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300 inline-block">
-        Ver Catálogo
-      </a>
-    </div>
-  </div>
-
-  <div id="not-found-modal" class="catalog-modal">
-      <div class="catalog-modal-content">
-          <span class="close-btn" id="close-not-found-modal">&times;</span>
-          <i class="fas fa-exclamation-circle text-4xl text-yellow-500 mb-4"></i>
-          <h3 class="text-xl font-bold font-oswald text-md-on-surface">Catálogo no encontrado</h3>
-          <p class="mt-2 text-md-on-surface-variant">El enlace del catálogo que intentas ver no es válido o ha sido retirado.</p>
-          <button id="close-not-found-button" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300">
-              Aceptar
-          </button>
       </div>
-  </div>
-  
-  <a href="https://wa.me/5212285722185"
-  id="whatsapp-float"
-   class="whatsapp-float fixed bottom-6 right-6 rounded-full shadow-lg transition-transform duration-300 z-50"
-   target="_blank"
-   aria-label="Contactar por WhatsApp">
-    <img 
-      src="assets/img/whatsapp.svg"
-      class="whatsapp-icon w-12 h-12 text-white"
-      alt="Icono de WhatsApp">
-  </a>
-
-  <script src="js/main.js"></script>
-</body>
+    </div>
+    <div id="catalog-modal" class="catalog-modal">
+      <div class="catalog-modal-content">
+        <span class="close-btn" id="close-catalog-modal">&times;</span>
+        <img id="modal-image" class="catalog-modal-image" src="" alt="Portada del catálogo">
+        <h3 id="modal-title" class="text-xl font-bold font-oswald text-md-on-surface"></h3>
+        <a id="modal-button" href="#" target="_blank" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300 inline-block"> Ver Catálogo </a>
+      </div>
+    </div>
+    <div id="not-found-modal" class="catalog-modal">
+      <div class="catalog-modal-content">
+        <span class="close-btn" id="close-not-found-modal">&times;</span>
+        <i class="fas fa-exclamation-circle text-4xl text-yellow-500 mb-4"></i>
+        <h3 class="text-xl font-bold font-oswald text-md-on-surface">Catálogo no encontrado</h3>
+        <p class="mt-2 text-md-on-surface-variant">El enlace del catálogo que intentas ver no es válido o ha sido retirado.</p>
+        <button id="close-not-found-button" class="mt-4 bg-md-primary text-md-on-primary hover:bg-md-primary-container hover:text-md-on-primary-container font-bold py-2 px-6 rounded-full transition duration-300"> Aceptar </button>
+      </div>
+    </div>
+    <a href="https://wa.me/5212285722185" id="whatsapp-float" class="whatsapp-float fixed bottom-6 right-6 rounded-full shadow-lg transition-transform duration-300 z-50" target="_blank" aria-label="Contactar por WhatsApp">
+      <img src="assets/img/whatsapp.svg" class="whatsapp-icon w-12 h-12 text-white" alt="Icono de WhatsApp">
+    </a>
+    <script src="js/main.js"></script>
+  </body>
 </html>
